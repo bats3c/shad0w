@@ -1,0 +1,64 @@
+strerror_override.lo: strerror_override.c strerror_override.h config.h \
+ /usr/share/mingw-w64/include/errno.h \
+ /usr/share/mingw-w64/include/crtdefs.h \
+ /usr/share/mingw-w64/include/_mingw.h \
+ /usr/share/mingw-w64/include/_mingw_mac.h \
+ /usr/share/mingw-w64/include/_mingw_secapi.h \
+ /usr/share/mingw-w64/include/vadefs.h \
+ /usr/share/mingw-w64/include/sdks/_mingw_directx.h \
+ /usr/share/mingw-w64/include/sdks/_mingw_ddk.h json_object.h \
+ /usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/include/stddef.h \
+ /usr/share/mingw-w64/include/stddef.h json_inttypes.h json_config.h \
+ /usr/share/mingw-w64/include/inttypes.h \
+ /usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/include/stdint.h \
+ /usr/share/mingw-w64/include/stdint.h \
+ /usr/share/mingw-w64/include/_mingw_print_push.h \
+ /usr/share/mingw-w64/include/_mingw_print_pop.h printbuf.h \
+ /usr/share/mingw-w64/include/string.h \
+ /usr/share/mingw-w64/include/sec_api/string_s.h
+
+strerror_override.h:
+
+config.h:
+
+/usr/share/mingw-w64/include/errno.h:
+
+/usr/share/mingw-w64/include/crtdefs.h:
+
+/usr/share/mingw-w64/include/_mingw.h:
+
+/usr/share/mingw-w64/include/_mingw_mac.h:
+
+/usr/share/mingw-w64/include/_mingw_secapi.h:
+
+/usr/share/mingw-w64/include/vadefs.h:
+
+/usr/share/mingw-w64/include/sdks/_mingw_directx.h:
+
+/usr/share/mingw-w64/include/sdks/_mingw_ddk.h:
+
+json_object.h:
+
+/usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/include/stddef.h:
+
+/usr/share/mingw-w64/include/stddef.h:
+
+json_inttypes.h:
+
+json_config.h:
+
+/usr/share/mingw-w64/include/inttypes.h:
+
+/usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/include/stdint.h:
+
+/usr/share/mingw-w64/include/stdint.h:
+
+/usr/share/mingw-w64/include/_mingw_print_push.h:
+
+/usr/share/mingw-w64/include/_mingw_print_pop.h:
+
+printbuf.h:
+
+/usr/share/mingw-w64/include/string.h:
+
+/usr/share/mingw-w64/include/sec_api/string_s.h:

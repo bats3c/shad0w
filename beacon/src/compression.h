@@ -1,0 +1,1 @@
+char* decompress(char* cdata);

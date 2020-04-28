@@ -1,0 +1,11 @@
+prefix=
+exec_prefix=
+libdir=/shad0w-dev/beacon/lib/json-c
+includedir=/shad0w-dev/beacon/lib/json-c
+
+Name: json
+Description: JSON implementation in C
+Version: 0.13.99
+Requires:
+Libs:  -L/shad0w-dev/beacon/lib/json-c -ljson-c
+Cflags: -I/shad0w-dev/beacon/lib/json-c
