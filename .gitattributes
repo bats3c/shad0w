@@ -1,1 +1,3 @@
-beacon/lib/json-c/* linguist-vendored
+* linguist-vendored
+*.py linguist-vendored=false
+*.c linguist-vendored=false
