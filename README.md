@@ -9,7 +9,7 @@ Shad0w is a covert post exploitation framework
 
 I recommend adding this alias to your bashrc
 
-    alias shad0w='sudo docker run -v $(pwd):/root/shad0w/bridge -p 443:443 -it shad0w'
+    alias shad0w='sudo docker run -v $(pwd):/root/shad0w/.bridge -p 443:443 -it shad0w'
 
 ### Usage
 
