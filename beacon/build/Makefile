@@ -11,7 +11,7 @@ WIN_OUTNAME=../beacon.exe
 
 SOURCES=debug.c core.c base64.c beacon.c loader.c
 
-all: clean beacon
+all: beacon
 
 clean:
 	$(shell rm $(WIN_OUTNAME))

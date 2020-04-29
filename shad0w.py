@@ -141,7 +141,7 @@ if __name__ == '__main__':
     if mode == "beacon":
         beacon_parser = argparse.ArgumentParser(prog="beacon")
         beacon_parser.add_argument("-a", "--address", required=True, help="Address the beacon will connect to")
-        beacon_parser.add_argument("-p", "--port", required=True, help="Port the beacon will connect on")
+        beacon_parser.add_argument("-p", "--port", required=False, default=443, help="Port the beacon will connect on")
         beacon_parser.add_argument("-j", "--jitter", required=False, default=5, type=int, help="Jitter the beacon should use when connecting back")
         beacon_parser.add_argument("-f", "--format", required=True, choices=('raw', 'exe'), help="Format to drop the beacon in (raw or exe)")
         beacon_parser.add_argument("-o", "--out", required=True, help="File to store the beacon in")

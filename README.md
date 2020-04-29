@@ -17,3 +17,5 @@ I recommend adding this alias to your bashrc
     shad0w beacon -a <ip> -f <format> -o <name>
 
 ### Run as dev
+
+    sudo docker run -v $(pwd):/root/shad0w -p 443:443 -it shad0w etc...
