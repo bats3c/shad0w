@@ -109,7 +109,13 @@ if __name__ == '__main__':
 
     # parse the args
     args, unk = first_parser.parse_known_args()
-    mode = ''.join(unk[0])
+
+    # if we not been given any args then quit
+    try:
+        mode = ''.join(unk[0])
+    except IndexError:
+        first_parser.print_help()
+        exit(-1)
 
     # if its neither beacon or listen then quit
     if (mode != "listen") and (mode != "beacon"):

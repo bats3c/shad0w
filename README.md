@@ -1,31 +1,19 @@
 # shad0w
 
-blah
+Shad0w is a covert post exploitation framework
 
-## Setup
+### Install
 
-build...
+    git clone https://github.com/bats3c/shad0w.git
+    sudo docker build -t shad0w .
 
-    docker build -t shad0w .
+I recommend adding this alias to your bashrc
 
-run...
+    alias shad0w='sudo docker run -v $(pwd):/root/shad0w/bridge -p 443:443 -it shad0w'
 
-    docker run -v $(pwd):/root/shad0w/bridge -it shad0w
+### Usage
 
-dev...
+    shad0w listen -a <ip>
+    shad0w beacon -a <ip> -f <format> -o <name>
 
-    sudo docker run -v $(pwd):/root/shad0w -it shad0w -d
-    sudo docker run -v $(pwd):/root/shad0w/bridge -it shad0w -d
-
-notes:
-
-    x86_64-w64-mingw32-gcc test.c -o test.exe -Wl,--pic-executable,-e,main
-    only mingw in kali repos
-    x86_64-w64-mingw32-gcc (GCC) 9.3-win32 20200324
-    9.3-win32
-
-shad0w listen -a dylan.codes -p 443
-shad0w beacon -a dylan.codes -p 443 -j 1 -f raw -o beacon.bin
-
-sudo docker rm -f $(sudo docker ps -a -q)
-sudo docker rmi <image>
+### Run as dev
