@@ -26,3 +26,6 @@ notes:
 
 shad0w listen -a dylan.codes -p 443
 shad0w beacon -a dylan.codes -p 443 -j 1 -f raw -o beacon.bin
+
+sudo docker rm -f $(sudo docker ps -a -q)
+sudo docker rmi <image>

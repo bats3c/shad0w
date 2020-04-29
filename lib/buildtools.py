@@ -71,7 +71,7 @@ def write_and_bridge(filename, rcode):
     # by the user and then make sure they can access it
 
     # might change this?
-    os.chdir("/root/shad0w")
+    os.chdir("/root/shad0w/bridge")
 
     with open(filename, 'wb') as file:
         file.write(rcode)
