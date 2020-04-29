@@ -78,3 +78,5 @@ def write_and_bridge(filename, rcode):
 
     with open(filename, 'wb') as file:
         file.write(rcode)
+    
+    print(f"wrote {len(rcode)} bytes to {filename}")
