@@ -3,5 +3,6 @@ __all__ = [
            "beacons",
            "shell",
            "exit",
-           "execute"
+           "execute",
+           "ls"
           ]

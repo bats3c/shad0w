@@ -1,2 +1,6 @@
-beacon creation
-util commands eg ls, cat, touch
+util commands:
+    ls
+    cat
+    touch
+    mkdir
+    rm

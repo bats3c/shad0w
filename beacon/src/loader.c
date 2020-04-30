@@ -89,6 +89,9 @@ BOOL InjectModule(CHAR* Bytes, DWORD Size)
 				threadId = threadEntry.th32ThreadID;
 				HANDLE hThread = OpenThread(THREAD_SET_CONTEXT, FALSE, threadId);
                 DWORD dwResult = QueueUserAPC((PAPCFUNC)rBuffer, hThread, NULL);
+
+                printf("injected into tid: %d\n", threadId);
+
                 CloseHandle(hThread);
 			}
 		}
