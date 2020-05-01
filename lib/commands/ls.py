@@ -29,6 +29,9 @@ def get_list_directory(rargs, args):
     # if we got no other args but 'ls' then drop the current dir
     if (args.dir is None) and (''.join(rargs) == "ls"):
         return "."
+
+    elif type(args.dir) == list:
+        return ' '.join(args.dir).replace('"', '')
     
     elif args.dir is not None:
         return args.dir
@@ -64,7 +67,7 @@ ls C:\\
     parse.error = error
 
     # setup the args
-    parse.add_argument("dir", help="Location of the dir to want to list the contents of")
+    parse.add_argument("dir", nargs='*', help="Location of the dir to want to list the contents of")
 
     # make sure we dont die from weird args
     try:
