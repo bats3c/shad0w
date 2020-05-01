@@ -1,5 +1,4 @@
 util commands:
-    ls
     cat
     touch
     mkdir

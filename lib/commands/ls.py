@@ -13,7 +13,6 @@ ERROR = False
 error_list = ""
 
 # let argparse error and exit nice
-
 def error(message):
     global ERROR, error_list
     ERROR = True
@@ -56,6 +55,7 @@ Examples:
 
 ls
 ls C:\\
+ls "C:\\Documents and Settings"
 """
     
     parse = argparse.ArgumentParser(prog='ls',

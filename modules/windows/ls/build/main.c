@@ -19,6 +19,10 @@ int main()
     {
         switch (GetLastError())
         {
+        case 3:
+            printf("ERROR: The path '%s' does not exist.\n", szDir);
+            return dwError;
+        
         case 5:
             printf("ERROR: Access to the path '%s' is denied.\n", szDir);
             return dwError;
