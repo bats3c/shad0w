@@ -1,1 +1,1 @@
-LPCSTR szDir = "C:\\*\\*";
+LPCSTR szDir = "\\*";

@@ -70,7 +70,7 @@ int main()
             filesize.HighPart = ffd.nFileSizeHigh;
 
             // this is just purely about formatting, making sure it looks nice
-            if (filesize.QuadPart > 9)
+            if (filesize.QuadPart > 99)
             {
                 printf(TEXT("FILE\t%.2d/%.2d/%.4d %.2d:%.2d  %.2d/%.2d/%.4d %.2d:%.2d   %d\t %s\n"), createtime.wDay, createtime.wMonth, createtime.wYear,
                                                                                                      createtime.wHour, createtime.wMinute, accesstime.wDay,

@@ -101,5 +101,3 @@ ls "C:\\Documents and Settings"
 
     # set a task for the current beacon to do
     shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)
-
-    # print(len(rcode))
