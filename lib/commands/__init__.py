@@ -4,5 +4,6 @@ __all__ = [
            "shell",
            "exit",
            "execute",
-           "ls"
+           "ls",
+           "cat"
           ]
