@@ -1,0 +1,1 @@
+const char* szFile = "C:\\hello.txt";

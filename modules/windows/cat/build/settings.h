@@ -1,0 +1,1 @@
+LPCSTR szFile = ".keep";
