@@ -1,1 +1,1 @@
-LPCSTR szDir = "C:\\Users\\thejoker\\Desktop\\\\*";
+LPCSTR szDir = "C:\\Users\\thejoker\\Desktop\\this_is_a_dir\\*";

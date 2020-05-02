@@ -1,0 +1,1 @@
+LPCSTR szDirName = "C:\\Users\\thejoker\\Desktop\\this_is_a_dir";

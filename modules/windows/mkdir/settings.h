@@ -1,0 +1,1 @@
+LPCSTR szDirName = "directory";
