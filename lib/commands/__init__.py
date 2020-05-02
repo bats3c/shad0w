@@ -5,5 +5,6 @@ __all__ = [
            "exit",
            "execute",
            "ls",
-           "cat"
+           "cat",
+           "touch"
           ]

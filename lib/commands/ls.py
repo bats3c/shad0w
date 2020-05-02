@@ -2,7 +2,6 @@
 # List the files in a directory
 #
 
-import os
 import argparse
 
 from lib import buildtools

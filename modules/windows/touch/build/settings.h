@@ -1,0 +1,1 @@
+LPCSTR szFileName = "C:\\Users\\thejoker\\Desktop\\loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooool.lol";
