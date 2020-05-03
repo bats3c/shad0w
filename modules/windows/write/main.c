@@ -36,7 +36,22 @@ void main()
     
     if (Ret != TRUE)
     {
-        printf("2 ERROR: Failed to write to '%s' with error code: %d\n", szFileName, GetLastError());
+
+        switch (GetLastError())
+        {
+        case 5:
+            printf("ERROR: Failed to write to '%s' because access is denied.\n", szFileName);
+            return;
+        
+        case 19:
+            printf("ERROR: Failed to write to '%s' because the media is write protected.\n", szFileName);
+            return;
+        
+        default:
+            break;
+        }
+
+        printf("ERROR: Failed to write to '%s' with error code: %d\n", szFileName, GetLastError());
         return;
     }
     
