@@ -35,10 +35,10 @@ def main(shad0w, args):
     usage_examples = """
 Example:
 
-rm "C:\\Users\\thejoker\\deleteme.txt"
+write -f "C:\\Users\\thejoker\\writetome.txt" -d "i am going to be written"
 """
     
-    parse = argparse.ArgumentParser(prog='rm',
+    parse = argparse.ArgumentParser(prog='write',
                                 formatter_class=argparse.RawDescriptionHelpFormatter,
                                 epilog=usage_examples)
     
@@ -47,7 +47,8 @@ rm "C:\\Users\\thejoker\\deleteme.txt"
     parse.error = error
 
     # setup the args
-    parse.add_argument("name", nargs='*', help="Name of what you want to delete")
+    parse.add_argument("-f", "--file", required=True, help="Name of the file you want to write to")
+    parse.add_argument("-d", "--data", nargs="*", required=True, help="Data you want to write to the file")
 
     # make sure we dont die from weird args
     try:
@@ -55,23 +56,28 @@ rm "C:\\Users\\thejoker\\deleteme.txt"
     except:
         pass
 
-    if not args.name:
-        parse.print_help()
-        return
+    if not (args.file and args.data):
+        if ERROR:
+            print(error_list)
+            parse.print_help()
+            return
 
     # clone all the source files
-    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/rm/", builddir="/root/shad0w/modules/windows/rm/build")
+    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/write/", builddir="/root/shad0w/modules/windows/write/build")
 
     # set the correct settings
-    template = "LPCSTR szFileName = \"%s\";" % (' '.join(args.name).replace('"', '').replace('\\', '\\\\'))
+    filename = ''.join(args.file).replace('"', '').replace('\\', '\\\\')
+    data = ' '.join(args.data).replace('"', '').replace('\\', '\\\\')
 
-    buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/rm/build/settings.h")
+    template = "LPCSTR szFileName = \"%s\";\nLPCSTR* wData = \"%s\";" % (filename, data)
+
+    buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/write/build/settings.h")
 
     # compile the module
-    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/rm/build", modlocation="/root/shad0w/modules/windows/rm/module.exe")
+    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/write/build", modlocation="/root/shad0w/modules/windows/write/module.exe")
 
     # get the shellcode from the module
-    rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/rm/module.exe", want_base64=True)
+    rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/write/module.exe", want_base64=True)
 
     # set a task for the current beacon to do
     shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)

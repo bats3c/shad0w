@@ -55,6 +55,10 @@ touch "C:\\Users\\thejoker\\hello.txt"
     except:
         pass
 
+    if not args.name:
+        parse.print_help()
+        return
+
     # clone all the source files
     buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/touch/", builddir="/root/shad0w/modules/windows/touch/build")
 

@@ -55,6 +55,10 @@ mkdir "C:\\Users\\thejoker\\hello\\"
     except:
         pass
 
+    if not args.name:
+        parse.print_help()
+        return
+
     # clone all the source files
     buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/mkdir/", builddir="/root/shad0w/modules/windows/mkdir/build")
 
