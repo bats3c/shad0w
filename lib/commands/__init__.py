@@ -7,5 +7,6 @@ __all__ = [
            "ls",
            "cat",
            "touch",
-           "mkdir"
+           "mkdir",
+           "rm"
           ]

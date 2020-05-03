@@ -17,7 +17,7 @@ void main()
             return;
         
         case ERROR_PATH_NOT_FOUND:
-            printf("ERROR: Failed to create '%s' because one or more intermediate directories do not exist.", szDirName);
+            printf("ERROR: Failed to create '%s' because one or more intermediate directories do not exist.\n", szDirName);
             return;
         
         default:
