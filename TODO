@@ -1,1 +1,5 @@
 syscalls
+upload
+download
+whoami
+elevate
