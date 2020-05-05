@@ -76,7 +76,7 @@ class Shad0wBuilder(object):
     def build(self):
 
         # copy source files into build directory
-        buildtools.clone_source_files()
+        buildtools.clone_source_files(asm=True)
 
         # change the settings file based on the args we been given
         buildtools.update_settings_file(self)

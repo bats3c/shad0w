@@ -3,7 +3,7 @@ import base64
 
 from lib import shellcode
 
-def clone_source_files(rootdir="src", builddir="build"):
+def clone_source_files(rootdir="src", builddir="build", asm=False):
     # move the source files of the beacon over
     # to the build directory
 
@@ -13,7 +13,7 @@ def clone_source_files(rootdir="src", builddir="build"):
     # why reinvent the wheel? lets jus use cp
     os.popen(f"cp {rootdir}/*.c {builddir}/")
     os.popen(f"cp {rootdir}/*.h {builddir}/")
-    os.popen(f"cp {rootdir}/*.asm {builddir}/")
+    if asm: os.popen(f"cp {rootdir}/*.asm {builddir}/")
     os.popen(f"cp {rootdir}/Makefile {builddir}/")
 
     return
