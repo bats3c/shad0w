@@ -28,7 +28,7 @@ class Console(object):
         self.cmd_handler   = input_handler.Handler(self.shad0w)
 
     def set_autocompletes(self):
-        cmds = ["help", "beacons", "shell", "exit", "execute", "ls", "cat", "touch", "mkdir", "rm", "write"]
+        cmds = ["help", "beacons", "shell", "exit", "execute", "ls", "cat", "touch", "mkdir", "rm", "write", "pwd"]
         self.autocomplete = WordCompleter(cmds, ignore_case=True)
 
     def bt(self):

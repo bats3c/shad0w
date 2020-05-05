@@ -1,0 +1,11 @@
+CC=/usr/bin/x86_64-w64-mingw32-gcc
+
+FLAGS=--static -Wl,--pic-executable,-e,main -w
+OUT_NAME=/root/shad0w/modules/windows/pwd/module.exe
+
+SOURCES=main.c
+
+all: module
+
+module:
+	$(CC) $(SOURCES) -o $(OUT_NAME) $(FLAGS)

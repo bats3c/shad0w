@@ -9,5 +9,6 @@ __all__ = [
            "touch",
            "mkdir",
            "rm",
-           "write"
+           "write",
+           "pwd"
           ]

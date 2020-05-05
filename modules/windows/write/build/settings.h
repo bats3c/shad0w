@@ -1,2 +1,2 @@
-LPCSTR szFileName = "C:\\Users\\thejoker\\writetome.txt";
-LPCSTR* wData = "i am going to be written";
+LPCSTR szFileName = "C:\\Users\\bane_hates_batman\\Desktop\\yoyoyoyo";
+LPCSTR* wData = "somesickshittttt";

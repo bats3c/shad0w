@@ -1,1 +1,1 @@
-LPCSTR szFileName = "C:\\Users\\thejoker\\Desktop\\this_is_a_dir";
+LPCSTR szFileName = "C:\\Users\\bane_hates_batman\\Desktop\\yoyoyoyo";
