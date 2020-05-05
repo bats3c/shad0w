@@ -1,5 +1,7 @@
 syscalls
+pwd
 upload
 download
 whoami
+local exec
 elevate

