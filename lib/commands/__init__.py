@@ -10,5 +10,6 @@ __all__ = [
            "mkdir",
            "rm",
            "write",
-           "pwd"
+           "pwd",
+           "upload"
           ]

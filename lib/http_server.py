@@ -20,7 +20,7 @@ IGNORE_CONTENT = ""
 def log_request():
     # this will show every request that the flask server gets
 
-    # shad0w.debug.log(request.form.to_dict())
+    # shad0w.debug.log(request)
 
     # do nothin jus return
     return None

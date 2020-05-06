@@ -1,1 +1,1 @@
-LPCSTR szFile = "C:\\Users\\bane_hates_batman\\Desktop\\yoyoyoyo";
+LPCSTR szFile = "C:\\Users\\thejoker\\Desktop\\mimikatz.exe";

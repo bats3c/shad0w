@@ -25,6 +25,9 @@ class Shad0wC2(object):
         self.sslkey         = args['key']
         self.sslcrt         = args['cert']
 
+        # endpoint for modules to callback to
+        self.endpoint       = args['endpoint']
+
         # runtime variables
         self.beacons        = {}
         self.beacon_count   = 0
@@ -63,12 +66,12 @@ class Shad0wBuilder(object):
         super(Shad0wBuilder, self).__init__()
 
         # key variables for the build
-        self.address = args['address']
-        self.port    = args['port']
-        self.jitter  = args['jitter']
-        self.format  = args['format']
-        self.outfile = args['out']
-        self.debugv  = args['debug']
+        self.address  = args['address']
+        self.port     = args['port']
+        self.jitter   = args['jitter']
+        self.format   = args['format']
+        self.outfile  = args['out']
+        self.debugv   = args['debug']
 
         # get the debug/logging stuff ready
         self.debug   = debug.Debug(self.debugv)
@@ -133,6 +136,7 @@ if __name__ == '__main__':
         listen_parser.add_argument("-k", "--key", required=False, default="certs/key.pem", help="Private key for the HTTPS server")
         listen_parser.add_argument("-c", "--cert", required=False, default="certs/cert.pem", help="Certificate for the HTTPS server")
         listen_parser.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
+        listen_parser.add_argument("-e", "--endpoint", required=False, default="NULL", help="The endpoint shad0w modules will callback to")
 
         args = vars(listen_parser.parse_args(unk[1:]))
 
