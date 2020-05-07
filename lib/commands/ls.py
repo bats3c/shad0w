@@ -66,7 +66,7 @@ ls "C:\\Documents and Settings"
     parse.error = error
 
     # setup the args
-    parse.add_argument("dir", nargs='*', help="Location of the dir to want to list the contents of")
+    parse.add_argument("dir", nargs='*', default=".", help="Location of the dir to want to list the contents of")
 
     # make sure we dont die from weird args
     try:
