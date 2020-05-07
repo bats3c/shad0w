@@ -6,5 +6,4 @@
 #define _HEADER_LEN -1
 #define SESSION_ID "0d76a154ec01973c65591487cc40d11d"
 #define DO_CALLBACK 0x4000
-#define FILENAME "mimikatz.exe"
-#define ABS_PATH FALSE
+#define FILENAME "mimikatz.exe" 

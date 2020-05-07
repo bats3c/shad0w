@@ -11,5 +11,6 @@ __all__ = [
            "rm",
            "write",
            "pwd",
-           "upload"
+           "upload",
+           "download"
           ]

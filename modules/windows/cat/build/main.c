@@ -9,7 +9,7 @@ void main()
     int fsize = 0;
     FILE *fp;
 
-    fp = fopen(szFile, "r");
+    fp = fopen(szFile, "rb");
     if(fp) {
         fseek(fp, 0, SEEK_END);
         fsize = ftell(fp);
