@@ -14,6 +14,12 @@ int main()
     // start getting the files
     hFind = FindFirstFile(szDir, &ffd);
 
+    if (szDir == '.')
+    {
+        /* code */
+    }
+    
+
     // if we have a bad handle try to work out what went wrong
     if (INVALID_HANDLE_VALUE == hFind) 
     {

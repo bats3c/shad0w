@@ -1,1 +1,1 @@
-#define szDir "\\*"
+#define szDir "C:\\Users\\thejoker\\Desktop\\*"

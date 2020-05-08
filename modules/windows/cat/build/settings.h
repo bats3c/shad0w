@@ -1,1 +1,1 @@
-LPCSTR szFile = "C:\\Users\\thejoker\\Desktop\\HexDump.exe";
+LPCSTR szFile = "C:\\Users\\thejoker\\Desktop\\user.txt";

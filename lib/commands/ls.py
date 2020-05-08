@@ -66,7 +66,7 @@ ls "C:\\Documents and Settings"
     parse.error = error
 
     # setup the args
-    parse.add_argument("dir", nargs='*', default=".", help="Location of the dir to want to list the contents of")
+    parse.add_argument("dir", nargs='*', help="Location of the dir to want to list the contents of")
 
     # make sure we dont die from weird args
     try:
@@ -77,7 +77,7 @@ ls "C:\\Documents and Settings"
     # the user might have just run 'ls' but if not lets fail
     if (not len(raw_args) == 1) and (not raw_args == "ls"):
         if ERROR:
-            print(error_list) 
+            print(error_list)
             parse.print_help()
             return
     

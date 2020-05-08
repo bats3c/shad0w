@@ -11,10 +11,10 @@ def clone_source_files(rootdir="src", builddir="build", asm=False):
     os.chdir("/root/shad0w/beacon")
 
     # why reinvent the wheel? lets jus use cp
-    os.popen(f"cp {rootdir}/*.c {builddir}/")
-    os.popen(f"cp {rootdir}/*.h {builddir}/")
+    os.system(f"cp {rootdir}/*.c {builddir}/")
+    os.system(f"cp {rootdir}/*.h {builddir}/")
     if asm: os.popen(f"cp {rootdir}/*.asm {builddir}/")
-    os.popen(f"cp {rootdir}/Makefile {builddir}/")
+    os.system(f"cp {rootdir}/Makefile {builddir}/")
 
     return
 
