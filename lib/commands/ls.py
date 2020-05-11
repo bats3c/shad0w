@@ -2,11 +2,11 @@
 # List the files in a directory
 #
 
+import json
 import argparse
 
-from lib import buildtools
-
-EXEC_ID = 0x3000
+EXEC_ID   = 0x4000
+OPCODE_LS = 0x1000
 
 ERROR = False
 error_list = ""
@@ -25,8 +25,8 @@ def get_list_directory(rargs, args):
     # resolve the directory we need to list
 
     # if we got no other args but 'ls' then drop the current dir
-    if (args.dir is None) and (''.join(rargs) == "ls"):
-        return "."
+    if ''.join(rargs) == 'ls':
+        return "." 
 
     elif type(args.dir) == list:
         return ' '.join(args.dir).replace('"', '')
@@ -36,6 +36,11 @@ def get_list_directory(rargs, args):
 
     return None
 
+
+def ls_callback(shad0w, data):
+    print(data)
+
+    return ""
 
 def main(shad0w, args):
 
@@ -82,21 +87,12 @@ ls "C:\\Documents and Settings"
             return
     
     # find the dir we want to list
-    dir = get_list_directory(raw_args, args).replace('\\', "\\\\")
+    dir = get_list_directory(raw_args, args)
 
-    # clone all the source files
-    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/ls/", builddir="/root/shad0w/modules/windows/ls/build")
-
-    # set the correct settings
-    template = "#define szDir \"%s\\\\*\"" % (dir)
-
-    buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/ls/build/settings.h")
-
-    # compile the module
-    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/ls/build", modlocation="/root/shad0w/modules/windows/ls/module.exe")
-
-    # get the shellcode from the module
-    rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/ls/module.exe", want_base64=True)
+    # make the json
+    data = {"op" : OPCODE_LS, "args": dir}
+    data = json.dumps(data)
 
     # set a task for the current beacon to do
-    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)
+    shad0w.beacons[shad0w.current_beacon]["callback"] = ls_callback
+    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, data)

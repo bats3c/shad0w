@@ -1,1 +1,0 @@
-LPCSTR szFileName = "delete_me.txt"

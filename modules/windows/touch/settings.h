@@ -1,1 +1,0 @@
-LPCSTR szFileName = "hello.txt";

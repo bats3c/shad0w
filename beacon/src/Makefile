@@ -16,8 +16,18 @@ WIN_LIB_OUT=syscalls64.lib
 WIN_C_SOURCES=debug.c core.c base64.c beacon.c loader.c
 WIN_ASM_SOURCES=syscalls64.asm
 
-all: beacon
+WIN_STDLIB_DIR=../lib/stdlib/
+WIN_STDLIB_SOURCES=$(WIN_STDLIB_DIR)listdirs.c $(WIN_STDLIB_DIR)readfile.c \
+				   $(WIN_STDLIB_DIR)makedirectory.c $(WIN_STDLIB_DIR)removefile.c \
+				   $(WIN_STDLIB_DIR)getdir.c $(WIN_STDLIB_DIR)changedir.c
+WIN_STDLIB_FLAGS=-static -shared -w
+WIN_STDLIB_OUT=stdlib.lib
 
-beacon:
+all: win_beacon
+
+win_stdlib:
+	$(WIN_CC) -c $(WIN_STDLIB_SOURCES) $(WIN_STDLIB_FLAGS) $(WIN_STDLIB_FLAGS)
+
+win_beacon:
 	$(WIN_ASM_CC) $(WIN_ASM_SOURCES) -o $(WIN_LIB_OUT)
-	$(WIN_CC) $(WIN_C_SOURCES) -o $(WIN_EXE_OUT) $(WIN_LINK) $(WIN_FLAGS)
+	$(WIN_CC) $(WIN_STDLIB_SOURCES) $(WIN_C_SOURCES) -o $(WIN_EXE_OUT) $(WIN_LINK) $(WIN_FLAGS)

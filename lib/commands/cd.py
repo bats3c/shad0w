@@ -1,12 +1,12 @@
 # 
-# Create a directory
-# 
+# Change the current directory
+#
 
 import json
 import argparse
 
-EXEC_ID      = 0x4000
-OPCODE_MKDIR = 0x5000
+EXEC_ID   = 0x4000
+OPCODE_CD = 0x6000
 
 ERROR = False
 error_list = ""
@@ -21,11 +21,26 @@ def exit(status=0, message=None):
     if message != None: print(message)
     return
 
-def mkdir_callback(shad0w, data):
+def get_list_directory(rargs, args):
+    # resolve the directory we need to list
+
+    # if we got no other args but 'ls' then drop the current dir
+    if ''.join(rargs) == 'ls':
+        return "." 
+
+    elif type(args.dir) == list:
+        return ' '.join(args.dir).replace('"', '')
+    
+    elif args.dir is not None:
+        return args.dir
+
+    return None
+
+
+def cd_callback(shad0w, data):
     print(data)
 
     return ""
-
 
 def main(shad0w, args):
 
@@ -39,12 +54,14 @@ def main(shad0w, args):
 
     # usage examples
     usage_examples = """
-Example:
 
-mkdir "C:\\Users\\thejoker\\hello\\"
+Examples:
+
+cd C:\\
+cd "C:\\Documents and Settings"
 """
     
-    parse = argparse.ArgumentParser(prog='mkdir',
+    parse = argparse.ArgumentParser(prog='ls',
                                 formatter_class=argparse.RawDescriptionHelpFormatter,
                                 epilog=usage_examples)
     
@@ -53,7 +70,7 @@ mkdir "C:\\Users\\thejoker\\hello\\"
     parse.error = error
 
     # setup the args
-    parse.add_argument("name", nargs='*', help="Name of the directory you want to create")
+    parse.add_argument("dir", nargs='*', help="Location of the dir you want to change to")
 
     # make sure we dont die from weird args
     try:
@@ -61,17 +78,19 @@ mkdir "C:\\Users\\thejoker\\hello\\"
     except:
         pass
 
-    if not args.name:
+    # the user might have just run 'ls' but if not lets fail
+    if ERROR:
+        print(error_list)
         parse.print_help()
         return
-
-    # clean it up
-    del_file = ' '.join(args.name).replace('\\', "\\\\").replace('"', '')
+    
+    # find the dir we want to list
+    dir = get_list_directory(raw_args, args)
 
     # make the json
-    data = {"op" : OPCODE_MKDIR, "args": del_file}
+    data = {"op" : OPCODE_CD, "args": dir}
     data = json.dumps(data)
 
     # set a task for the current beacon to do
-    shad0w.beacons[shad0w.current_beacon]["callback"] = mkdir_callback
+    shad0w.beacons[shad0w.current_beacon]["callback"] = cd_callback
     shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, data)

@@ -2,11 +2,11 @@
 # Delete something
 # 
 
+import json
 import argparse
 
-from lib import buildtools
-
-EXEC_ID = 0x3000
+EXEC_ID   = 0x4000
+OPCODE_RM = 0x4000
 
 ERROR = False
 error_list = ""
@@ -20,6 +20,11 @@ def error(message):
 def exit(status=0, message=None): 
     if message != None: print(message)
     return
+
+def rm_callback(shad0w, data):
+    print(data)
+
+    return ""
 
 def main(shad0w, args):
 
@@ -59,19 +64,13 @@ rm "C:\\Users\\thejoker\\deleteme.txt"
         parse.print_help()
         return
 
-    # clone all the source files
-    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/rm/", builddir="/root/shad0w/modules/windows/rm/build")
+    # clean it up
+    del_file = ' '.join(args.name).replace('\\', "\\\\").replace('"', '')
 
-    # set the correct settings
-    template = "LPCSTR szFileName = \"%s\";" % (' '.join(args.name).replace('"', '').replace('\\', '\\\\'))
-
-    buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/rm/build/settings.h")
-
-    # compile the module
-    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/rm/build", modlocation="/root/shad0w/modules/windows/rm/module.exe")
-
-    # get the shellcode from the module
-    rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/rm/module.exe", want_base64=True)
+    # make the json
+    data = {"op" : OPCODE_RM, "args": del_file}
+    data = json.dumps(data)
 
     # set a task for the current beacon to do
-    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)
+    shad0w.beacons[shad0w.current_beacon]["callback"] = rm_callback
+    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, data)
