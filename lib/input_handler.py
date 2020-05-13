@@ -1,3 +1,4 @@
+import os
 import importlib
 
 from lib.commands import *
@@ -16,6 +17,14 @@ class Handler(object):
         splitcommand = cmd.split(" ")
         basecmd      = splitcommand[0]
         cmd_args     = splitcommand[0:]
+
+        # see if we need to execute a local command
+        try:
+            if cmd[0][0] == "!":
+                self.shad0w.debug.log(f"Executing: {''.join(cmd[1:])}", log=True)
+                os.system(''.join(cmd[1:]))
+                return
+        except IndexError: pass
 
         # find the handle for the module in the globals list an call it with args
 
