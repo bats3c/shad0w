@@ -21,8 +21,17 @@ class Handler(object):
         # see if we need to execute a local command
         try:
             if cmd[0][0] == "!":
+                # lets execute the commands in the bridge
+                cwd = os.getcwd()
+                os.chdir(|/root/shad0w/.bridge)
+
+                # execute the command
                 self.shad0w.debug.log(f"Executing: {''.join(cmd[1:])}", log=True)
                 os.system(''.join(cmd[1:]))
+
+                # move back to the old dir
+                os.chdir(cwd)
+                
                 return
         except IndexError: pass
 
