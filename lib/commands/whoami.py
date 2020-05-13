@@ -70,9 +70,9 @@ whoami --privs --groups
     parse.error = error
 
     # setup the args
-    parse.add_argument("--all", action='store_true', help="Show all avalible infomation")
-    parse.add_argument("--privs", action='store_true', help="Show all privilages")
-    parse.add_argument("--groups", action='store_true', help="Show all groups the user is a member of")
+    parse.add_argument("-a", "--all", action='store_true', help="Show all avalible infomation")
+    parse.add_argument("-p", "--privs", action='store_true', help="Show all privilages")
+    parse.add_argument("-g", "--groups", action='store_true', help="Show all groups the user is a member of")
 
     # make sure we dont die from weird args
     try:
