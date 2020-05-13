@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import ssl
 import socket
 import argparse
@@ -112,6 +113,7 @@ if __name__ == '__main__':
     first_parser = argparse.ArgumentParser()
     first_parser.add_argument("listen", action="store_true", help="Tell shad0w to listen for connections")
     first_parser.add_argument("beacon", action="store_true", help="Tell shad0w to create a beacon")
+    first_parser.add_argument("update", action="store_true", help="Update shad0w")
 
     # parse the args
     args, unk = first_parser.parse_known_args()
@@ -124,9 +126,14 @@ if __name__ == '__main__':
         exit(-1)
 
     # if its neither beacon or listen then quit
-    if (mode != "listen") and (mode != "beacon"):
+    if (mode != "listen") and (mode != "beacon") and (mode != "update"):
         first_parser.print_help()
         exit(-1)
+    
+    # first check if we need to update
+    if mode == "update":
+        print("Updating...")
+        os.system("git pull")
     
     # set the arguments for the listen
     if mode == "listen":
