@@ -1,5 +1,3 @@
-local cmds (inside docker)
-update
 elevate
 stager
 bar
