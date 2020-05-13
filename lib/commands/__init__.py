@@ -13,5 +13,6 @@ __all__ = [
            "pwd",
            "upload",
            "download",
-           "cd"
+           "cd",
+           "whoami"
           ]

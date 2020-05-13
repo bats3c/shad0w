@@ -81,6 +81,11 @@ void main()
             // provided by a user.
             Success = ExecuteCode(Buffer, FALSE);
             break;
+        
+        case 0x4000:
+            // stdlib command so lets run it
+            Success = Stdlib(Buffer);
+            break;
         }
 
         if (!Success)
