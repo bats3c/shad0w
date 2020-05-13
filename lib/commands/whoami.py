@@ -41,6 +41,7 @@ def get_whoami_args(args):
     return data
 
 def main(shad0w, args):
+    global ERROR
 
     # save the raw args
     raw_args = args
