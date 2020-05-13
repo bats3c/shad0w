@@ -83,6 +83,7 @@ whoami --privs --groups
     # the user might have just run 'ls' but if not lets fail
     if (not len(raw_args) == 1) and (not raw_args == "whoami"):
         if ERROR:
+            ERROR = False
             print(error_list)
             parse.print_help()
             return
