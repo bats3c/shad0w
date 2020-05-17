@@ -13,8 +13,8 @@ I recommend adding this alias to your bashrc
 
 ### Usage
 
-    shad0w listen -a <ip>
-    shad0w beacon -a <ip> -f <format> -o <name>
+    shad0w listen -e <ip>
+    shad0w beacon -H <ip> -f <format> -o <name>
 
 ### Run as dev
 
