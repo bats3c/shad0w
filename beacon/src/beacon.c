@@ -14,8 +14,23 @@
 
 #include "settings.h"
 
-// dllmain, fist code to run
-// BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpReserved )
+void __attribute__ ((constructor)) entry()
+{
+    #ifdef SECURE
+        DEBUG("Securing Process");
+        // hand the security stuffs
+        if(!InitSecurity())
+        {
+            // we failed to implement our proper security
+            // this is bad and because the user has requested
+            // security mode on purpose... we gotta dip.
+
+            exit(1);
+        }
+    #endif
+
+    return;
+}
 
 void main()
 {
@@ -30,7 +45,6 @@ void main()
     struct   BasicUserInfo UserInfo;
 
     // collect basic info
-
     if (!GetBasicUserInfo(&UserInfo))
     {
         // thats kinda a tuff one, we need this info to function and if we can't get this basic info straight up we cant follow the protocol properly.

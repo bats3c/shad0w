@@ -1,5 +1,11 @@
 // platform specific headers needed so we can function
 
+#define WIN32_LEAN_AND_MEAN
+
+#include <windows.h>
+
+#include <lm.h>
+#include <winhttp.h>
 #include <stdio.h>
 
 // so we can parse the json data
@@ -11,17 +17,6 @@
 #include "base64.h"
 #include "compression.h"
 
-#ifdef WIN
-
-    // use our windows dpendencies
-
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-    #include <winhttp.h>
-    #include <lm.h>
-
-#endif
-
 // core header file
 
 #include "core.h"
@@ -31,7 +26,6 @@
 #include "settings.h"
 
 // core functions
-
 BOOL GetBasicUserInfo(struct BasicUserInfo *UserInfo)
 {
 
