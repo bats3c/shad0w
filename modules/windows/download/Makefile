@@ -5,7 +5,7 @@ OUT_NAME=/root/shad0w/modules/windows/download/module.exe
 
 SOURCES=main.c
 
-all: module
+x64: module
 
 module:
 	$(CC) $(SOURCES) -o $(OUT_NAME) $(FLAGS)

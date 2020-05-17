@@ -36,6 +36,7 @@ def update_settings_file(shad0wbuild, custom_template=None, custom_path=None):
 
     #define _CALLBACK_JITTER %s000""" % (shad0wbuild.address, shad0wbuild.port, shad0wbuild.jitter)
 
+    # use a custom build template
     elif custom_template is not None:
         settings_template = custom_template
 
@@ -45,15 +46,43 @@ def update_settings_file(shad0wbuild, custom_template=None, custom_path=None):
     
     return
 
-def make_in_clone(builddir="/root/shad0w/beacon/build", modlocation="/root/shad0w/beacon/beacon.exe"):
-    # build the beacon from the source files
-    # held inside the build directory
+def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=None, modlocation="/root/shad0w/beacon/beacon.exe"):
+    # build the beacon from the source files, making sure to
+    # obey the correct payload settings that we have been given
 
-    # we should already be here but this is just to make sure
+    # builddir should only be none when we are building a beacon
+    if builddir is None:
+        if static is None:
+            # then we are building a staged payload so use that build dir
+            builddir = "/root/shad0w/beacon/stager/build"
+        if static is not None:
+            # we will be building a static payload
+            builddir = "/root/shad0w/beacon/build"
+    
+    # build the compile time args
+    compile_args = ""
+
+    if secure is not None:
+        compile_args += "-DSECURE"
+
+    # make sure we in the correct build dir
     os.chdir(builddir)
 
+    # write the compile args to the makefile
+    with open("Makefile", "r+") as file:
+        new_data = ""
+        data     = file.read()
+
+        for line in data.splitlines():
+            if line.startswith("VARIABLES"):
+                line = "VARIABLES=" + compile_args
+            new_data += line + "\n"
+
+        file.write(new_data)
+
     # and lets make
-    os.popen("make").read()
+    os.system(f"make {arch} 1>/dev/null 2>&1")
+    # os.system(f"make {arch}")
 
     # check that our beacon was actually made
     try:

