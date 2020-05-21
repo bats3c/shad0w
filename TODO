@@ -1,4 +1,3 @@
-fix execute -f /root/shad0w/.bridge/darkmagic.exe to execute -f darkmagic.exe
 fake web pages on the web server
 bar
 elevate - need stager before we can start doing exploits
