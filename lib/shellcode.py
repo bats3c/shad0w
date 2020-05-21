@@ -3,6 +3,10 @@ import donut
 import base64
 import tempfile
 
+def parse_donut_error(data, filename):
+    if "Error : File not found." in data:
+        print(f"Unable to find '{filename}'")
+
 def generate(file, args, params, parse=True):
     """ generate shellcode from a pe using donut """
 
@@ -61,7 +65,8 @@ def generate(file, args, params, parse=True):
 
         # not a good way to check but it will work for now
         if temp.name not in cmd_out:
-            print("ERROR: generating shellcode")
+            parse_donut_error(cmd_out, file)
+            return None
 
         # base64 encode the file and return it
         with open(temp.name, "rb") as file:
@@ -86,7 +91,8 @@ def generate(file, args, params, parse=True):
 
         # not a good way to check but it will work for now
         if temp.name not in cmd_out:
-            print("ERROR: generating shellcode")
+            parse_donut_error(cmd_out, file)
+            return None
 
         # return the raw shellcode
         with open(temp.name, "rb") as file:
