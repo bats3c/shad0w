@@ -6,13 +6,12 @@ __all__ = [
            "execute",
            "ls",
            "cat",
-           "touch",
            "mkdir",
            "rm",
-           "write",
            "pwd",
            "upload",
            "download",
            "cd",
-           "whoami"
+           "whoami",
+           "elevate"
           ]

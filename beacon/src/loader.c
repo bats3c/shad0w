@@ -245,8 +245,6 @@ BOOL InjectUserCode(CHAR* Bytes, SIZE_T Size)
     CreateThread(NULL, 0, ReadFromPipe, g_hChildStd_OUT_Rd, 0, &threadId);
 
     #ifdef SECURE
-        DEBUG("Creating secure process");
-
         // get the size of the list
         InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &tSize);
 
