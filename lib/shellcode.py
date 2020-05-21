@@ -6,6 +6,8 @@ import tempfile
 def parse_donut_error(data, filename):
     if "Error : File not found." in data:
         print(f"Unable to find '{filename}'")
+    else:
+        print(f"Failed to execute '{filename}'")
 
 def generate(file, args, params, parse=True):
     """ generate shellcode from a pe using donut """
