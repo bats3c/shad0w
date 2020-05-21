@@ -90,7 +90,7 @@ void SpawnAndInject(HANDLE hProcess, CHAR* ProcessName, HANDLE* cProc, HANDLE* c
     InitializeProcThreadAttributeList(sInfo.lpAttributeList, 2, 0, &attribSize);
 
     // our protection policys
-    DWORD64 policy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON \
+    DWORD64 policy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON | \
                      PROCESS_CREATION_MITIGATION_POLICY_PROHIBIT_DYNAMIC_CODE_ALWAYS_ON;
     UpdateProcThreadAttribute(sInfo.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, &policy, sizeof(policy), NULL, NULL);
 
