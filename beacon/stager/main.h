@@ -1,0 +1,1 @@
+#define _CALLBACK_URL L"/stage"

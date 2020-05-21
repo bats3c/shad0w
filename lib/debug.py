@@ -1,7 +1,13 @@
+import sys
+import time
+import threading
+
 class Debug(object):
     def __init__(self, arg):
         super(Debug, self).__init__()
         self.debug_verbose = arg
+
+        self.stop_spinner = False
 
     def log(self, text, log=False, pre=True):
         if log and pre:
@@ -16,3 +22,19 @@ class Debug(object):
 
     def error(self, text):
         print("\033[1;31m[!]\033[0m", text)
+    
+    def do_spinner(self, text):
+        spin = ["|", "/", "-", "\\"]
+
+        self.stop_spinner = False
+        
+        while self.stop_spinner == False:
+            for s in spin:
+                sys.stdout.write(f"\r\033[1;34m[i]\033[0m {text} {s}                                                         \r")
+                time.sleep(0.1)
+
+    
+    def spinner(self, text):
+        spin_thread = threading.Thread(target=self.do_spinner, args=(text,))
+        spin_thread.daemon = False
+        spin_thread.start()

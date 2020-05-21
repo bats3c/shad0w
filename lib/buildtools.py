@@ -3,12 +3,27 @@ import base64
 
 from lib import shellcode
 
+# warnings to the user about the module they are using
+secure_warning = """The secure payload makes heavy use of new windows features and ntdll api hooking.
+This can make the payload a lot more resistant to EDR products but can also make it more unstable.
+Its been tested on:
+    -   x64 Windows 8.1, x64 Windows 10 (Pro & Enterprise)
+    -   x64 Windows Server 2019
+It may work on other systems as well.
+"""
+static_warning = """Static payloads can be very large and much easier to detect.
+For use in droppers, loaders, exploits etc staged payloads are recommended as they are much smaller, so easier to use.
+"""
+
 def clone_source_files(rootdir="src", builddir="build", asm=False):
     # move the source files of the beacon over
     # to the build directory
 
     # put us in the correct dir (this obviously needs to be inside docker)
     os.chdir("/root/shad0w/beacon")
+
+    # clean the build dir
+    os.system(f"rm {builddir}/*")
 
     # why reinvent the wheel? lets jus use cp
     os.system(f"cp {rootdir}/*.c {builddir}/")
@@ -52,12 +67,7 @@ def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=N
 
     # builddir should only be none when we are building a beacon
     if builddir is None:
-        if static is None:
-            # then we are building a staged payload so use that build dir
-            builddir = "/root/shad0w/beacon/stager/build"
-        if static is not None:
-            # we will be building a static payload
-            builddir = "/root/shad0w/beacon/build"
+        builddir = "/root/shad0w/beacon/build"
     
     # build the compile time args
     compile_args = ""
@@ -69,7 +79,7 @@ def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=N
     os.chdir(builddir)
 
     # write the compile args to the makefile
-    with open("Makefile", "r+") as file:
+    with open("Makefile", "r") as file:
         new_data = ""
         data     = file.read()
 
@@ -78,7 +88,9 @@ def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=N
                 line = "VARIABLES=" + compile_args
             new_data += line + "\n"
 
-        file.write(new_data)
+        wfile = open("Makefile", "w")
+        wfile.write(new_data)
+        wfile.close()
 
     # and lets make
     os.system(f"make {arch} 1>/dev/null 2>&1")
@@ -119,4 +131,66 @@ def write_and_bridge(filename, rcode):
     with open(filename, 'wb') as file:
         file.write(rcode)
     
-    print(f"wrote {len(rcode)} bytes to {filename}")
+    # print(f"wrote {len(rcode)} bytes to {filename}")
+    print("\033[1;32m[+]\033[0m", f"Created {filename} ({len(rcode)} bytes)")
+
+def raise_issue_payload(string):
+
+        # throw an error with the payload string
+        print(f"Invalid payload: '{string}'")
+
+        # exit with error code
+        exit(-1)
+
+def get_payload_variables(payload_string, warn=True):
+
+        global secure_warning, static_warning
+        
+        # set our return args
+        arch     = None
+        platform = None
+        secure   = None
+        static   = None
+
+        # split up the payload string
+        payload = payload_string.split('/')
+
+        # these two are essential so die without them
+        try:
+            arch     = payload[0]
+            platform = payload[1]
+        except IndexError:
+            raise_issue_payload(payload_string)
+
+        # these two dont matter as much
+        try:
+            secure   = payload[2]
+            static   = payload[3]
+        except IndexError:
+            pass
+    
+        # make sure we get the correct args
+        try:
+            if static == "static":
+                static = static
+            if secure == "static":
+                static = secure
+                secure = None
+            if secure not in ["secure", None]:
+                raise_issue_payload(payload_string)
+        except NameError: pass
+
+        # give the user the warnings
+        if warn:
+            if secure is not None: print(f"\033[1;33m{secure_warning}\033[0m")
+            if static is not None: print(f"\033[1;33m{static_warning}\033[0m")
+
+        # check we have correct arg names
+        try:
+            assert arch in ["x86", "x64"]
+            assert platform in ["windows", "linux", "osx"]
+        except AssertionError:
+            raise_issue_payload(payload_string)
+
+        # return our generated args
+        return arch, platform, secure, static

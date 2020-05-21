@@ -76,7 +76,10 @@ def generate(file, args, params, parse=True):
         temp = tempfile.NamedTemporaryFile()
         
         # build the command to generate our shellcode
-        cmd = f"{donut} {file} -o {temp.name}"
+        if params:
+            cmd = f"{donut} {file} -p \'{params}\' -o {temp.name}"
+        else:
+            cmd = f"{donut} {file} -o {temp.name}"
 
         # execute the command and get the output
         cmd_out = os.popen(cmd).read()

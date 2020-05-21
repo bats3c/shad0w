@@ -48,6 +48,12 @@ def web_task_beacon():
 
     return phandle.task_beacon(request)
 
+@app.route("/stage", methods=["GET", "POST"])
+def web_stage_beacon():
+    # send the requested stage to a beacon
+
+    return phandle.stage_beacon(request)
+
 
 def run_serv(*args):
     # cant think of a better way doing this so guess i gotta use globals

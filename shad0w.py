@@ -77,71 +77,19 @@ class Shad0wBuilder(object):
 
         # get the debug/logging stuff ready
         self.debug   = debug.Debug(self.debugv)
-    
-    def raise_issue_payload(self, string):
-
-        # throw an error with the payload string
-        print(f"Invalid payload: '{string}'")
-
-        # exit with error code
-        exit(-1)
-    
-    def get_payload_variables(self, payload_string):
-        
-        # set our return args
-        arch     = None
-        platform = None
-        secure   = None
-        static   = None
-
-        # split up the payload string
-        payload = payload_string.split('/')
-
-        # these two are essential so die without them
-        try:
-            arch     = payload[0]
-            platform = payload[1]
-        except IndexError:
-            self.raise_issue_payload(payload_string)
-
-        # these two dont matter as much
-        try:
-            secure   = payload[2]
-            static   = payload[3]
-        except IndexError:
-            pass
-    
-        # make sure we get the correct args
-        try:
-            if static == "static":
-                static = static
-            if secure == "static":
-                static = secure
-                secure = None
-            if secure not in ["secure", None]:
-                self.raise_issue_payload(payload_string)
-        except NameError: pass
-        
-
-        # check we have correct arg names
-        try:
-            assert arch in ["x86", "x64"]
-            assert platform in ["windows", "linux", "osx"]
-        except AssertionError:
-            self.raise_issue_payload(payload_string)
-
-        print(arch, platform, secure, static)
-
-        # return our generated args
-        return arch, platform, secure, static
 
     def build(self):
 
         # get the variables for the make
-        arch, platform, secure, static = self.get_payload_variables(self.payload)
+        arch, platform, secure, static = buildtools.get_payload_variables(self.payload)
 
-        # copy source files into build directory
-        buildtools.clone_source_files(asm=True)
+        # copy the correct source files into build directory
+        if static is not None:
+            # then we are building a static beacon
+            buildtools.clone_source_files(asm=True)
+        if static is None:
+            # the we are building a stager
+            buildtools.clone_source_files(asm=True, rootdir="stager")
 
         # change the settings file based on the args we been given
         buildtools.update_settings_file(self)

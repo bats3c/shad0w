@@ -1,3 +1,6 @@
+// This works fine in every binary appart from the staged secure binary. I have no ideas why.
+// So therefore this is no longer in use.
+
 #include <windows.h>
 
 #define SECURITY_WIN32
@@ -35,24 +38,65 @@ VOID* GetTokenInfo(TOKEN_INFORMATION_CLASS TokenType)
     return pTokenInfo;
 }
 
-char* whoami(args)
+char* wchar_to_char(const wchar_t* pwchar)
+{
+    // get the number of characters in the string.
+    int currentCharIndex = 0;
+    char currentChar = pwchar[currentCharIndex];
+
+    while (currentChar != '\0')
+    {
+        currentCharIndex++;
+        currentChar = pwchar[currentCharIndex];
+    }
+
+    const int charCount = currentCharIndex + 1;
+
+    // allocate a new block of memory size char (1 byte) instead of wide char (2 bytes)
+    char* filePathC = (char*)malloc(sizeof(char) * charCount);
+
+    for (int i = 0; i < charCount; i++)
+    {
+        // convert to char (1 byte)
+        char character = pwchar[i];
+
+        *filePathC = character;
+
+        filePathC += sizeof(char);
+
+    }
+    filePathC += '\0';
+
+    filePathC -= (sizeof(char) * charCount);
+
+    return filePathC;
+}
+
+char* whoami(BOOL DisplayAll, char* oBuffer)
 {
     DWORD pCount;
     PSID pSid = 0;
     LPWSTR pSidStr = 0;
     LPWSTR UserName, SPN;
     ULONG uSize = MAX_PATH;
-    char* oBuffer = (char*)malloc(7000);
+
+    OutputDebugStringA("Start of whoami\n");
 
     // get all the token info into our structs
     PTOKEN_GROUPS pGroupInfo = (PTOKEN_GROUPS)GetTokenInfo(TokenGroups);
     PTOKEN_PRIVILEGES pPrivInfo = (PTOKEN_PRIVILEGES)GetTokenInfo(TokenPrivileges);
 
+    OutputDebugStringA("this is the first\n");
+
     sprintf(oBuffer, "User Infomation\n");
     sprintf(oBuffer, "%s===============\n\n", oBuffer);
 
+    OutputDebugStringA("this is the second\n");
+
     sprintf(oBuffer, "%sUser Name\t\t\tSPN\t\t\t\tSID\n", oBuffer);
     sprintf(oBuffer, "%s---------\t\t\t---\t\t\t\t---\n", oBuffer);
+
+    OutputDebugStringA("this is the third\n");
 
     // alloc our memory
     SPN = (LPWSTR)malloc(MAX_PATH);
@@ -73,25 +117,23 @@ char* whoami(args)
     ConvertSidToStringSidW(pGroupInfo->Groups[0].Sid, &pSidStr);
 
     // format all the info
-    sprintf(oBuffer, "%s%S\t", oBuffer, UserName);
+    sprintf(oBuffer, "%s%S\t", oBuffer, wchar_to_char(UserName));
+
+    OutputDebugStringA("before wcslen\n");
     if (wcslen(SPN) <= 1)
     {
-        sprintf(oBuffer, "%s%S\t\t\t\t", oBuffer, SPN);
+        sprintf(oBuffer, "%s%S\t\t\t\t", oBuffer, wchar_to_char(SPN));
     } else
     {
-        sprintf(oBuffer, "%s%S\t", oBuffer, SPN);
+        sprintf(oBuffer, "%s%S\t", oBuffer, wchar_to_char(SPN));
     }
-    sprintf(oBuffer, "%s%S\n\n", oBuffer, pSidStr);
-
-    // if so then make sure both run
-    if (strncmp(args, "all", 3) == 0)
-    {
-        args = "privs groups";
-    }
+    OutputDebugStringA("after wcslen\n");
+    sprintf(oBuffer, "%s%S\n\n", oBuffer, wchar_to_char(pSidStr));
 
     // display the groups
-    if (strstr(args, "groups") != NULL)
+    if (DisplayAll)
     {
+        OutputDebugStringA("inside if statement\n");
         SID_NAME_USE Use = 0;
         wchar_t tmpBuffer[666];
         WCHAR szGroupName[255] = {0};
@@ -129,24 +171,24 @@ char* whoami(args)
                 {
                     if (wcslen(pSidStr) > 7)
                     {
-                        sprintf(oBuffer, "%s%S\t\t%S\t\t\t", oBuffer, tmpBuffer, pSidStr);
+                        sprintf(oBuffer, "%s%S\t\t%S\t\t\t", oBuffer, wchar_to_char(tmpBuffer), wchar_to_char(pSidStr));
                     } else{
-                        sprintf(oBuffer, "%s%S\t\t%S\t\t\t\t", oBuffer, tmpBuffer, pSidStr);
+                        sprintf(oBuffer, "%s%S\t\t%S\t\t\t\t", oBuffer, wchar_to_char(tmpBuffer), wchar_to_char(pSidStr));
                     }
                 } else if (wcslen(tmpBuffer) >= 30)
                 {
                     if (wcslen(pSidStr) > 7)
                     {
-                        sprintf(oBuffer, "%s%S  %S\t\t\t", oBuffer, tmpBuffer, pSidStr);
+                        sprintf(oBuffer, "%s%S  %S\t\t\t", oBuffer, wchar_to_char(tmpBuffer), wchar_to_char(pSidStr));
                     } else {
-                        sprintf(oBuffer, "%s%S  %S\t\t\t\t", oBuffer, tmpBuffer, pSidStr);
+                        sprintf(oBuffer, "%s%S  %S\t\t\t\t", oBuffer, wchar_to_char(tmpBuffer), wchar_to_char(pSidStr));
                     }
                 } else {
                     if (wcslen(pSidStr) > 7)
                     {
-                        sprintf(oBuffer, "%s%S\t\t\t\t%S\t\t\t", oBuffer, tmpBuffer, pSidStr);
+                        sprintf(oBuffer, "%s%S\t\t\t\t%S\t\t\t", oBuffer, wchar_to_char(tmpBuffer), wchar_to_char(pSidStr));
                     } else {
-                        sprintf(oBuffer, "%s%S\t\t\t\t%S\t\t\t\t", oBuffer, tmpBuffer, pSidStr);
+                        sprintf(oBuffer, "%s%S\t\t\t\t%S\t\t\t\t", oBuffer, wchar_to_char(tmpBuffer), wchar_to_char(pSidStr));
                     }
                 }
 
@@ -172,12 +214,11 @@ char* whoami(args)
             }
         }
 
+        OutputDebugStringA("after all the groups stuff\n");
+
         // clean it up a bit
         sprintf(oBuffer, "%s\n\n", oBuffer);
-    }
 
-    if (strstr(args, "privs") != NULL)
-    {   
         sprintf(oBuffer, "%sPrivileges\n==========\n\n", oBuffer);
 
         sprintf(oBuffer, "%sName\t\t\t\tStatus\n", oBuffer);
@@ -209,12 +250,13 @@ char* whoami(args)
 
             if (pnSize > 23)
             {
-                sprintf(oBuffer, "%s%S\t%s\n", oBuffer, pName, status);
+                sprintf(oBuffer, "%s%S\t%s\n", oBuffer, wchar_to_char(pName), status);
             } else {
-                sprintf(oBuffer, "%s%S\t\t%s\n", oBuffer, pName, status);
+                sprintf(oBuffer, "%s%S\t\t%s\n", oBuffer, wchar_to_char(pName), status);
             }            
         }
     }
 
+    OutputDebugStringA("finished, about to return\n");
     return oBuffer;
 }

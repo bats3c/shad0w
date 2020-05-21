@@ -85,9 +85,12 @@ BOOL InitSecurity()
 
     if (!SetProcessMitigationPolicy(ProcessSignaturePolicy, &SigPolicy, sizeof(SigPolicy))) 
     {
-		// we failed to set it, thats not very good
+		// we failed to set it, it means we are probly on a system that does not support it
+        // we still have other security mitigations active tho so lets stay alive and rely on them
         DEBUG("SetProcessMitigationPolicy (ProcessSignaturePolicy) failed");
-		return FALSE;
+
+        // we know it wont work, so lets make sure we dont enable this in the future
+        ProcessMitigationActive = FALSE;
 	}
 
     return TRUE;
