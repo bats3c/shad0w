@@ -103,7 +103,7 @@ class Shad0wBuilder(object):
         buildtools.update_settings_file(self)
 
         # now we need to run 'make' inside the cloned dir
-        buildtools.make_in_clone(arch=arch, platform=platform, secure=secure, static=static)
+        buildtools.make_in_clone(arch=arch, platform=platform, secure=secure, static=static, debug=self.debugv)
 
         # now get the beacon in the correct format
         if self.format == "raw":

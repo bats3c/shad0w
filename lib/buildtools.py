@@ -61,7 +61,7 @@ def update_settings_file(shad0wbuild, custom_template=None, custom_path=None):
     
     return
 
-def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=None, modlocation="/root/shad0w/beacon/beacon.exe"):
+def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=None, modlocation="/root/shad0w/beacon/beacon.exe", debug=False):
     # build the beacon from the source files, making sure to
     # obey the correct payload settings that we have been given
 
@@ -93,8 +93,10 @@ def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=N
         wfile.close()
 
     # and lets make
-    os.system(f"make {arch} 1>/dev/null 2>&1")
-    # os.system(f"make {arch}")
+    if not debug:
+        os.system(f"make {arch} 1>/dev/null 2>&1")
+    elif debug:
+        os.system(f"make {arch}_debug")
 
     # check that our beacon was actually made
     try:

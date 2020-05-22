@@ -10,7 +10,7 @@ WIN_CC=/usr/bin/x86_64-w64-mingw32-gcc
 WIN_ASM_CC=/usr/bin/nasm -f win64
 
 WIN_LINK=-L../lib/json-c/.libs/ -L./ -ljson-c -lsyscalls64
-
+WIN_HIDE_FLAGS=-Wl,-subsystem,windows
 WIN_FLAGS=-Wl,-Bstatic -lwinhttp -Wl,-Bstatic -lwtsapi32 -Wl,-Bstatic -lsecur32 $(VARIABLES) --static -Wl,--pic-executable,-e,main -w
 
 WIN_EXE_OUT=../beacon.exe
@@ -30,11 +30,16 @@ WIN_SECURE_DIR=../lib/secure/
 WIN_SECURE_SOURCES=$(WIN_SECURE_DIR)main.c
 WIN_STDLIB_FLAGS=-static
 
+x64_debug: win_beacon_64_debug
 x64: win_beacon_64
 
 win_stdlib_64:
 	$(WIN_CC) -c $(WIN_STDLIB_SOURCES) $(WIN_STDLIB_FLAGS) $(WIN_STDLIB_FLAGS)
 
-win_beacon_64:
+win_beacon_64_debug:
 	$(WIN_ASM_CC) $(WIN_ASM_SOURCES) -o $(WIN_LIB_OUT)
 	$(WIN_CC) $(WIN_STDLIB_SOURCES) $(WIN_SECURE_SOURCES) $(WIN_C_SOURCES) -o $(WIN_EXE_OUT) $(WIN_LINK) $(WIN_FLAGS)
+
+win_beacon_64:
+	$(WIN_ASM_CC) $(WIN_ASM_SOURCES) -o $(WIN_LIB_OUT)
+	$(WIN_CC) $(WIN_STDLIB_SOURCES) $(WIN_SECURE_SOURCES) $(WIN_C_SOURCES) -o $(WIN_EXE_OUT) $(WIN_LINK) $(WIN_FLAGS) $(WIN_HIDE_FLAGS)
