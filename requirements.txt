@@ -5,3 +5,4 @@ pefile
 cffi
 donut-shellcode
 requests
+PrettyTable
