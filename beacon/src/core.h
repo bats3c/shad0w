@@ -25,11 +25,20 @@ char* changedir(char* Dir);
 
 LPVOID ReportExecutionFail();
 
+typedef void (WINAPI * RtlGetVersion_) (OSVERSIONINFOEXW *);
+
 struct BasicUserInfo
 {
     LPSTR UserName;
     LPSTR ComputerName;
     LPSTR DomainName;
+};
+
+struct BasicCompInfo
+{
+    LPSTR Arch;
+    LPSTR OS;
+    LPSTR Secure;
 };
 
 CHAR IdBuffer[65];

