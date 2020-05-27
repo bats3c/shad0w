@@ -28,7 +28,7 @@ def exit(status=0, message=None):
     return
 
 def whoami_callback(shad0w, data):
-    print(data)
+    print(data.strip('\r\n'))
 
     return ""
 
