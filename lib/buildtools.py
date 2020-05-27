@@ -282,11 +282,14 @@ def shellcode_to_array(data):
     return array
     
 
-def elevate_build_stage(shad0w, rootdir=None, os=None, arch=None, secure=None, format=None):
+def elevate_build_stage(shad0w, rootdir=None, os=None, arch=None, secure=None, format=None, static=None):
     # if (rootdir or os or arch or secure) == None:
     #     return
     
-    clone_source_files(asm=True, rootdir="stager")
+    if static == None:
+        clone_source_files(asm=True, rootdir="stager")
+    elif static == True:
+        clone_source_files(asm=True)
 
     settings_template = """#define _C2_CALLBACK_ADDRESS L"%s"
 #define _C2_CALLBACK_PORT %s
