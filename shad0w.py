@@ -96,7 +96,7 @@ class Shad0wBuilder(object):
             # then we are building a static beacon
             buildtools.clone_source_files(asm=True)
         if static is None:
-            # the we are building a stager
+            # then we are building a stager
             buildtools.clone_source_files(asm=True, rootdir="stager")
 
         # change the settings file based on the args we been given
