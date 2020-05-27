@@ -2,15 +2,16 @@
 #   List beacons and info about them
 #
 
+from prettytable import PrettyTable
+
 def _list_beacons(shad0w):
     # i have gcse english, i gonna use it
     if shad0w.beacon_count == 1:
-        shad0w.debug.log(f"{shad0w.beacon_count} active beacon", log=True, pre=False)
+        shad0w.debug.log(f"{shad0w.beacon_count} active beacon\n", log=True)
     else:
-        shad0w.debug.log(f"{shad0w.beacon_count} active beacons", log=True, pre=False)
+        shad0w.debug.log(f"{shad0w.beacon_count} active beacons\n", log=True)
 
-    # a nice line cause it'll look pretty
-    print("--------------------------------------------------------------------------------")
+    t = PrettyTable(['Number', 'Session', "Last Checkin"])
 
     for beacon in shad0w.beacons.keys():
 
@@ -34,7 +35,10 @@ def _list_beacons(shad0w):
             short_name = f"{username}@{machine}"
 
         # show it in the: (num   -   name) format
-        shad0w.debug.log(f"{num}\t-\t{short_name}\t-\t{checkin}", log=True, pre=False)
+        # shad0w.debug.log(f"{num}\t-\t{short_name}\t-\t{checkin}", log=True, pre=False)
+        t.add_row([num, short_name, checkin])
+    
+    print(t)
 
     return
 
