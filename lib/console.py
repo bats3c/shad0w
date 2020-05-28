@@ -40,25 +40,25 @@ class Console(object):
         if self.shad0w.current_beacon:
             checkin_diff = self.shad0w.beacons[self.shad0w.current_beacon]["last_checkin_raw"]
             ping_diff = datetime.datetime.now() - checkin_diff
-            last_ping = f'<b><style bg="ansired">{ping_diff.seconds + 1}s</style></b>'
+            last_ping = f'<style bg="ansired">{ping_diff.seconds + 1}s</style>'
 
             secure_val = self.shad0w.beacons[self.shad0w.current_beacon]["secure"]
             if secure_val == False:
-                secure = '<b><style bg="ansired">No</style></b>'
+                secure = '<style bg="ansired">No</style>'
             if secure_val != False:
-                secure = '<b><style bg="green">Yes</style></b>'
+                secure = '<style bg="green">Yes</style>'
             
             username = self.shad0w.beacons[self.shad0w.current_beacon]["username"]
-            username = f'<b><style bg="#20b2aa">{username}</style></b>'
+            username = f'<style bg="black">{username}</style>'
 
             computer = self.shad0w.beacons[self.shad0w.current_beacon]["machine"]
-            computer = f'<b><style bg="#20b2aa">{computer}</style></b>'
+            computer = f'<style bg="black">{computer}</style>'
 
             arch = self.shad0w.beacons[self.shad0w.current_beacon]["arch"]
-            arch = f'<b><style bg="#20b2aa">{arch}</style></b>'
+            arch = f'<style bg="black">{arch}</style>'
 
             version = self.shad0w.beacons[self.shad0w.current_beacon]["os"]
-            version = f'<b><style bg="#20b2aa">{version} ({arch})</style></b>'
+            version = f'<style bg="black">{version} ({arch})</style>'
 
             return HTML(f'User: {username} | Computer: {computer} | OS: {version} | Secure: {secure} | Ping: {last_ping}')
         else:
