@@ -143,8 +143,7 @@ def write_and_bridge(filename, rcode):
     with open(filename, 'wb') as file:
         file.write(rcode)
     
-    # print(f"wrote {len(rcode)} bytes to {filename}")
-    print("\033[1;32m[+]\033[0m", f"Created {filename} ({len(rcode)} bytes)")
+    return len(rcode)
 
 def raise_issue_payload(string):
 
@@ -323,3 +322,11 @@ def elevate_build_stage(shad0w, rootdir=None, os=None, arch=None, secure=None, f
 
     with open(stagefile, "w+") as file:
         file.write(stage_template)
+
+def shrink_exe(name):
+    os.system(f"strip {name} 1>/dev/null 2>&1")
+    os.system(f"upx --brute {name} 1>/dev/null 2>&1")
+    os.system(f"sed -i \"s/UPX/XPU/g\" {name}")
+
+    with open(name, "rb") as file:
+        return len(file.read())

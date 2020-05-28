@@ -75,13 +75,14 @@ class Shad0wBuilder(object):
         super(Shad0wBuilder, self).__init__()
 
         # key variables for the build
-        self.address = args['address']
-        self.port    = args['port']
-        self.jitter  = args['jitter']
-        self.format  = args['format']
-        self.outfile = args['out']
-        self.debugv  = args['debug']
-        self.payload = args['payload']
+        self.address   = args['address']
+        self.port      = args['port']
+        self.jitter    = args['jitter']
+        self.format    = args['format']
+        self.outfile   = args['out']
+        self.debugv    = args['debug']
+        self.payload   = args['payload']
+        self.no_shrink = args['no_shrink']
 
         # get the debug/logging stuff ready
         self.debug   = debug.Debug(self.debugv)
@@ -119,7 +120,14 @@ class Shad0wBuilder(object):
                 rcode = file.read()
 
             # then give them the exe and bridge it
-            buildtools.write_and_bridge(self.outfile, rcode)
+            length = buildtools.write_and_bridge(self.outfile, rcode)
+
+            # shrink the finally binary
+            if not self.no_shrink:
+                length = buildtools.shrink_exe(self.outfile)
+            
+            # print(f"wrote {len(rcode)} bytes to {filename}")
+            print("\033[1;32m[+]\033[0m", f"Created {self.outfile} ({length} bytes)")
 
 
 
@@ -178,6 +186,7 @@ if __name__ == '__main__':
         beacon_parser.add_argument("-j", "--jitter", required=False, default=1, type=int, help="Jitter the beacon should use when connecting back")
         beacon_parser.add_argument("-f", "--format", required=True, choices=('raw', 'exe'), help="Format to drop the beacon in (raw or exe)")
         beacon_parser.add_argument("-o", "--out", required=True, help="File to store the beacon in")
+        beacon_parser.add_argument("-n", "--no-shrink", required=False, action='store_true', help="Leave the file at its final size, do not attempt to shrink it")
         beacon_parser.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
 
         args = vars(beacon_parser.parse_args(unk[1:]))
