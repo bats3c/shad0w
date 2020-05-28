@@ -1,7 +1,10 @@
-elevate - need stager before we can start doing exploits
-make binarys smaller
-bar
-colors
+make everything that should be a syscall into a syscall   |
+full auto complete on commands                            |--> End of this week
+starters script so ports can bind                         | 
+bar                                                       |
+colors for priv level, output, sytax highlighting         |
+
+
 kernel
 
 Windows Server 2016 Standard 14393 - support its syscalls

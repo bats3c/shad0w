@@ -31,9 +31,28 @@ class Console(object):
         cmds = ["help", "beacons", "shell", "exit", "execute", "ls", "cat", "touch", "mkdir", "rm", "write", "pwd", "upload", "download", "cd", "whoami", "elevate"]
         self.autocomplete = WordCompleter(cmds, ignore_case=True)
 
-    def bt(self):
-        last_ping = self.shad0w.beacons[self.shad0w.current_beacon]["last_checkin"]
-        return ANSI(f"Last Ping: {last_ping}")
+    def beacon_toolbar(self):
+        last_ping = f'<b><style bg="ansired">{self.shad0w.beacons[self.shad0w.current_beacon]["last_checkin"]}</style></b>'
+
+        secure_val = self.shad0w.beacons[self.shad0w.current_beacon]["secure"]
+        if secure_val == False:
+            secure = '<b><style bg="ansired">No</style></b>'
+        if secure_val != False:
+            secure = '<b><style bg="green">Yes</style></b>'
+        
+        username = self.shad0w.beacons[self.shad0w.current_beacon]["username"]
+        username = f'<b><style bg="blue">{username}</style></b>'
+
+        computer = self.shad0w.beacons[self.shad0w.current_beacon]["machine"]
+        computer = f'<b><style bg="blue">{computer}</style></b>'
+
+        arch = self.shad0w.beacons[self.shad0w.current_beacon]["arch"]
+        arch = f'<b><style bg="blue">{arch}</style></b>'
+
+        version = self.shad0w.beacons[self.shad0w.current_beacon]["os"]
+        version = f'<b><style bg="blue">{version} ({arch})</style></b>'
+
+        return HTML(f'User: {username} | Computer: {computer} | OS: {version} | Secure: {secure} | Ping: {last_ping}')
 
     def start(self):
 
@@ -57,9 +76,9 @@ class Console(object):
                     machine    = self.shad0w.beacons[self.shad0w.current_beacon]["machine"]
 
                     if domain != "NULL":
-                        input = self.prompt_session.prompt(ANSI(self.active_domain_prompt % (username, domain, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE)
+                        input = self.prompt_session.prompt(ANSI(self.active_domain_prompt % (username, domain, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE, bottom_toolbar=self.beacon_toolbar)
                     else:
-                        input = self.prompt_session.prompt(ANSI(self.active_prompt % (username, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE)
+                        input = self.prompt_session.prompt(ANSI(self.active_prompt % (username, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE, bottom_toolbar=self.beacon_toolbar)
 
                 # handle the input we just recived
                 try:
