@@ -13,6 +13,7 @@ from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.formatted_text import HTML, ANSI
 from prompt_toolkit.patch_stdout import patch_stdout
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.shortcuts import prompt, CompleteStyle, PromptSession
 
 class Console(object):
@@ -72,7 +73,7 @@ class Console(object):
         self.set_autocompletes()
         try:
             with patch_stdout():
-                self.prompt_session = PromptSession(bottom_toolbar=self.beacon_toolbar, history=histfile, lexer=PygmentsLexer(cmd.Shad0wLexer), style=cmd.Shad0wLexer.lex_style)
+                self.prompt_session = PromptSession(bottom_toolbar=self.beacon_toolbar, history=histfile, lexer=PygmentsLexer(cmd.Shad0wLexer), style=cmd.Shad0wLexer.lex_style, auto_suggest=AutoSuggestFromHistory())
         except ValueError: pass
         while True:
             try:
