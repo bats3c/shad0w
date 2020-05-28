@@ -1,8 +1,5 @@
 make everything that should be a syscall into a syscall   |
-full auto complete on commands                            |--> End of this week
 starters script so ports can bind                         | 
-bar                                                       |
-colors for priv level, output, sytax highlighting         |
 
 
 kernel
