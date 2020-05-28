@@ -6,3 +6,4 @@ cffi
 donut-shellcode
 requests
 PrettyTable
+pygments

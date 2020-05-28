@@ -4,10 +4,12 @@ import datetime
 import traceback
 import threading
 
-from lib import input_handler
+from lib import input_handler, cmd
 
 from prompt_toolkit import PromptSession
+from pygments.lexers.shell import PowerShellLexer
 from prompt_toolkit.history import FileHistory
+from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.formatted_text import HTML, ANSI
 from prompt_toolkit.patch_stdout import patch_stdout
@@ -46,16 +48,16 @@ class Console(object):
                 secure = '<b><style bg="green">Yes</style></b>'
             
             username = self.shad0w.beacons[self.shad0w.current_beacon]["username"]
-            username = f'<b><style bg="#005EFF">{username}</style></b>'
+            username = f'<b><style bg="#20b2aa">{username}</style></b>'
 
             computer = self.shad0w.beacons[self.shad0w.current_beacon]["machine"]
-            computer = f'<b><style bg="#005EFF">{computer}</style></b>'
+            computer = f'<b><style bg="#20b2aa">{computer}</style></b>'
 
             arch = self.shad0w.beacons[self.shad0w.current_beacon]["arch"]
-            arch = f'<b><style bg="#005EFF">{arch}</style></b>'
+            arch = f'<b><style bg="#20b2aa">{arch}</style></b>'
 
             version = self.shad0w.beacons[self.shad0w.current_beacon]["os"]
-            version = f'<b><style bg="#005EFF">{version} ({arch})</style></b>'
+            version = f'<b><style bg="#20b2aa">{version} ({arch})</style></b>'
 
             return HTML(f'User: {username} | Computer: {computer} | OS: {version} | Secure: {secure} | Ping: {last_ping}')
         else:
@@ -70,7 +72,7 @@ class Console(object):
         self.set_autocompletes()
         try:
             with patch_stdout():
-                self.prompt_session = PromptSession(bottom_toolbar=self.beacon_toolbar, history=histfile)
+                self.prompt_session = PromptSession(bottom_toolbar=self.beacon_toolbar, history=histfile, lexer=PygmentsLexer(cmd.Shad0wLexer), style=cmd.Shad0wLexer.lex_style)
         except ValueError: pass
         while True:
             try:
