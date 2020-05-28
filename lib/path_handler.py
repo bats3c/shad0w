@@ -34,6 +34,10 @@ class Handler(object):
         # only if were given an id by the beacon
 
         if beacon_id:
+            
+            # update the ping
+            self.shad0w.beacons[beacon_id]["last_checkin"] = str(datetime.now())
+
             try:
                 # if the beacon isnt just checking in to give us
                 # data then build a responce to give the beacon
