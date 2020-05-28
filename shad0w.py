@@ -3,6 +3,7 @@
 import os
 import ssl
 import socket
+import asyncio
 import argparse
 
 from threading import Thread
@@ -57,15 +58,17 @@ class Shad0wC2(object):
             mirror.mirror_site(self, self.mirror)
 
         # start the http server thread
-        self.debug.log("starting http server thread")
+        # self.debug.log("starting http server thread")
         thttp = Thread(target=http_server.run_serv, args=(self,))
         thttp.daemon = False
         thttp.start()
+        # asyncio.run(http_server.run_serv(self))
 
         # start the console thread
-        tconsole = Thread(target=self.console.start)
-        tconsole.daemon = False
-        tconsole.start()
+        asyncio.run(self.console.start())
+        # tconsole = Thread(target=self.console.start)
+        # tconsole.daemon = False
+        # tconsole.start()
 
 
 class Shad0wBuilder(object):
@@ -175,7 +178,7 @@ if __name__ == '__main__':
 
         # start the C2 listening
         shad0w = Shad0wC2(args)
-        shad0w.start()
+        asyncio.run(shad0w.start())
     
     # set the arguments for creating the beacon
     if mode == "beacon":

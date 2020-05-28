@@ -28,7 +28,8 @@ def exit(status=0, message=None):
     return
 
 def whoami_callback(shad0w, data):
-    print(data.strip('\r\n'))
+    if len(data) > 1:
+        shad0w.debug.log(data, log=True, pre=False)
 
     return ""
 
@@ -46,7 +47,7 @@ def get_whoami_args(args):
     
     return data
 
-def main(shad0w, args):
+async def main(shad0w, args):
     global ERROR
 
     # save the raw args

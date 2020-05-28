@@ -22,7 +22,7 @@ def exit(status=0, message=None):
     return
 
 def rm_callback(shad0w, data):
-    print(data)
+    shad0w.debug.log(data, log=True, pre=False)
 
     return ""
 

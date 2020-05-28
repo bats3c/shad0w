@@ -9,7 +9,8 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.formatted_text import HTML, ANSI
-from prompt_toolkit.shortcuts import prompt, CompleteStyle
+from prompt_toolkit.patch_stdout import patch_stdout
+from prompt_toolkit.shortcuts import prompt, CompleteStyle, PromptSession
 
 class Console(object):
 
@@ -32,29 +33,32 @@ class Console(object):
         self.autocomplete = WordCompleter(cmds, ignore_case=True)
 
     def beacon_toolbar(self):
-        last_ping = f'<b><style bg="ansired">{self.shad0w.beacons[self.shad0w.current_beacon]["last_checkin"]}</style></b>'
+        if self.shad0w.current_beacon:
+            last_ping = f'<b><style bg="ansired">{self.shad0w.beacons[self.shad0w.current_beacon]["last_checkin"]}</style></b>'
 
-        secure_val = self.shad0w.beacons[self.shad0w.current_beacon]["secure"]
-        if secure_val == False:
-            secure = '<b><style bg="ansired">No</style></b>'
-        if secure_val != False:
-            secure = '<b><style bg="green">Yes</style></b>'
-        
-        username = self.shad0w.beacons[self.shad0w.current_beacon]["username"]
-        username = f'<b><style bg="blue">{username}</style></b>'
+            secure_val = self.shad0w.beacons[self.shad0w.current_beacon]["secure"]
+            if secure_val == False:
+                secure = '<b><style bg="ansired">No</style></b>'
+            if secure_val != False:
+                secure = '<b><style bg="green">Yes</style></b>'
+            
+            username = self.shad0w.beacons[self.shad0w.current_beacon]["username"]
+            username = f'<b><style bg="blue">{username}</style></b>'
 
-        computer = self.shad0w.beacons[self.shad0w.current_beacon]["machine"]
-        computer = f'<b><style bg="blue">{computer}</style></b>'
+            computer = self.shad0w.beacons[self.shad0w.current_beacon]["machine"]
+            computer = f'<b><style bg="blue">{computer}</style></b>'
 
-        arch = self.shad0w.beacons[self.shad0w.current_beacon]["arch"]
-        arch = f'<b><style bg="blue">{arch}</style></b>'
+            arch = self.shad0w.beacons[self.shad0w.current_beacon]["arch"]
+            arch = f'<b><style bg="blue">{arch}</style></b>'
 
-        version = self.shad0w.beacons[self.shad0w.current_beacon]["os"]
-        version = f'<b><style bg="blue">{version} ({arch})</style></b>'
+            version = self.shad0w.beacons[self.shad0w.current_beacon]["os"]
+            version = f'<b><style bg="blue">{version} ({arch})</style></b>'
 
-        return HTML(f'User: {username} | Computer: {computer} | OS: {version} | Secure: {secure} | Ping: {last_ping}')
+            return HTML(f'User: {username} | Computer: {computer} | OS: {version} | Secure: {secure} | Ping: {last_ping}')
+        else:
+            return HTML(f'Hello')
 
-    def start(self):
+    async def start(self):
 
         # default history file
         histfile = FileHistory('.shad0w_history')
@@ -62,13 +66,14 @@ class Console(object):
         # do what prompts do
         self.set_autocompletes()
         try:
-            self.prompt_session = PromptSession(history=histfile)
+            with patch_stdout():
+                self.prompt_session = PromptSession(bottom_toolbar=self.beacon_toolbar, history=histfile)
         except ValueError: pass
         while True:
             try:
                 # display a prompt depending on wheather we got an active beacon or not
                 if self.shad0w.current_beacon is None:
-                    input = self.prompt_session.prompt(ANSI(self.prompt), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE)
+                    input = await self.prompt_session.prompt_async(ANSI(self.prompt), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE)
                 else:
                     # stuff to format for name
                     domain     = self.shad0w.beacons[self.shad0w.current_beacon]["domain"]
@@ -76,13 +81,16 @@ class Console(object):
                     machine    = self.shad0w.beacons[self.shad0w.current_beacon]["machine"]
 
                     if domain != "NULL":
-                        input = self.prompt_session.prompt(ANSI(self.active_domain_prompt % (username, domain, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE, bottom_toolbar=self.beacon_toolbar)
+                        with patch_stdout():
+                            input = await self.prompt_session.prompt_async(ANSI(self.active_domain_prompt % (username, domain, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE, mouse_support=True, refresh_interval=0.5)
                     else:
-                        input = self.prompt_session.prompt(ANSI(self.active_prompt % (username, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE, bottom_toolbar=self.beacon_toolbar)
+                        with patch_stdout():
+                            input = await self.prompt_session.prompt_async(ANSI(self.active_prompt % (username, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE, mouse_support=True, refresh_interval=0.5)
 
                 # handle the input we just recived
                 try:
-                    self.cmd_handler.do(input)
+                    with patch_stdout():
+                        await self.cmd_handler.do(input)
                 except Exception as e:
 
                     # tell user about error

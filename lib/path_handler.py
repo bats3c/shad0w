@@ -36,7 +36,9 @@ class Handler(object):
         if beacon_id:
             
             # update the ping
-            self.shad0w.beacons[beacon_id]["last_checkin"] = str(datetime.now())
+            try:
+                self.shad0w.beacons[beacon_id]["last_checkin"] = str(datetime.now())
+            except KeyError: pass
 
             try:
                 # if the beacon isnt just checking in to give us
@@ -50,7 +52,7 @@ class Handler(object):
                     # clear the task
                     self.shad0w.beacons[beacon_id]["task"] = None
                     # inform user
-                    self.shad0w.debug.log(f"Beacon ({beacon_id}) received task\n", log=True, new=True)
+                    self.shad0w.debug.log(f"Beacon ({beacon_id}) received task", log=True)
                     return task
                 
                 # check if the data is for the current beacon

@@ -38,7 +38,7 @@ def get_list_directory(rargs, args):
 
 
 def ls_callback(shad0w, data):
-    print(data)
+    shad0w.debug.log(data, log=True, pre=False)
 
     return ""
 

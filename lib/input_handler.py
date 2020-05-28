@@ -1,6 +1,8 @@
 import os
 import importlib
 
+from prompt_toolkit.patch_stdout import patch_stdout
+
 from lib.commands import *
 
 class Handler(object):
@@ -10,7 +12,7 @@ class Handler(object):
         super(Handler, self).__init__()
         self.shad0w = shad0w
 
-    def do(self, cmd):
+    async def do(self, cmd):
 
         # split command into name + args
 
@@ -44,4 +46,8 @@ class Handler(object):
 
             cmd_func = globals()[basecmd]
             if self.shad0w.debugv: importlib.reload(cmd_func)
-            cmd_func.main(self.shad0w, cmd_args)
+
+            if basecmd == "whoami":
+                await cmd_func.main(self.shad0w, cmd_args)
+            else:
+                cmd_func.main(self.shad0w, cmd_args)

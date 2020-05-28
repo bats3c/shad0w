@@ -7,7 +7,7 @@ EXEC_ID    = 0x4000
 OPCODE_PWD = 0x3000
 
 def pwd_callback(shad0w, data):
-    print(data)
+    shad0w.debug.log(data, log=True, pre=False)
 
     return ""
 
