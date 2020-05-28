@@ -1,5 +1,6 @@
 import os
 import signal
+import datetime
 import traceback
 import threading
 
@@ -34,7 +35,9 @@ class Console(object):
 
     def beacon_toolbar(self):
         if self.shad0w.current_beacon:
-            last_ping = f'<b><style bg="ansired">{self.shad0w.beacons[self.shad0w.current_beacon]["last_checkin"]}</style></b>'
+            checkin_diff = self.shad0w.beacons[self.shad0w.current_beacon]["last_checkin_raw"]
+            ping_diff = datetime.datetime.now() - checkin_diff
+            last_ping = f'<b><style bg="ansired">{ping_diff.seconds + 1}s</style></b>'
 
             secure_val = self.shad0w.beacons[self.shad0w.current_beacon]["secure"]
             if secure_val == False:
@@ -43,20 +46,20 @@ class Console(object):
                 secure = '<b><style bg="green">Yes</style></b>'
             
             username = self.shad0w.beacons[self.shad0w.current_beacon]["username"]
-            username = f'<b><style bg="blue">{username}</style></b>'
+            username = f'<b><style bg="#005EFF">{username}</style></b>'
 
             computer = self.shad0w.beacons[self.shad0w.current_beacon]["machine"]
-            computer = f'<b><style bg="blue">{computer}</style></b>'
+            computer = f'<b><style bg="#005EFF">{computer}</style></b>'
 
             arch = self.shad0w.beacons[self.shad0w.current_beacon]["arch"]
-            arch = f'<b><style bg="blue">{arch}</style></b>'
+            arch = f'<b><style bg="#005EFF">{arch}</style></b>'
 
             version = self.shad0w.beacons[self.shad0w.current_beacon]["os"]
-            version = f'<b><style bg="blue">{version} ({arch})</style></b>'
+            version = f'<b><style bg="#005EFF">{version} ({arch})</style></b>'
 
             return HTML(f'User: {username} | Computer: {computer} | OS: {version} | Secure: {secure} | Ping: {last_ping}')
         else:
-            return HTML(f'Hello')
+            return HTML(f'<b><style bg="ansired">No Active Beacon</style></b>')
 
     async def start(self):
 
@@ -82,10 +85,10 @@ class Console(object):
 
                     if domain != "NULL":
                         with patch_stdout():
-                            input = await self.prompt_session.prompt_async(ANSI(self.active_domain_prompt % (username, domain, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE, mouse_support=True, refresh_interval=0.5)
+                            input = await self.prompt_session.prompt_async(ANSI(self.active_domain_prompt % (username, domain, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE, refresh_interval=0.5)
                     else:
                         with patch_stdout():
-                            input = await self.prompt_session.prompt_async(ANSI(self.active_prompt % (username, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE, mouse_support=True, refresh_interval=0.5)
+                            input = await self.prompt_session.prompt_async(ANSI(self.active_prompt % (username, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE, refresh_interval=0.5)
 
                 # handle the input we just recived
                 try:

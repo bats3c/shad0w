@@ -37,7 +37,8 @@ class Handler(object):
             
             # update the ping
             try:
-                self.shad0w.beacons[beacon_id]["last_checkin"] = str(datetime.now())
+                self.shad0w.beacons[beacon_id]["last_checkin"]     = str(datetime.now())
+                self.shad0w.beacons[beacon_id]["last_checkin_raw"] = datetime.now()
             except KeyError: pass
 
             try:
@@ -109,7 +110,8 @@ class Handler(object):
                     else:
                         self.shad0w.beacons[beacon_id]["secure"]       = False
                         
-                    self.shad0w.beacons[beacon_id]["last_checkin"] = str(datetime.now())
+                    self.shad0w.beacons[beacon_id]["last_checkin"]     = str(datetime.now())
+                    self.shad0w.beacons[beacon_id]["last_checkin_raw"] = datetime.now()
 
                     # send everytime it checks in, tells it whether to die of not
                     self.shad0w.beacons[beacon_id]["stay_alive"]   = True
