@@ -4,6 +4,8 @@
 
 import os, signal
 
+__description__ = "Exit shad0w C2"
+
 def main(shad0w, args):
 
     # yea ik

@@ -4,6 +4,8 @@
 
 from prettytable import PrettyTable
 
+__description__ = "Interact with or display current beacons"
+
 def _list_beacons(shad0w):
     # i have gcse english, i gonna use it
     if shad0w.beacon_count == 1:

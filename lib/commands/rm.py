@@ -5,6 +5,8 @@
 import json
 import argparse
 
+__description__ = "Delete a file on the target"
+
 EXEC_ID   = 0x4000
 OPCODE_RM = 0x4000
 

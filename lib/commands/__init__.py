@@ -13,5 +13,6 @@ __all__ = [
            "download",
            "cd",
            "whoami",
-           "elevate"
+           "elevate",
+           "mimikatz"
           ]

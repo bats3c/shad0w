@@ -8,6 +8,8 @@ import argparse
 
 from lib import buildtools
 
+__description__ = "Upload a file to the target"
+
 EXEC_ID = 0x3000
 
 ERROR = False

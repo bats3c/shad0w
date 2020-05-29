@@ -8,6 +8,8 @@ import argparse
 
 from lib import shellcode
 
+__description__ = "Get infomation about the current user the beacon is running as"
+
 # using work around for stager bug
 # EXEC_ID       = 0x4000
 # OPCODE_WHOAMI = 0x7000

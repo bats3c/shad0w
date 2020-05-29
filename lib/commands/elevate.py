@@ -9,8 +9,11 @@ import importlib
 
 from prettytable import PrettyTable
 
+__description__ = "Attempt to elevate the beacons privilages on the target"
+
 ERROR = False
 error_list = ""
+RAN_COMMAND = False
 
 # let argparse error and exit nice
 def error(message):
@@ -85,6 +88,7 @@ def use_exploit(shad0w, name, arch):
             importlib.import_module(exploit.replace("/", ".")).exploit(shad0w, arch)
 
 def main(shad0w, args):
+    global RAN_COMMAND
     
     # check we got a beacon
     if shad0w.current_beacon is None:
@@ -133,18 +137,26 @@ elevate --smart
 
     # list the avalible exploits
     if args.list:
+        RAN_COMMAND = True
         list_exploits(shad0w)
     
     # show the details for an exploit
     if args.details:
+        RAN_COMMAND = True
         show_details(shad0w, args.details)
 
     # check if an exploit will work
     if args.check:
+        RAN_COMMAND = True
         session_arch = shad0w.beacons[shad0w.current_beacon]["arch"]
         check_exploit(shad0w, args.check, session_arch)
     
     # check if an exploit will work
     if args.use:
+        RAN_COMMAND = True
         session_arch = shad0w.beacons[shad0w.current_beacon]["arch"]
         use_exploit(shad0w, args.use, session_arch)
+    
+    if RAN_COMMAND == False:
+        parse.print_help()
+        return

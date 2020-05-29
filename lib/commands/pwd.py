@@ -3,6 +3,8 @@
 #
 import json
 
+__description__ = "Display the current working directory of the beacon"
+
 EXEC_ID    = 0x4000
 OPCODE_PWD = 0x3000
 

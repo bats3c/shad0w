@@ -5,6 +5,8 @@
 import json
 import argparse
 
+__description__ = "List the files in a directory on the target"
+
 EXEC_ID   = 0x4000
 OPCODE_LS = 0x1000
 

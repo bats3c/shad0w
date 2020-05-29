@@ -9,6 +9,8 @@ import traceback
 
 from lib import buildtools
 
+__description__ = "Download a file from the target machine to shad0ws current directory"
+
 EXEC_ID = 0x3000
 
 ERROR = False
