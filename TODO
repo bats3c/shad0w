@@ -1,5 +1,6 @@
-make everything that should be a syscall into a syscall   |
-
+help
+exit
+droppers
 kernel
 
 Windows Server 2016 Standard 14393 - support its syscalls
