@@ -9,7 +9,7 @@ class Shad0wLexer(RegexLexer):
     name = 'shad0w'
     aliases = ['shad0w']
 
-    commands = ("help shell execute cat mkdir \
+    commands = ("help execute cat mkdir \
                  upload cd elevate beacons exit \
                  ls rm pwd download whoami mimikatz").split()
     
