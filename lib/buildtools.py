@@ -299,9 +299,9 @@ def elevate_build_stage(shad0w, rootdir=None, os=None, arch=None, secure=None, f
     update_settings_file(None, custom_template=settings_template)
 
     # now we need to run 'make' inside the cloned dir
-    shad0w.debug.spinner(f"Preparing exploit...")
+    # shad0w.debug.spinner(f"Preparing exploit...")
     make_in_clone(arch=arch, platform=os, secure=secure, static=True)
-    shad0w.debug.stop_spinner = True
+    # shad0w.debug.stop_spinner = True
 
     # get the shellcode from the payload
     if format == "raw":

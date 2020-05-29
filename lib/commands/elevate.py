@@ -6,6 +6,7 @@ import os
 import sys
 import argparse
 import importlib
+import threading
 
 from prettytable import PrettyTable
 
@@ -77,7 +78,7 @@ def check_exploit(shad0w, name, arch):
             importlib.import_module(exploit.replace("/", ".")).check(shad0w, arch)
 
 def use_exploit(shad0w, name, arch):
-    # run the exploit in check mode
+    # run the exploit in exploit mode
 
     sys.path.append("/root/shad0w/exploits/")
     all_exploits = importlib.import_module("__init__").__all__
@@ -85,7 +86,8 @@ def use_exploit(shad0w, name, arch):
     for exploit in all_exploits:
         exploit_name = os.path.basename(exploit)
         if name == exploit_name:
-            importlib.import_module(exploit.replace("/", ".")).exploit(shad0w, arch)
+            exploit_mod = importlib.import_module(exploit.replace("/", "."))
+            threading.Thread(target=exploit_mod.exploit, args=(shad0w, arch)).start()
 
 def main(shad0w, args):
     global RAN_COMMAND
