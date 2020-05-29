@@ -14,7 +14,7 @@ class Shad0wLexer(RegexLexer):
                  ls rm pwd download whoami").split()
     
     lex_style = Style.from_dict({
-    'pygments.keyword':   '#20b2aa',
+    'pygments.keyword':   '#FFFFFF',
     })
 
     tokens = {
