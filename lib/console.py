@@ -33,8 +33,7 @@ class Console(object):
         self.cmd_handler   = input_handler.Handler(self.shad0w)
 
     def set_autocompletes(self):
-        cmds = ["help", "beacons", "shell", "exit", "execute", "ls", "cat", "touch", "mkdir", "rm", "write", "pwd", "upload", "download", "cd", "whoami", "elevate"]
-        self.autocomplete = WordCompleter(cmds, ignore_case=True)
+        self.autocomplete = WordCompleter(cmd.Shad0wLexer.commands, ignore_case=True)
 
     def beacon_toolbar(self):
         if self.shad0w.current_beacon:
