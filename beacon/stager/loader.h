@@ -23,18 +23,19 @@ typedef struct _STARTUPINFOEXA {
 
 typedef void (WINAPI * RtlGetVersion_) (OSVERSIONINFOEXW *);
 
-NTSTATUS(*NtWriteVirtualMemory)(
-    HANDLE hProcess, 
-    PVOID lpBaseAddress, 
-    PVOID lpBuffer, 
-    SIZE_T NumberOfBytesToRead, 
-    PSIZE_T NumberOfBytesRead
+NTSTATUS(*NtAllocateVirtualMemory)(
+    HANDLE ProcessHandle, 
+    PVOID *BaseAddress,
+    ULONG_PTR ZeroBits,
+    PSIZE_T RegionSize,
+    ULONG AllocationType,
+    ULONG Protect
 );
 
-NTSTATUS(*NtQueueApcThread)(
-    HANDLE ThreadHandle,
-    PIO_APC_ROUTINE ApcRoutine,
-    PVOID NormalContext,
-    PVOID SystemArgument1,
-    PVOID SystemArgument2 
+NTSTATUS(*NtProtectVirtualMemory)(
+    HANDLE ProcessHandle,
+    PVOID *BaseAddress,
+    PSIZE_T NumberOfBytesToProtect,
+    ULONG NewAccessProtection,
+    PULONG OldAccessProtection
 );

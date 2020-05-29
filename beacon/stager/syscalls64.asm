@@ -1,77 +1,54 @@
 section .text
 
 ; Windows 10 definitions
-global NtQueueApcThread10
-global NtWriteVirtualMemory10
+global NtAllocateVirtualMemory10
+global NtProtectVirtualMemory10
 
 ; Windows 8.1 definitions
-global NtQueueApcThread81
-global NtWriteVirtualMemory81
-
-; Windows 8.1 definitions
-global NtQueueApcThread8
-global NtWriteVirtualMemory8
-
-; Windows 8.1 definitions
-global NtQueueApcThread7
-global NtWriteVirtualMemory7
+global NtAllocateVirtualMemory81
+global NtProtectVirtualMemory81
 
 ; Windows 10
 ; ----------------------------------------
-NtQueueApcThread10:
+NtAllocateVirtualMemory10:
 	mov r10, rcx
-	mov eax, 45h
+	mov eax, 18h
 	syscall
 	ret
 
-NtWriteVirtualMemory10:
+NtProtectVirtualMemory10:
 	mov r10, rcx
-	mov eax, 3Ah
+	mov eax, 50h
 	syscall
 	ret
 ; ----------------------------------------
 
 ; Windows 8.1
 ; ----------------------------------------
-NtQueueApcThread81:
+NtAllocateVirtualMemory81:
 	mov r10, rcx
-	mov eax, 44h
+	mov eax, 17h
 	syscall
 	ret
-
-NtWriteVirtualMemory81:
+	
+NtProtectVirtualMemory81:
 	mov r10, rcx
-	mov eax, 39h
+	mov eax, 4fh
 	syscall
 	ret
 ; ----------------------------------------
 
 ; Windows 8.0
 ; ----------------------------------------
-NtQueueApcThread8:
+NtAllocateVirtualMemory80:
 	mov r10, rcx
-	mov eax, 43h
+	mov eax, 16h
 	syscall
 	ret
-
-NtWriteVirtualMemory8:
+	
+NtProtectVirtualMemory80:
 	mov r10, rcx
-	mov eax, 38h
-	syscall
-	ret
-; ----------------------------------------
-
-; Windows 7 SP1 and below
-; ----------------------------------------
-NtQueueApcThread7:
-	mov r10, rcx
-	mov eax, 42h
-	syscall
-	ret
-
-NtWriteVirtualMemory7:
-	mov r10, rcx
-	mov eax, 37h
+	mov eax, 4eh
 	syscall
 	ret
 ; ----------------------------------------

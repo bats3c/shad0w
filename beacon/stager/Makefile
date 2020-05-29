@@ -3,6 +3,7 @@ VARIABLES=
 WIN_CC=/usr/bin/x86_64-w64-mingw32-gcc
 WIN_ASM_CC=/usr/bin/nasm -f win64
 
+WIN_LINK=-L./ -lsyscalls64
 WIN_HIDE_FLAGS=-Wl,-subsystem,windows
 WIN_FLAGS=-lwinhttp -Wl,-Bstatic -lwtsapi32 -Wl,-Bstatic $(VARIABLES) --static -Wl,--pic-executable,-e,main -w
 
