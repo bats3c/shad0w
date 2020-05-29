@@ -39,7 +39,7 @@ class Console(object):
         if self.shad0w.current_beacon:
             checkin_diff = self.shad0w.beacons[self.shad0w.current_beacon]["last_checkin_raw"]
             ping_diff = datetime.datetime.now() - checkin_diff
-            last_ping = f'<style bg="ansired">{ping_diff.seconds + 1}s</style>'
+            last_ping = f'<style bg="black">{ping_diff.seconds + 1}s</style>'
 
             secure_val = self.shad0w.beacons[self.shad0w.current_beacon]["secure"]
             if secure_val == False:
