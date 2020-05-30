@@ -15,6 +15,7 @@ from lib import console
 from lib import encryption
 from lib import buildtools
 from lib import mirror
+from lib import payload_format
 
 class Shad0wC2(object):
 
@@ -93,13 +94,13 @@ class Shad0wBuilder(object):
     def build(self):
 
         # get the variables for the make
-        arch, platform, secure, static = buildtools.get_payload_variables(self.payload)
+        self.arch, self.platform, self.secure, self.static = buildtools.get_payload_variables(self.payload)
 
         # copy the correct source files into build directory
-        if static is not None:
+        if self.static is not None:
             # then we are building a static beacon
             buildtools.clone_source_files(asm=True)
-        if static is None:
+        if self.static is None:
             # then we are building a stager
             buildtools.clone_source_files(asm=True, rootdir="stager")
 
@@ -107,29 +108,11 @@ class Shad0wBuilder(object):
         buildtools.update_settings_file(self)
 
         # now we need to run 'make' inside the cloned dir
-        buildtools.make_in_clone(arch=arch, platform=platform, secure=secure, static=static, debug=self.debugv)
+        buildtools.make_in_clone(arch=self.arch, platform=self.platform, secure=self.secure, static=self.static, debug=self.debugv)
 
-        # now get the beacon in the correct format
-        if self.format == "raw":
-            # extract the shellcode from the new beacon
-            rcode = buildtools.extract_shellcode()
+        length = payload_format.create(self)
 
-            # write the shellcode
-            buildtools.write_and_bridge(self.outfile, rcode)
-        
-        if self.format == "exe":
-            # get the bytes of the exe
-            with open("/root/shad0w/beacon/beacon.exe", 'rb') as file:
-                rcode = file.read()
-
-            # then give them the exe and bridge it
-            length = buildtools.write_and_bridge(self.outfile, rcode)
-
-            # shrink the finally binary
-            if not self.no_shrink:
-                length = buildtools.shrink_exe(self.outfile)
-            
-            # print(f"wrote {len(rcode)} bytes to {filename}")
+        if length != False:
             print("\033[1;32m[+]\033[0m", f"Created {self.outfile} ({length} bytes)")
 
 
@@ -187,7 +170,7 @@ if __name__ == '__main__':
         beacon_parser.add_argument("-H", "--address", required=True, help="Address the beacon will connect to")
         beacon_parser.add_argument("-P", "--port", required=False, default=443, help="Port the beacon will connect on")
         beacon_parser.add_argument("-j", "--jitter", required=False, default=1, type=int, help="Jitter the beacon should use when connecting back")
-        beacon_parser.add_argument("-f", "--format", required=True, choices=('raw', 'exe'), help="Format to drop the beacon in (raw or exe)")
+        beacon_parser.add_argument("-f", "--format", required=True, choices=payload_format.formats, help="Format to store the beacon payload as")
         beacon_parser.add_argument("-o", "--out", required=True, help="File to store the beacon in")
         beacon_parser.add_argument("-n", "--no-shrink", required=False, action='store_true', help="Leave the file at its final size, do not attempt to shrink it")
         beacon_parser.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
