@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# This is a launcher script for shad0w.
+
+if [ -z $1 ]
+then
+    exec sudo docker run -v $(pwd):/root/shad0w/.bridge -it shad0w
+    exit
+fi
+
+if [ $1 = "install" ]
+then
+    cp shad0w /usr/bin/shad0w
+    docker build -t shad0w .
+    exec shad0w
+    exit
+fi
+
+if [ $1 = "beacon" ]
+then
+    exec sudo docker run -v $(pwd):/root/shad0w/.bridge -it shad0w $@
+    exit
+fi
+
+if [ $1 = "listen" ]
+then
+    exec sudo docker run -v $(pwd):/root/shad0w/.bridge -p 443:443 -it shad0w $@
+    exit
+fi
+
+exec sudo docker run -v $(pwd):/root/shad0w/.bridge -p 443:443 -it shad0w $@
