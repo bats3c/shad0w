@@ -34,8 +34,6 @@ void __attribute__ ((constructor)) entry()
 
 void main()
 {
-
-    // jus sum variables lol
     BOOL     Success;
     DWORD    OpCode;
     char*    Buffer;
