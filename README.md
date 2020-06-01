@@ -1,6 +1,6 @@
 # shad0w
 
-![Project Status](https://img.shields.io/badge/status-BETA-yellow)
+[![Project Status](https://img.shields.io/badge/status-BETA-yellow?style=flat-square)]()
 
 shad0w is a post exploitation framework designed to operate covertly on heavily monitored enviroments
 
