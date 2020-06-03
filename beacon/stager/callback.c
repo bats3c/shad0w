@@ -86,7 +86,7 @@ CHAR* GetStageFromC2(DWORD* sSize)
             dwSize = 0;
             if (!WinHttpQueryDataAvailable( hRequest, &dwSize)) 
             {
-                printf( "Error %u in WinHttpQueryDataAvailable.\n", GetLastError());
+                DEBUG( "Error %u in WinHttpQueryDataAvailable.\n", GetLastError());
                 break;
             }
             

