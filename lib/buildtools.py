@@ -1,5 +1,7 @@
 import os
 import base64
+import string
+import random
 
 from lib import shellcode
 
@@ -323,10 +325,22 @@ def elevate_build_stage(shad0w, rootdir=None, os=None, arch=None, secure=None, f
     with open(stagefile, "w+") as file:
         file.write(stage_template)
 
+def _random_string(length):
+    rstring = ""
+    alphabet = string.ascii_lowercase + string.ascii_uppercase
+
+    for _ in range(0, length):
+        rstring += random.choice(alphabet)
+    
+    return rstring
+
 def shrink_exe(name):
     os.system(f"strip {name} 1>/dev/null 2>&1")
     os.system(f"upx --brute {name} 1>/dev/null 2>&1")
-    os.system(f"sed -i \"s/UPX/XPU/g\" {name}")
+
+    # rule: strings_4_6_2020
+    section_name = _random_string(3)
+    os.system(f"sed -i \"s/UPX/{section_name}/g\" {name}")
 
     with open(name, "rb") as file:
         return len(file.read())
