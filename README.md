@@ -2,14 +2,14 @@
 
 [![Project Status](https://img.shields.io/badge/status-BETA-yellow?style=flat-square)]()
 
-shad0w is a post exploitation framework designed to operate covertly on heavily monitored enviroments
+shad0w is a post exploitation framework designed to operate covertly on heavily monitored environments
 
 ### Features
 
 #### C2 Server
 
 - Secure communication over HTTPS.
-- Clone and live proxy any website, making the C2 fully browseable.
+- Clone and live proxy any website, making the C2 fully browsable.
 
 #### Beacons
 
@@ -18,8 +18,8 @@ shad0w is a post exploitation framework designed to operate covertly on heavily 
 - Uses native windows syscalls
 - Bypasses userland API hooking
 - Blocks EDR from loading DLLs into its process
-- Can execute .NET assemblys, EXEs, DLLs, VBS, JS or XSL files completly in memory
-- Common privilage escalation exploits built in
+- Can execute .NET assemblies, EXEs, DLLs, VBS, JS or XSL files completely in memory
+- Common privilege escalation exploits built in
 - Interact with the file system
 - Configurable C2 callback jitter
 
@@ -29,15 +29,15 @@ shad0w is a post exploitation framework designed to operate covertly on heavily 
 - Auto complete
 - Up/Down history
 - Reverse command search
-- Syntax highlighing
+- Syntax highlighting
 
 ### Coming Soon
 
 - Unmanaged powershell
 - Syscalls for older versions of windows
 - Kernel mode capability
-- More privilage escalation exploits
-- Ghost in the logs intergration
+- More privilege escalation exploits
+- Ghost in the logs integration
 - UAC bypasses
 - Persistence
 - 32 bit support
@@ -64,7 +64,7 @@ To use the website mirroring functionality you can use the `-m` or `--mirror` fl
 
     $ shad0w listen -e www.bbc-news.com -m "https://www.bbc.com/"
 
-This will mean that if the C2s address of `www.bbc-news.com` is visited the content of `https://www.bbc.com/` will be retrived and returned. This is also true for any links on the cloned website. If the person browsing the C2 navigated to `https://www.bbc-news.com/sport/football/52799575` the content at `https://www.bbc.com/sport/football/52799575` would be mirrored.
+This will mean that if the C2s address of `www.bbc-news.com` is visited the content of `https://www.bbc.com/` will be retrieved and returned. This is also true for any links on the cloned website. If the person browsing the C2 navigated to `https://www.bbc-news.com/sport/football/52799575` the content at `https://www.bbc.com/sport/football/52799575` would be mirrored.
 
 #### Beacons
 
@@ -74,7 +74,7 @@ There are two types of beacons, `secure` and `insecure`. Secure beacons have all
 
 The insecure beacons are designed to work on a wide variety of windows versions but are designed to be used in situations where detection does not matter.
 
-The synatx for beacon generation.
+The syntax for beacon generation.
 
     $ shad0w beacon -p <payload> -H <c2 address> -f <format> -o <filename>
 
@@ -113,7 +113,7 @@ To get a list of active beacons you can use the `beacons` command
 
     shad0w ≫ beacons
 
-To interact with a beacon use the `beacons` command with the `-i` flag specifing the beacon id
+To interact with a beacon use the `beacons` command with the `-i` flag specifying the beacon id
 
     shad0w ≫ beacons -i 1
 
