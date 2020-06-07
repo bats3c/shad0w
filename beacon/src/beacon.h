@@ -6,3 +6,17 @@ BOOL GetBasicCompInfo(struct BasicCompInfo *CompInfo);
 LPVOID DieCleanly();
 
 LPVOID ReportExecutionFail();
+
+struct BasicUserInfo
+{
+    LPSTR UserName;
+    LPSTR ComputerName;
+    LPSTR DomainName;
+};
+
+struct BasicCompInfo
+{
+    LPSTR Arch;
+    LPSTR OS;
+    LPSTR Secure;
+};

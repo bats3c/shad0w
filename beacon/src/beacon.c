@@ -7,7 +7,7 @@
 
 // main header file
 
-#include "core.h"
+// #include "core.h"
 #include "beacon.h"
 
 // dynamic header file, contains all info for callback
