@@ -187,6 +187,8 @@ void main()
             if (!pszOutBuffer)
             {
                 printf("Out of memory\n");
+                free(pszOutBuffer);
+
                 break;
             }
 
@@ -197,6 +199,8 @@ void main()
             if (!WinHttpReadData( hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded))
             {
                 // been an error
+                free(pszOutBuffer);
+
                 return FALSE;
             }
             else
@@ -205,7 +209,6 @@ void main()
             }
 
             // free the memory allocated to the buffer.
-
             free(pszOutBuffer);
 
         } while (dwSize > 0);
