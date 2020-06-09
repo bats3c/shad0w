@@ -7,3 +7,4 @@
 #define STRING_WINHTTP_RECVRES "WinHttpReceiveResponse"
 #define STRING_WINHTTP_DATAAVA "WinHttpQueryDataAvailable"
 #define STRING_WINHTTP_READATA "WinHttpReadData"
+#define STRING_WINHTTP_CLOSEH  "WinHttpCloseHandle"
