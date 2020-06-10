@@ -15,7 +15,6 @@ USERCD_EXEC_ID = 0x3000
 MIMIKATZ_BIN = "/root/shad0w/bin/mimikatz.x64.exe"
 
 # did the command error
-
 ERROR = False
 error_list = ""
 
@@ -26,11 +25,18 @@ def error(message):
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
-def exit(status=0, message=None): 
+def exit(status=0, message=None):
     if message != None: print(message)
     return
 
 def mimikatz_callback(shad0w, data):
+    data = data.replace(".#####.", "\033[1;32m.#####.\033[0m")
+    data = data.replace(".## ^ ##.", "\033[1;32m.##\033[0m \033[1;39m^\033[0m \033[1;32m##.\033[0m")
+    data = data.replace("## / \\ ##", "\033[1;32m##\033[0m \033[1;39m/ \\\033[1;32m \033[1;32m##\033[0m")
+    data = data.replace("## \\ / ##", "\033[1;32m##\033[0m \033[1;39m\\ /\033[1;32m \033[1;32m##\033[0m")
+    data = data.replace("'## v ##'", "\033[1;32m'##\033[0m \033[1;39mv\033[1;32m \033[1;32m##'\033[0m")
+    data = data.replace("'#####'", "\033[1;32m'#####'\033[0m")
+
     print(data)
 
     return ""
@@ -41,7 +47,7 @@ def main(shad0w, args):
     if shad0w.current_beacon is None:
         shad0w.debug.log("ERROR: No active beacon", log=True)
         return
-    
+
     # usage examples
     usage_examples = """
 
