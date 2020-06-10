@@ -25,6 +25,8 @@ char* changedir(char* Dir);
 
 LPVOID ReportExecutionFail();
 
+char* decrypt_string(char* string, int key);
+
 typedef void (WINAPI * RtlGetVersion_) (OSVERSIONINFOEXW *);
 
 struct BasicUserInfo

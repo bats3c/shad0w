@@ -52,12 +52,14 @@ typedef struct _STARTUPINFOEXA {
 
 NTSTATUS __stdcall _LdrLoadDll(PWSTR SearchPath OPTIONAL, PULONG DllCharacteristics OPTIONAL, PUNICODE_STRING DllName, PVOID *BaseAddress);
 
-typedef void (WINAPI * LdrLoadDll_) (PWSTR SearchPath OPTIONAL, 
-                                     PULONG DllCharacteristics OPTIONAL, 
-                                     PUNICODE_STRING DllName, 
+typedef void (WINAPI * LdrLoadDll_) (PWSTR SearchPath OPTIONAL,
+                                     PULONG DllCharacteristics OPTIONAL,
+                                     PUNICODE_STRING DllName,
                                      PVOID *BaseAddress);
 
 LPVOID lAddr;
 char OriginalBytes[50] = {};
 
 BOOL ProcessMitigationActive = TRUE;
+
+char* decrypt_string(char* string, int key);

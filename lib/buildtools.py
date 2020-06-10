@@ -84,29 +84,28 @@ def _crypt_strings():
 
     new_file = ""
 
-    # try:
-    with open("strings.h", "r") as file:
-        data = file.read()
+    try:
+        with open("strings.h", "r") as file:
+            data = file.read()
 
-    for define in data.splitlines():
-        old_val = ''.join(re.findall(r'"(.*?)"', define))
-        var_name = ''.join(re.findall(r'#define(.*?)"', define)).strip(" ")
+        for define in data.splitlines():
+            old_val = ''.join(re.findall(r'"(.*?)"', define))
+            var_name = ''.join(re.findall(r'#define(.*?)"', define)).strip(" ")
 
-        key_name, key = _gen_key(var_name)
-        new_val = _crypt_string(old_val, key).decode()
-        print(f"{old_val} => {new_val} ({key})")
+            key_name, key = _gen_key(var_name)
+            new_val = _crypt_string(old_val, key).decode()
 
-        new_file += f"#define {var_name} \"{new_val}\"\n"
-        new_file += key_name + "\n"
+            new_file += f"#define {var_name} \"{new_val}\"\n"
+            new_file += key_name + "\n"
 
-    with open("strings.h", "w") as file:
-        file.write(new_file)
+        with open("strings.h", "w") as file:
+            file.write(new_file)
 
-    # except Exception as e:
-    #     # there was not a strings.h file
-    #     print(e)
-    #     print("it aint here")
-    #     return
+    except Exception as e:
+        # there was not a strings.h file
+        print(e)
+        print("it aint here")
+        return
 
 
 

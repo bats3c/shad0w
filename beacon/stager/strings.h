@@ -8,3 +8,4 @@
 #define STRING_WINHTTP_DATAAVA "WinHttpQueryDataAvailable"
 #define STRING_WINHTTP_READATA "WinHttpReadData"
 #define STRING_WINHTTP_CLOSEH  "WinHttpCloseHandle"
+#define STRING_NTDLL_LOADDLL   "LdrLoadDll"
