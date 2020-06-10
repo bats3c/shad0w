@@ -14,7 +14,7 @@ WIN_LINK=-L./ -lsyscalls64
 
 WIN_ASM_SOURCES=syscalls64.asm
 
-WIN_C_SOURCES=debug.c base64.c callback.c loader.c main.c
+WIN_C_SOURCES=debug.c base64.c crypt.c callback.c loader.c main.c
 
 WIN_SECURE_DIR=../lib/secure/
 WIN_SECURE_SOURCES=$(WIN_SECURE_DIR)main.c

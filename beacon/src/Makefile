@@ -16,7 +16,7 @@ WIN_FLAGS=-Wl,-Bstatic -lwinhttp -Wl,-Bstatic -lwtsapi32 -Wl,-Bstatic -lsecur32 
 WIN_EXE_OUT=../beacon.exe
 WIN_LIB_OUT=syscalls64.lib
 
-WIN_C_SOURCES=debug.c core.c base64.c beacon.c loader.c
+WIN_C_SOURCES=debug.c core.c base64.c crypt.c beacon.c loader.c
 WIN_ASM_SOURCES=syscalls64.asm
 
 WIN_STDLIB_DIR=../lib/stdlib/
