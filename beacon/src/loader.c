@@ -222,7 +222,6 @@ BOOL SpawnCode(CHAR* Bytes, SIZE_T Size)
         // start the thread
         ResumeThread(pInfo.hThread);
         CloseHandle(pInfo.hThread);
-        
 
     #endif
 
