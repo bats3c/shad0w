@@ -101,10 +101,8 @@ def _crypt_strings():
         with open("strings.h", "w") as file:
             file.write(new_file)
 
-    except Exception as e:
+    except:
         # there was not a strings.h file
-        print(e)
-        print("it aint here")
         return
 
 
