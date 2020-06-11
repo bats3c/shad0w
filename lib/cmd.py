@@ -11,8 +11,11 @@ class Shad0wLexer(RegexLexer):
 
     commands = ("help execute cat mkdir \
                  upload cd elevate beacons exit \
-                 ls rm pwd download whoami mimikatz").split()
-    
+                 ls rm pwd download whoami mimikatz \
+                 rubeus seatbelt sharpwmi sharpchrome \
+                 sharpdpapi sharpup lockless safetykatz \
+                 sharpdump ").split()
+
     lex_style = Style.from_dict({
     'pygments.keyword':   '#FFFFFF',
     })

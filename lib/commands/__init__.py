@@ -14,5 +14,14 @@ __all__ = [
            "cd",
            "whoami",
            "elevate",
-           "mimikatz"
+           "mimikatz",
+           "rubeus",
+           "seatbelt",
+           "sharpwmi",
+           "sharpchrome",
+           "sharpdpapi",
+           "sharpup",
+           "lockless",
+           "safetykatz",
+           "sharpdump"
           ]

