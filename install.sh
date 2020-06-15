@@ -1,9 +1,15 @@
 #!/bin/bash
 
+# install stuff we need
 apt-get update -y
-apt-get install -y git python3.8 python3-pip python3-openssl gcc-mingw-w64 python3.8-dev nasm upx binutils
+apt-get install -y git python3.8 python3-pip python3-openssl gcc-mingw-w64 python3.8-dev nasm upx binutils wget apt-transport-https procps
 python3.8 -m pip install -r /root/shad0w/requirements.txt
-# git clone https://github.com/bats3c/shad0w /root/shad0w
+
+# install dotnet
+wget https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb
+dpkg -i /tmp/packages-microsoft-prod.deb
+apt update -y
+apt install dotnet-sdk-2.2 -y
 
 
 # x86_64-w64-mingw32-gcc test.c -o test.exe -Wl,--pic-executable,-e,main
