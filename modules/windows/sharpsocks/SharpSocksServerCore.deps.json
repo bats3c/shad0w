@@ -1,0 +1,53 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.2/linux-x64",
+    "signature": "345bd74407d4bcdd63b2539c4e83f50fc93c6658"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.2": {},
+    ".NETCoreApp,Version=v2.2/linux-x64": {
+      "SharpSocksServerCore/1.0.0": {
+        "dependencies": {
+          "McMaster.Extensions.CommandLineUtils": "2.3.4"
+        },
+        "runtime": {
+          "SharpSocksServerCore.dll": {}
+        }
+      },
+      "McMaster.Extensions.CommandLineUtils/2.3.4": {
+        "dependencies": {
+          "System.ComponentModel.Annotations": "4.4.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/McMaster.Extensions.CommandLineUtils.dll": {
+            "assemblyVersion": "2.3.4.0",
+            "fileVersion": "2.3.4.0"
+          }
+        }
+      },
+      "System.ComponentModel.Annotations/4.4.1": {}
+    }
+  },
+  "libraries": {
+    "SharpSocksServerCore/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "McMaster.Extensions.CommandLineUtils/2.3.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-IQ33m+TB4Gks1UosGgzX2GAECIOwSLWKWl3dBa+Mo62ZnHlcRGMH7ho9Jgk5GH5Y6K+flHr1MV8V6pnucFiacg==",
+      "path": "mcmaster.extensions.commandlineutils/2.3.4",
+      "hashPath": "mcmaster.extensions.commandlineutils.2.3.4.nupkg.sha512"
+    },
+    "System.ComponentModel.Annotations/4.4.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/8XSRz3cgSSPEdiV6UFhlfk6/FX9P10MAja4XPCyMCz7/0YTqjtCh4e0jjLYOCJL8jK7O/vhtUjYo1TOSuPngQ==",
+      "path": "system.componentmodel.annotations/4.4.1",
+      "hashPath": "system.componentmodel.annotations.4.4.1.nupkg.sha512"
+    }
+  }
+}
