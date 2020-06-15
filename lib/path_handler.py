@@ -26,7 +26,7 @@ class Handler(object):
         # print(request.get_json(force=True))
 
         jdata = request.get_json(force=True)
-        
+
         # print("jdata: ", jdata)
 
         beacon_id, opcode, data = tools.get_data_from_json(jdata)
@@ -34,7 +34,7 @@ class Handler(object):
         # only if were given an id by the beacon
 
         if beacon_id:
-            
+
             # update the ping
             try:
                 self.shad0w.beacons[beacon_id]["last_checkin"]     = str(datetime.now())
@@ -55,7 +55,7 @@ class Handler(object):
                     # inform user
                     self.shad0w.debug.log(f"Beacon ({beacon_id}) received task", log=True)
                     return task
-                
+
                 # check if the data is for the current beacon
                 if beacon_id == self.shad0w.current_beacon:
                     # check if we should display the data
@@ -94,6 +94,9 @@ class Handler(object):
                     # init the new beacons dict
                     self.shad0w.beacons[beacon_id]                 = {}
 
+                    # add the ip to that dict
+                    self.shad0w.beacons[beacon_id]["ip_addr"]      = request.remote_addr
+
                     # increase the beacon count + set beacon num
                     self.shad0w.beacon_count                       += 1
                     self.shad0w.beacons[beacon_id]["num"]          = self.shad0w.beacon_count
@@ -109,7 +112,7 @@ class Handler(object):
                         self.shad0w.beacons[beacon_id]["secure"]       = True
                     else:
                         self.shad0w.beacons[beacon_id]["secure"]       = False
-                        
+
                     self.shad0w.beacons[beacon_id]["last_checkin"]     = str(datetime.now())
                     self.shad0w.beacons[beacon_id]["last_checkin_raw"] = datetime.now()
 
@@ -128,11 +131,11 @@ class Handler(object):
                 else:
                     self.shad0w.debug.log("invalid register request")
                     return self.builder.build(blank=True)
-            
+
             else:
                 self.shad0w.debug.log("invaild http method for register")
                 return self.builder.build(blank=True)
-    
+
     def stage_beacon(self, request):
         # this will be hit when a stager is requesting a beacon. We will need to parse
         # the request for the beacon and generate the correct one, once this is done we
