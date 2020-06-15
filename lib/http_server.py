@@ -35,7 +35,7 @@ def web_blank_page():
 
     if shad0w.mirror is None:
         return phandle.blank_page()
-    
+
     elif shad0w.mirror is not None:
         return shad0w.page_data
 
