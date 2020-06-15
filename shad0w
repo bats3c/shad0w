@@ -24,8 +24,8 @@ fi
 
 if [ $1 = "listen" ]
 then
-    exec sudo docker run -v $(pwd):/root/shad0w/.bridge -p 443:443 -it shad0w $@
+    exec sudo docker run -v $(pwd):/root/shad0w/.bridge -p 443:443 -p 80:8080 -p 43334:43334 -it shad0w $@
     exit
 fi
 
-exec sudo docker run -v $(pwd):/root/shad0w/.bridge -p 443:443 -it shad0w $@
+exec sudo docker run -v $(pwd):/root/shad0w/.bridge -p 443:443 -p 80:8080 -p 43334:43334 -it shad0w $@
