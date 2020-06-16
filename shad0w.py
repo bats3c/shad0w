@@ -140,12 +140,12 @@ if __name__ == '__main__':
     if (mode != "listen") and (mode != "beacon") and (mode != "update"):
         first_parser.print_help()
         exit(-1)
-    
+
     # first check if we need to update
     if mode == "update":
         print("Updating...")
         os.system("git pull")
-    
+
     # set the arguments for the listen
     if mode == "listen":
         listen_parser = argparse.ArgumentParser(prog="listen")
@@ -162,7 +162,7 @@ if __name__ == '__main__':
         # start the C2 listening
         shad0w = Shad0wC2(args)
         asyncio.run(shad0w.start())
-    
+
     # set the arguments for creating the beacon
     if mode == "beacon":
         beacon_parser = argparse.ArgumentParser(prog="beacon")

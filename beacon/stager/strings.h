@@ -9,3 +9,5 @@
 #define STRING_WINHTTP_READATA "WinHttpReadData"
 #define STRING_WINHTTP_CLOSEH  "WinHttpCloseHandle"
 #define STRING_NTDLL_LOADDLL   "LdrLoadDll"
+#define STRING_KERNEL32_SPMP   "SetProcessMitigationPolicy"
+#define STRING_KERNEL32_CPROC  "GetCurrentProcess"
