@@ -12,7 +12,7 @@ __description__ = "A C# port of various PowerUp functionality (performs some pri
 USERCD_EXEC_ID = 0x3000
 
 # location of sharpup binary
-SHARPUP_BIN = "/root/shad0w/bin/SharpUp.x86.exe"
+SHARPUP_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SharpUp.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):

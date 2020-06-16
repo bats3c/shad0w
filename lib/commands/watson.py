@@ -12,7 +12,7 @@ __description__ = "Enumerate missing KBs and suggest exploits for PrivESC , by @
 USERCD_EXEC_ID = 0x3000
 
 # location of watson binary
-WATSON_BIN = "/root/shad0w/bin/Watson.x86.exe"
+WATSON_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Watson.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):

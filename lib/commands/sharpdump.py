@@ -12,7 +12,7 @@ __description__ = "A tool to create a minidump of a process"
 USERCD_EXEC_ID = 0x3000
 
 # location of sharpdump binary
-SHARPDUMP_BIN = "/root/shad0w/bin/SharpDump.x86.exe"
+SHARPDUMP_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SharpDump.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):
