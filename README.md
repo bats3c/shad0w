@@ -23,13 +23,11 @@ shad0w is a post exploitation framework designed to operate covertly on heavily 
 - Interact with the file system
 - Configurable C2 callback jitter
 
-#### Interface
+#### Modules
 
-- Asynchronous command line
-- Auto complete
-- Up/Down history
-- Reverse command search
-- Syntax highlighting
+- [GhostPack](https://github.com/GhostPack)
+- [mimikatz](https://github.com/gentilkiwi/mimikatz)
+- [SharpSocks](https://github.com/nettitude/SharpSocks)
 
 ### Coming Soon
 

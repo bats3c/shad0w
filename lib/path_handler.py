@@ -64,7 +64,6 @@ class Handler(object):
 
                 # another session has returned data
                 if beacon_id != self.shad0w.current_beacon:
-                    print("other")
                     return task
 
             except:

@@ -60,3 +60,6 @@ typedef BOOLAPI (WINAPI * WinHttpReadData_) (
 typedef BOOLAPI (WINAPI * WinHttpCloseHandle_) (
     IN HINTERNET hInternet
 );
+
+typedef HANDLE (WINAPI * GetCurrentProcess_) (
+);
