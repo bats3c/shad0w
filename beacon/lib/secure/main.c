@@ -1,7 +1,9 @@
 #include <windows.h>
+#include <winhttp.h>
 #include <stdio.h>
 
 #include "main.h"
+#include "imports.h"
 #include "../../build/strings.h"
 
 NTSTATUS __stdcall _LdrLoadDll(PWSTR SearchPath OPTIONAL, PULONG DllCharacteristics OPTIONAL, PUNICODE_STRING DllName, PVOID *BaseAddress)
@@ -82,7 +84,9 @@ BOOL InitSecurity()
     // set our policys
     SigPolicy.MicrosoftSignedOnly = 1;
 
-    if (!SetProcessMitigationPolicy(ProcessSignaturePolicy, &SigPolicy, sizeof(SigPolicy)))
+    SetProcessMitigationPolicy_ rSetProcessMitigationPolicy = (SetProcessMitigationPolicy_)GetProcAddress(LoadLibrary("kernel32.dll"), decrypt_string(STRING_KERNEL32_SPMP, STRING_KERNEL32_SPMP_KEY));
+
+    if (!rSetProcessMitigationPolicy(ProcessSignaturePolicy, &SigPolicy, sizeof(SigPolicy)))
     {
 		// we failed to set it, it means we are probly on a system that does not support it
         // we still have other security mitigations active tho so lets stay alive and rely on them
