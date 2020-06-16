@@ -91,6 +91,7 @@ void main()
     char*     b64_out;
     FILE*     write_ptr;
     LPCWSTR*  ResBuffer;
+    DWORD     BufferSize;
     LPCWSTR   ReqBuffer[MAX_PATH * 3];
     HINTERNET hSession, hConnect, hRequest = NULL;
 
@@ -160,7 +161,8 @@ void main()
         DWORD dwDownloaded = 0;
         LPSTR pszOutBuffer;
 
-        ResBuffer = "";
+        BufferSize = 1000;
+        ResBuffer  = malloc(BufferSize);
 
         do
         {
@@ -205,6 +207,11 @@ void main()
             }
             else
             {
+                if ((strlen(ResBuffer) + strlen(pszOutBuffer)) > BufferSize)
+                {
+                    ResBuffer = realloc(ResBuffer, (strlen(ResBuffer) + strlen(pszOutBuffer)));
+                }
+
                 asprintf(&ResBuffer, "%s%s", ResBuffer, pszOutBuffer);
             }
 

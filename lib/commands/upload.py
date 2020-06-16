@@ -32,7 +32,10 @@ def exit(status=0, message=None):
 def upload_callback(shad0w, data):
     global FILE_TO_UPLOAD, FILE_DATA
 
-    shad0w.debug.good(f"Uploading '{FILE_TO_UPLOAD}' ({len(FILE_DATA)} bytes)")
+    if len(data) == 0:
+        shad0w.debug.good(f"Uploading '{FILE_TO_UPLOAD}' ({len(FILE_DATA)} bytes)")
+    else:
+        print(data.strip())
 
     return base64.b64encode(FILE_DATA)
 
