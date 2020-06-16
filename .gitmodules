@@ -1,0 +1,3 @@
+[submodule "bin/SharpCollection"]
+	path = bin/SharpCollection
+	url = https://github.com/Flangvik/SharpCollection

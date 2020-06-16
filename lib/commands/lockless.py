@@ -12,7 +12,7 @@ __description__ = "A tool that allows for the enumeration of open file handles a
 USERCD_EXEC_ID = 0x3000
 
 # location of lockless binary
-LOCKLESS_BIN = "/root/shad0w/bin/LockLess.x86.exe"
+LOCKLESS_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/LockLess.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):

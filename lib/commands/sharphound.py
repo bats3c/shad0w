@@ -12,7 +12,7 @@ __description__ = "C# Rewrite of the BloodHound3 Ingestor, targeted for NET 4.5"
 USERCD_EXEC_ID = 0x3000
 
 # location of sharphound binary
-SHARPHOUND_BIN = "/root/shad0w/bin/SharpHound3.x86.exe"
+SHARPHOUND_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SharpHound.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):

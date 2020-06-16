@@ -25,5 +25,6 @@ __all__ = [
            "safetykatz",
            "sharpdump",
            "sharpsocks",
-           "sharphound"
+           "sharphound",
+           "watson"
           ]
