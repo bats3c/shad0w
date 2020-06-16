@@ -185,8 +185,10 @@ def write_and_bridge(filename, rcode):
     # might change this?
     os.chdir("/root/shad0w/.bridge")
 
-    # remove the old beacon file
-    os.unlink("/root/shad0w/beacon/beacon.exe")
+    # remove the old beacon file, this wont always be the name though
+    try:
+        os.unlink("/root/shad0w/beacon/beacon.exe")
+    except FileNotFoundError: pass
 
     with open(filename, 'wb') as file:
         file.write(rcode)

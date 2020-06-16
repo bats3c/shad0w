@@ -23,7 +23,7 @@ def random_string():
 
     for _ in range(0, 10):
         rstring += random.choice(alphabet)
-    
+
     return rstring
 
 def format_shellcode(shellcode):
@@ -47,7 +47,7 @@ def generate(raw_shellcode):
 
     hex_shellcode = format_shellcode(raw_shellcode)
 
-    return TEMPLATE % (windef, wintype, windef, shellcode, 
-                       hex_shellcode, baseaddr, wintype, shellcode, 
-                       shellcode, baseaddr, shellcode, wintype, 
+    return TEMPLATE % (windef, wintype, windef, shellcode,
+                       hex_shellcode, baseaddr, wintype, shellcode,
+                       shellcode, baseaddr, shellcode, wintype,
                        baseaddr)
