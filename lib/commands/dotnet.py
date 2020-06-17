@@ -5,6 +5,7 @@
 from lib import buildtools
 
 __description__ = "Get the installed .NET versions"
+__author__ = "@_batsec_"
 
 EXEC_ID = 0x3000
 
