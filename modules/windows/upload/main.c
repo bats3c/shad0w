@@ -227,6 +227,9 @@ void main()
 
     b64_out = base64_decode((const char*)ResBuffer, out_len - 1, &out_len);
 
+    // free up the buffer
+    free(ResBuffer);
+
     if (ABS_PATH)
     {
         write_ptr = fopen(FILENAME,"wb");
