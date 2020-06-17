@@ -2,10 +2,6 @@
 # Determine the dotnet versions installed on a system
 #
 
-import os
-import base64
-import argparse
-
 from lib import buildtools
 
 __description__ = "Get the installed .NET versions"
