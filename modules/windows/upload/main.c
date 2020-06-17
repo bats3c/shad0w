@@ -252,6 +252,8 @@ void main()
 
     printf("\033[1;32m[+]\033[0m File Uploaded.\n");
 
+    free(b64_out);
+
     // clean up the handles
     WinHttpCloseHandle(hRequest);
     WinHttpCloseHandle(hSession);
