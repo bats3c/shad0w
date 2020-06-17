@@ -91,6 +91,7 @@ void main()
     char*     b64_out;
     FILE*     write_ptr;
     LPCWSTR*  ResBuffer;
+    LPCSTR    Cwd, Path;
     DWORD     BufferSize;
     LPCWSTR   ReqBuffer[MAX_PATH * 3];
     HINTERNET hSession, hConnect, hRequest = NULL;
@@ -234,9 +235,9 @@ void main()
     {
         write_ptr = fopen(FILENAME,"wb");
     } else {
-        LPCSTR Cwd, Path;
 
         Cwd = (LPCSTR)malloc(MAX_PATH);
+        Path = (LPCSTR)malloc(MAX_PATH + strlen(FILENAME));
 
         if (GetCurrentDirectory(MAX_PATH, Cwd) == 0)
         {
@@ -252,6 +253,9 @@ void main()
 
     printf("\033[1;32m[+]\033[0m File Uploaded.\n");
 
+    // free the buffers
+    free(Cwd);
+    free(Path);
     free(b64_out);
 
     // clean up the handles
