@@ -15,7 +15,7 @@ class Shad0wLexer(RegexLexer):
                  rubeus seatbelt sharpwmi sharpchrome \
                  sharpdpapi sharpup lockless safetykatz \
                  sharpdump sharpsocks sharphound watson \
-                 dotnet ").split()
+                 dotnet meterpreter").split()
 
     lex_style = Style.from_dict({
     'pygments.keyword':   '#FFFFFF',
