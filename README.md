@@ -45,7 +45,7 @@ shad0w is a post exploitation framework designed to operate covertly on heavily 
 
 To install shad0w run the two commands below, making sure you already have docker installed on your system.
 
-    $ git clone https://github.com/bats3c/shad0w.git && cd shad0w
+    $ git clone --recurse-submodules https://github.com/bats3c/shad0w.git && cd shad0w
     $ sudo ./shad0w install
 
 ### Usage

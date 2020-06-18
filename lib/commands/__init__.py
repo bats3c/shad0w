@@ -26,5 +26,7 @@ __all__ = [
            "sharpdump",
            "sharpsocks",
            "sharphound",
-           "watson"
+           "watson",
+           "dotnet",
+           "meterpreter"
           ]

@@ -9,6 +9,7 @@ import argparse
 from lib import buildtools
 
 __description__ = "Upload a file to the target"
+__author__ = "@_batsec_"
 
 EXEC_ID = 0x3000
 
@@ -32,7 +33,10 @@ def exit(status=0, message=None):
 def upload_callback(shad0w, data):
     global FILE_TO_UPLOAD, FILE_DATA
 
-    shad0w.debug.good(f"Uploading '{FILE_TO_UPLOAD}' ({len(FILE_DATA)} bytes)")
+    if len(data) == 0:
+        shad0w.debug.good(f"Uploading '{FILE_TO_UPLOAD}' ({len(FILE_DATA)} bytes)")
+    else:
+        print(data.strip())
 
     return base64.b64encode(FILE_DATA)
 
@@ -101,10 +105,10 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
             FILE_DATA = file.read()
     except:
         shad0w.debug.error(f"File {args.file} does not exist")
-    
-    # make this variable global so the call back can access it 
+
+    # make this variable global so the call back can access it
     FILE_TO_UPLOAD = args.file
-    
+
     # change back to our dir
     os.chdir(shad0w_cwd)
 

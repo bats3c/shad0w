@@ -12,6 +12,7 @@ from lib import auxiliary
 from lib import shellcode
 
 __description__ = "Execute a .NET assembly, EXE, DLL, VBS, JS or XSL file in memory on the target"
+__author__ = "@_batsec_"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

@@ -5,6 +5,7 @@
 from prettytable import PrettyTable
 
 __description__ = "Interact with or display current beacons"
+__author__ = "@_batsec_"
 
 def _list_beacons(shad0w):
     # i have gcse english, i gonna use it
