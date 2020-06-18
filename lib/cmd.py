@@ -14,7 +14,8 @@ class Shad0wLexer(RegexLexer):
                  ls rm pwd download whoami mimikatz \
                  rubeus seatbelt sharpwmi sharpchrome \
                  sharpdpapi sharpup lockless safetykatz \
-                 sharpdump sharpsocks sharphound watson").split()
+                 sharpdump sharpsocks sharphound watson \
+                 dotnet ").split()
 
     lex_style = Style.from_dict({
     'pygments.keyword':   '#FFFFFF',
