@@ -7,6 +7,7 @@ import argparse
 from lib import shellcode
 
 __description__ = "Execute mimikatz commands in memory on the target"
+__author__ = "@_batsec_, @gentilkiwi"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

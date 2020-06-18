@@ -7,12 +7,13 @@ import argparse
 from lib import shellcode
 
 __description__ = "A C# port of some DPAPI functionality from mimikatz"
+__author__ = "@_batsec_, @harmj0y"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000
 
 # location of sharpdpapi binary
-SHARPDPAPI_BIN = "/root/shad0w/bin/SharpDPAPI.x86.exe"
+SHARPDPAPI_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SharpDPAPI.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):

@@ -7,12 +7,13 @@ import argparse
 from lib import shellcode
 
 __description__ = "A toolset for raw Kerberos interaction and abuses"
+__author__ = "@_batsec_, @harmj0y"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000
 
 # location of rubeus binary
-RUBEUS_BIN = "/root/shad0w/bin/Rubeus.x86.exe"
+RUBEUS_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Rubeus.exe"
 
 # did the command error
 ERROR = False

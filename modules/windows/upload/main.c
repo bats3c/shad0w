@@ -91,6 +91,8 @@ void main()
     char*     b64_out;
     FILE*     write_ptr;
     LPCWSTR*  ResBuffer;
+    LPCSTR    Cwd, Path;
+    DWORD     BufferSize;
     LPCWSTR   ReqBuffer[MAX_PATH * 3];
     HINTERNET hSession, hConnect, hRequest = NULL;
 
@@ -160,7 +162,8 @@ void main()
         DWORD dwDownloaded = 0;
         LPSTR pszOutBuffer;
 
-        ResBuffer = "";
+        BufferSize = 1000;
+        ResBuffer  = malloc(BufferSize);
 
         do
         {
@@ -205,6 +208,11 @@ void main()
             }
             else
             {
+                if ((strlen(ResBuffer) + strlen(pszOutBuffer)) > BufferSize)
+                {
+                    ResBuffer = realloc(ResBuffer, (strlen(ResBuffer) + strlen(pszOutBuffer)));
+                }
+
                 asprintf(&ResBuffer, "%s%s", ResBuffer, pszOutBuffer);
             }
 
@@ -220,13 +228,16 @@ void main()
 
     b64_out = base64_decode((const char*)ResBuffer, out_len - 1, &out_len);
 
+    // free up the buffer
+    free(ResBuffer);
+
     if (ABS_PATH)
     {
         write_ptr = fopen(FILENAME,"wb");
     } else {
-        LPCSTR Cwd, Path;
 
         Cwd = (LPCSTR)malloc(MAX_PATH);
+        Path = (LPCSTR)malloc(MAX_PATH + strlen(FILENAME));
 
         if (GetCurrentDirectory(MAX_PATH, Cwd) == 0)
         {
@@ -241,6 +252,11 @@ void main()
     fwrite(b64_out, b64_len, 1, write_ptr);
 
     printf("\033[1;32m[+]\033[0m File Uploaded.\n");
+
+    // free the buffers
+    free(Cwd);
+    free(Path);
+    free(b64_out);
 
     // clean up the handles
     WinHttpCloseHandle(hRequest);
