@@ -27,5 +27,6 @@ __all__ = [
            "sharpsocks",
            "sharphound",
            "watson",
-           "dotnet"
+           "dotnet",
+           "psh"
           ]
