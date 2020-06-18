@@ -62,9 +62,9 @@ def main(shad0w, args):
     parser.error = error
 
     # setup the args, set default='' to show help message when missing
-    parser.add_argument("--port", nargs='+', required=True, help="Port you would like metasploit to call")
-    parser.add_argument("--host", nargs='+', required=True, help="Host/IP you would like metasploit to call")
-    parser.add_argument("--payload",  nargs='+', help="What metasploit payload you would like to deploy , default: windows/x64/meterpreter_reverse_tcp",required=False, default="windows/x64/meterpreter_reverse_tcp")
+    parser.add_argument("--port", required=True, help="Port you would like metasploit to call")
+    parser.add_argument("--host", required=True, help="Host/IP you would like metasploit to call")
+    parser.add_argument("--payload", help="What metasploit payload you would like to deploy , default: windows/x64/meterpreter/reverse_tcp",required=False, default="windows/x64/meterpreter/reverse_tcp")
 
     # make sure we dont die from weird args
     try:
