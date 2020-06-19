@@ -8,7 +8,7 @@ def get_commands():
     commandList = []
     for r, d, f in os.walk("/root/shad0w/lib/commands/"):
         for file in f:
-            if file.endswith(".py") and "_" not in file and :
+            if file.endswith(".py") and "_" not in file:
                 commandList.append(file.replace(".py",""))
     return commandList
 
