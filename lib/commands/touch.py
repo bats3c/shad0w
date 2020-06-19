@@ -1,10 +1,14 @@
-# 
+#
 # Create a file
-# 
+#
 
 import argparse
 
 from lib import buildtools
+
+
+__author__ = "@_batsec_"
+__description__ = "Create empty files on target"
 
 EXEC_ID = 0x3000
 
@@ -17,7 +21,7 @@ def error(message):
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
-def exit(status=0, message=None): 
+def exit(status=0, message=None):
     if message != None: print(message)
     return
 
@@ -25,7 +29,7 @@ def main(shad0w, args):
 
     # save the raw args
     raw_args = args
-    
+
     # check we actually have a beacon
     if shad0w.current_beacon is None:
         shad0w.debug.error("ERROR: No active beacon")
@@ -37,11 +41,11 @@ Example:
 
 touch "C:\\Users\\thejoker\\hello.txt"
 """
-    
+
     parse = argparse.ArgumentParser(prog='touch',
                                 formatter_class=argparse.RawDescriptionHelpFormatter,
                                 epilog=usage_examples)
-    
+
     # keep it behaving nice
     parse.exit = exit
     parse.error = error

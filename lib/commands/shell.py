@@ -4,6 +4,9 @@
 # spawn cmd.exe with arguments given
 #
 
+__description__ = "Execute shell commands via cmd.exe on target"
+__author__ = "@_batsec_"
+
 
 # identify task as cmd.exe spawn
 
