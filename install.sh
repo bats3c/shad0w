@@ -2,7 +2,7 @@
 
 # install stuff we need
 apt-get update -y
-apt-get install -y python3.8 python3-pip python3-openssl gcc-mingw-w64 python3.8-dev nasm upx binutils wget apt-transport-https procps mono-complete less
+apt-get install -y python3.8 python3-pip python3-openssl gcc-mingw-w64 python3.8-dev nasm upx binutils wget apt-transport-https procps mono-complete less metasploit-framework
 python3.8 -m pip install -r /root/shad0w/requirements.txt
 
 # install dotnet
@@ -20,3 +20,4 @@ apt install dotnet-sdk-2.2 -y
 # sudo docker rmi <image>
 # sudo docker run -v $(pwd):/root/shad0w -it shad0w -d
 # sudo docker run -v $(pwd):/root/shad0w/bridge -it shad0w -d
+
