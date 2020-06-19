@@ -93,6 +93,9 @@ class Handler(object):
                     # init the new beacons dict
                     self.shad0w.beacons[beacon_id]                 = {}
 
+                    # setup the file serve dict
+                    self.shad0w.beacons[beacon_id]["serve"]        = {}
+
                     # add the ip to that dict
                     self.shad0w.beacons[beacon_id]["ip_addr"]      = request.remote_addr
 
@@ -179,7 +182,7 @@ class Handler(object):
             # give the shellcode to the stager
             self.shad0w.debug.log(f"Sending stage {self.shad0w.endpoint} --> {request.remote_addr} ({len(rcode)} bytes)", log=True)
             return rcode
-        
+
         else:
             self.shad0w.debug.log("invaild http method for stager")
             return self.builder.build(blank=True)

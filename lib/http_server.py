@@ -60,11 +60,18 @@ def web_stage_beacon():
 
     return phandle.stage_beacon(request)
 
-@app.errorhandler(404) 
+@app.errorhandler(404)
 def not_found(e):
+
+    try:
+        for obj in shad0w.beacons[shad0w.current_beacon]["serve"]:
+            if obj == request.path:
+                return shad0w.beacons[shad0w.current_beacon]["serve"][obj]
+    except: pass
+
     path = shad0w.mirror + request.path
     shad0w.debug.log(f"proxying call to {path}")
-    
+
     data, headers, status_code = mirror.mirror_site(shad0w, path, dynamic=True, method=request.method, headers=request.headers,
                                                     data=request.get_data(), cookies=request.cookies)
 
