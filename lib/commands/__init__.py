@@ -1,33 +1,3 @@
-__all__ = [
-           "help",
-           "beacons",
-           "shell",
-           "exit",
-           "execute",
-           "ls",
-           "cat",
-           "mkdir",
-           "rm",
-           "pwd",
-           "upload",
-           "download",
-           "cd",
-           "whoami",
-           "elevate",
-           "mimikatz",
-           "rubeus",
-           "seatbelt",
-           "sharpwmi",
-           "sharpchrome",
-           "sharpdpapi",
-           "sharpup",
-           "lockless",
-           "safetykatz",
-           "sharpdump",
-           "sharpsocks",
-           "sharphound",
-           "watson",
-           "dotnet",
-           "meterpreter",
-           "psh"
-          ]
+from lib import tools
+
+__all__ = tools.get_commands()

