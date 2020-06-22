@@ -149,21 +149,24 @@ BOOL SpawnCode(CHAR* Bytes, SIZE_T Size)
     // start the thread to read from the stdout pipe
     CreateThread(NULL, 0, ReadFromPipe, g_hChildStd_OUT_Rd, 0, &threadId);
 
-    #ifdef SECURE
-        // get the size of the list
-        InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &tSize);
+    // This messes with other tools.
+    // TODO: implement a 'unblockdlls' command so we can keep the same functionality
 
-        // alloc the memory for it
-        sInfo.lpAttributeList = (LPPROC_THREAD_ATTRIBUTE_LIST)malloc(tSize);
+    // #ifdef SECURE
+    //     // get the size of the list
+    //     InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &tSize);
 
-        // now put the attributes in
-        InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &tSize);
+    //     // alloc the memory for it
+    //     sInfo.lpAttributeList = (LPPROC_THREAD_ATTRIBUTE_LIST)malloc(tSize);
 
-        DWORD64 policy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON;
+    //     // now put the attributes in
+    //     InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &tSize);
 
-        // now update our attributes
-        UpdateProcThreadAttribute(sInfo.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, &policy, sizeof(policy), NULL, NULL);
-    #endif
+    //     DWORD64 policy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON;
+
+    //     // now update our attributes
+    //     UpdateProcThreadAttribute(sInfo.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, &policy, sizeof(policy), NULL, NULL);
+    // #endif
 
     // use syscalls if we are in secure mode
     #ifdef SECURE
