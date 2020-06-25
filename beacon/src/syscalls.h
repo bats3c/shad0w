@@ -1,75 +1,58 @@
-#include <winternl.h>
+#include <windows.h>
 
-/******************************************/
-/* Windows 10                             */
-/******************************************/
-EXTERN_C NTSTATUS NtWriteVirtualMemory10(
-    HANDLE hProcess, 
-    PVOID lpBaseAddress, 
-    PVOID lpBuffer, 
-    SIZE_T NumberOfBytesToRead, 
-    PSIZE_T NumberOfBytesRead
-);
+#define SYSCALL_STUB_SIZE 23
+#define NTDLL_PATH "C:\\Windows\\System32\\ntdll.dll"
 
-EXTERN_C NTSTATUS NtQueueApcThread10(
-    HANDLE ThreadHandle,
-    PIO_APC_ROUTINE ApcRoutine,
-    PVOID NormalContext,
-    PVOID SystemArgument1,
-    PVOID SystemArgument2 
-);
-
-EXTERN_C NTSTATUS NtAllocateVirtualMemory10(
-    HANDLE ProcessHandle, 
-    PVOID *BaseAddress,
+typedef NTSTATUS (NTAPI * _NtAllocateVirtualMemory) (
+    HANDLE    ProcessHandle,
+    PVOID     *BaseAddress,
     ULONG_PTR ZeroBits,
-    PSIZE_T RegionSize,
-    ULONG AllocationType,
-    ULONG Protect
+    PSIZE_T   RegionSize,
+    ULONG     AllocationType,
+    ULONG     Protect
 );
 
-EXTERN_C NTSTATUS NtProtectVirtualMemory10(
+typedef NTSTATUS (NTAPI * _NtProtectVirtualMemory) (
     HANDLE ProcessHandle,
     PVOID *BaseAddress,
     PSIZE_T NumberOfBytesToProtect,
     ULONG NewAccessProtection,
     PULONG OldAccessProtection
 );
-/******************************************/
 
-/******************************************/
-/* Windows 8.1                            */
-/******************************************/
-EXTERN_C NTSTATUS NtWriteVirtualMemory81(
-    HANDLE hProcess, 
-    PVOID lpBaseAddress, 
-    PVOID lpBuffer, 
-    SIZE_T NumberOfBytesToRead, 
-    PSIZE_T NumberOfBytesRead
+typedef NTSTATUS (NTAPI * _NtWriteVirtualMemory) (
+    HANDLE ProcessHandle,
+    PVOID  BaseAddress,
+    PVOID  Buffer,
+    ULONG  BufferSize,
+    PULONG NumberOfBytesWritten
 );
 
-EXTERN_C NTSTATUS NtQueueApcThread81(
+typedef NTSTATUS (NTAPI * _NtQueueApcThread) (
     HANDLE ThreadHandle,
     PIO_APC_ROUTINE ApcRoutine,
     PVOID NormalContext,
     PVOID SystemArgument1,
-    PVOID SystemArgument2 
+    PVOID SystemArgument2
 );
 
-EXTERN_C NTSTATUS NtAllocateVirtualMemory81(
-    HANDLE ProcessHandle, 
-    PVOID *BaseAddress,
-    ULONG_PTR ZeroBits,
-    PSIZE_T RegionSize,
-    ULONG AllocationType,
-    ULONG Protect
-);
 
-EXTERN_C NTSTATUS NtProtectVirtualMemory81(
-    HANDLE ProcessHandle,
-    PVOID *BaseAddress,
-    PSIZE_T NumberOfBytesToProtect,
-    ULONG NewAccessProtection,
-    PULONG OldAccessProtection
-);
-/******************************************/
+struct NtInfo
+{
+	PIMAGE_EXPORT_DIRECTORY pExprtDir;
+	LPVOID					lpRawData;
+	PIMAGE_SECTION_HEADER	pTextSection;
+	PIMAGE_SECTION_HEADER	pRdataSection;
+	CHAR	  				cSyscallStub;
+};
+
+struct Syscalls
+{
+	_NtAllocateVirtualMemory NtAllocateVirtualMemory;
+    _NtProtectVirtualMemory  NtProtectVirtualMemory;
+    _NtWriteVirtualMemory    NtWriteVirtualMemory;
+    _NtQueueApcThread        NtQueueApcThread;
+
+};
+
+extern CHAR SyscallStub[SYSCALL_STUB_SIZE];

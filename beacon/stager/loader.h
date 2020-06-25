@@ -20,22 +20,3 @@ typedef struct _STARTUPINFOEXA {
   STARTUPINFOA                 StartupInfo;
   LPPROC_THREAD_ATTRIBUTE_LIST lpAttributeList;
 } STARTUPINFOEXA, *LPSTARTUPINFOEXA;
-
-typedef void (WINAPI * RtlGetVersion_) (OSVERSIONINFOEXW *);
-
-NTSTATUS(*NtAllocateVirtualMemory)(
-    HANDLE ProcessHandle, 
-    PVOID *BaseAddress,
-    ULONG_PTR ZeroBits,
-    PSIZE_T RegionSize,
-    ULONG AllocationType,
-    ULONG Protect
-);
-
-NTSTATUS(*NtProtectVirtualMemory)(
-    HANDLE ProcessHandle,
-    PVOID *BaseAddress,
-    PSIZE_T NumberOfBytesToProtect,
-    ULONG NewAccessProtection,
-    PULONG OldAccessProtection
-);
