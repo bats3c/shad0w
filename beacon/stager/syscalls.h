@@ -1,43 +1,38 @@
-#include <winternl.h>
+#include <windows.h>
 
-/******************************************/
-/* Windows 10                             */
-/******************************************/
-EXTERN_C NTSTATUS NtAllocateVirtualMemory10(
-    HANDLE ProcessHandle, 
-    PVOID *BaseAddress,
+#define SYSCALL_STUB_SIZE 23
+#define NTDLL_PATH "C:\\Windows\\System32\\ntdll.dll"
+
+typedef NTSTATUS (NTAPI * _NtAllocateVirtualMemory) (
+    HANDLE    ProcessHandle,
+    PVOID     *BaseAddress,
     ULONG_PTR ZeroBits,
-    PSIZE_T RegionSize,
-    ULONG AllocationType,
-    ULONG Protect
+    PSIZE_T   RegionSize,
+    ULONG     AllocationType,
+    ULONG     Protect
 );
 
-EXTERN_C NTSTATUS NtProtectVirtualMemory10(
+typedef NTSTATUS (NTAPI * _NtProtectVirtualMemory) (
     HANDLE ProcessHandle,
     PVOID *BaseAddress,
     PSIZE_T NumberOfBytesToProtect,
     ULONG NewAccessProtection,
     PULONG OldAccessProtection
 );
-/******************************************/
 
-/******************************************/
-/* Windows 8.1                            */
-/******************************************/
-EXTERN_C NTSTATUS NtAllocateVirtualMemory81(
-    HANDLE ProcessHandle, 
-    PVOID *BaseAddress,
-    ULONG_PTR ZeroBits,
-    PSIZE_T RegionSize,
-    ULONG AllocationType,
-    ULONG Protect
-);
+struct NtInfo
+{
+	PIMAGE_EXPORT_DIRECTORY pExprtDir;
+	LPVOID					lpRawData;
+	PIMAGE_SECTION_HEADER	pTextSection;
+	PIMAGE_SECTION_HEADER	pRdataSection;
+	CHAR	  				cSyscallStub;
+};
 
-EXTERN_C NTSTATUS NtProtectVirtualMemory81(
-    HANDLE ProcessHandle,
-    PVOID *BaseAddress,
-    PSIZE_T NumberOfBytesToProtect,
-    ULONG NewAccessProtection,
-    PULONG OldAccessProtection
-);
-/******************************************/
+struct Syscalls
+{
+	_NtAllocateVirtualMemory NtAllocateVirtualMemory;
+    _NtProtectVirtualMemory  NtProtectVirtualMemory
+};
+
+extern CHAR SyscallStub[SYSCALL_STUB_SIZE];

@@ -32,7 +32,6 @@ def clone_source_files(rootdir="src", builddir="build", asm=False, backmake=Fals
     # why reinvent the wheel? lets jus use cp
     os.system(f"cp {rootdir}/*.c {builddir}/")
     os.system(f"cp {rootdir}/*.h {builddir}/")
-    if asm: os.system(f"cp {rootdir}/*.asm {builddir}/")
     if not backmake: os.system(f"cp {rootdir}/Makefile {builddir}/")
     if backmake: os.system(f"cp {rootdir}/../Makefile {builddir}/")
 
