@@ -567,6 +567,10 @@ BOOL Stdlib(char* Buffer)
         data = changedir(args);
         break;
 
+    case 0x7000:
+        data = getpid();
+        break;
+
     // I have no idea why this doesnt work.
     // case 0x7000:
     //     // rewrite

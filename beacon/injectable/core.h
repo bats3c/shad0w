@@ -22,6 +22,7 @@ char* makedirectory(char* szDirName);
 char* removefile(char* szFileName);
 char* getdir();
 char* changedir(char* Dir);
+char* getpid();
 
 LPVOID ReportExecutionFail();
 

