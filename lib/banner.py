@@ -37,7 +37,70 @@ class Banner(object):
 ░ ░▒  ░ ░ ▒ ░▒░ ░  ▒   ▒▒ ░ ░ ▒  ▒   ░ ▒ ▒░   ▒ ░ ░
 ░  ░  ░   ░  ░░ ░  ░   ▒    ░ ░  ░ ░ ░ ░ ▒    ░   ░
       ░   ░  ░  ░      ░  ░   ░        ░ ░      ░
-                            ░                        
+                            ░
 """
 
-        self.banners = [banner1, banner2, banner3]
+        banner4 = """
+                                  ;^'                               
+                               `~^;-*                               
+                              ~~'^/.~.                              
+                       ';~!!!~,/xxn.,;":,'`.'                       
+                   `;!</~":~-;jnyoz..-   ```,;;;,                   
+     ~"`         ;^|!~;-,,;,,<+tFF{,', '--,,''.`-;;`                
+     {`'-,.    :^~~;_---------"~~;:-,.'-------,'.``~'               
+     ^;``',` ,/,;;---------;^^;,'"-'---'`                   '-,     
+      /"`.` :~``.,-------;~:,"<]n|1,-----"".          `-~^!;^<      
+       ~;-!/;'',-------:;,-[SBMWWg^,-------;!;, `';!/=/;'``";       
+        '",.^_--------_;'1BWWWWWWW"----------;^<=\\^;:,'''`-'        
+         _;I"_------,,;:;IWWWWWWWW.-----------,"":-----,',`         
+          /WR;"'_''':rl<,sWWWWWWWS--------------------,'`           
+          ;NMx;;^;;^TbW$rFWWWWWW0~---------',,-------,`             
+          ';^l=\\!*xxsFhqHRNWWNRA1vv1~''----'``   `,-'`              
+           .yl\\r1xCaaaaCCCIsxnIIInFnI_;,---,.-^"             ':"":` 
+            {jyIaaaaaaaaaaaaFxjxj{fyF~..-----'.~|~,``':;~!^^^;-;r'  
+            ']sFIaCaaaaaaaInyaaaCIynr  '-------'-~|r=/~",'```;~-    
+ ':',-_";;;^!,"vnFICaaaaCFFJCnF1iy*:   ,---------,_:-,,'.``;~.      
+  "~~'`.',,--`  ,txnoFFsehhCU$n'-!`    `,-------------,'';;`        
+     ;~~,```.'` '12PxvUBMM&0A;',-,^,     `'---------,.-~"           
+      "~(]*vv=~`:i&&BMWM&Q3\\-,' ,-'!-       `,--,,'';;,             
+    -HBBBNBR$SSF!fAQDNMGFv^--,'`.-,';.         ```.-`               
+   r0MWWQD0BMMMMMNNNNcv/,----,.; `-,.;,                             
+  ,0NWWWWWWWWWWWWW0$FIK0;---,.!;` ,-,'='                            
+  "QNWWWWNK$DDKK$GhDMBF|.--,.~~,'.`--'"r`                           
+   !NWWWWNBWWWWWWW0kr`.,--,'^;`.'.~'--,~" ```                       
+  ,{BMWWWWWW&DgRQ$F|.,---,'/'", :~- -,.,-*^^^//'                    
+  rIcPMWWWWHKWWM0F^ -----,./ `  ";  `,-';1!~;;;`                    
+ :<$yfKBWWWWB0&RD!`'-----,.^.`    ,^^;""./~~;!;                     
+ ;`(Pjnk0MWWMMRj^ `,'',---':!';", ^!";=]isIe22af;                   
+  ` ;zFxsIIzJ=^/"`.,,   ,-,.~;  `.`\\\\fFoFFIFFosxG,                  
+      `;!^!;"-`  ".'-.   --,.^.   )r|{i[xoVkwwyuz`                  
+                 !,',,   `--''/` `}\\!+kNWWWWWWM0~                   
+                 ,!',-`   `-,':^  "oDMWWWWWWWWWN&-                  
+                  /',-'    '-,'"!`B0NWWWWWWWWWWMBR-                 
+                  ;;',-`    ,--';~N0MWWWWWWWWWWWM&D`                
+                  `|',-'     ---'.&RBMy&WWWWWWWWMB&=                
+                   <.,--     `--,`&Q0KIBWWWWWWWWMN0J                
+                   ;:'--'     .--`"yGAAWWWWWWWWMN&GJ                
+                `,.:;',-.`,"   ,,  ;gKhBMMNkGBD3Kir.                
+              `;r~!";";````"_`"``   'S&&&BiFo1',`                   
+              `;";;;!~|!~;.";/",^!~;";J[1;".                        
+              ~;!!~;~^|!!;';~~-\\!~;_,''.'`""v,                      
+              3crr\\/!\\=\\rrr**;;;^\\"^^!;"_,;*UC                      
+              /CFxuyFFFoynvr~!r~^^~~!^<r)Tuchy                      
+            ~q&PIFnslzlno~-`-;[*+{xlyFFyzxFkx-                      
+          /DBQQR0&000&&D6:'.`'"/+{fnonzsFwbbb~'                     
+        -bBRR0&BBNMMWWW0F``   ,;eFoFepQBMMMB&0)                     
+       ;BBR0&BNMMWWWWWWm1    `,=aU0NWWWWWWWMN&BF                    
+      ~N&R&BNMMWWWWWWWR6^`'','"wUBMWWWWWWWWWWMBN^                   
+   `_-vnohG&MWWWWWWWWR6e!,`,'-^U0BMWWWWWWWWWWWMNP                   
+  "^!^^^^/^"\\eMWWWWMa)~--_:  ,_kBNMWWWWWWWWWWWWMp'                  
+ `^\\<\\/\\rr~!^\\!joz1!^;;;"'   ,:|MNM&UhIsjJ}v)J0Wo;                  
+ `!;-;~~~;^{/^/\\/^^^=;,      .";xNI~~//^^^^^^~^x*;.                 
+  ,;.!";;;~;==!^\\\\!"          ;!=!!^^r=|||=rr|1!~~,                 
+     `""~:.,,"!;'             _^!^^}=^/^!!~~^!^?^/.                 
+                               ^!~v^~~;~;;;!";~~v=                  
+                               `|*!;;`r^~\\!/-.;;;'                  
+                                 '''`  ";;;.                  
+"""
+
+        self.banners = [banner4, banner1, banner2, banner3]
