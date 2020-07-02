@@ -7,7 +7,7 @@ from lib import buildtools
 from lib.templates import exe
 from lib.templates import powershell
 
-formats = ('raw', 'exe', 'psh')
+formats = ('raw', 'exe', 'psh', 'dll', 'rdll', 'inj')
 
 def get_size(filename):
     # get the bytes of the exe
