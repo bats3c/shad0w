@@ -1,5 +1,5 @@
-kill switch in beacon
-migrate with same session
 shinject
 binject
+getpid
 process name as well a pid
+compatible with metasploit callbacks
