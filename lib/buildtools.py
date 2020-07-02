@@ -19,15 +19,15 @@ static_warning = """Static payloads can be very large and much easier to detect.
 For use in droppers, loaders, exploits etc staged payloads are recommended as they are much smaller, so easier to use.
 """
 
-def clone_source_files(rootdir="src", builddir="build", asm=False, backmake=False):
+def clone_source_files(rootdir="src", builddir="build", basedir="/root/shad0w/beacon", asm=False, backmake=False):
     # move the source files of the beacon over
     # to the build directory
 
     # put us in the correct dir (this obviously needs to be inside docker)
-    os.chdir("/root/shad0w/beacon")
+    os.chdir(basedir)
 
     # clean the build dir
-    os.system(f"rm {builddir}/*")
+    os.system(f"rm {builddir}/* 1>/dev/null 2>&1")
 
     # why reinvent the wheel? lets jus use cp
     os.system(f"cp {rootdir}/*.c {builddir}/")
