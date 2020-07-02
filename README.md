@@ -1,9 +1,8 @@
-# shad0w
+# Shad0w C2 Framework
 
 <p align="center">
   <img alt="pwndrop logo" src="shad0w.jpg" />
 </p>
-<!-- [![shad0w](shad0w.jpg)]() -->
 
 [![Project Status](https://img.shields.io/badge/status-BETA-yellow?style=flat-square)]()
 
