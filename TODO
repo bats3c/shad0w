@@ -1,7 +1,3 @@
-syscalls for dll inject
-shinject
-binject
-getpid
 generate beacons at c2 startup an store in memory
 process name as well a pid
 compatible with metasploit callbacks
