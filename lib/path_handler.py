@@ -80,12 +80,13 @@ class Handler(object):
 
             if request.method == "POST":
 
-                username = request.form.get("username")
-                domain   = request.form.get("domain")
-                machine  = request.form.get("machine")
-                arch     = request.form.get("arch")
-                opsystem = request.form.get("os")
-                secure      = request.form.get("secure")
+                username     = request.form.get("username")
+                domain       = request.form.get("domain")
+                machine      = request.form.get("machine")
+                arch         = request.form.get("arch")
+                opsystem     = request.form.get("os")
+                secure       = request.form.get("secure")
+                impersonate  = request.form.get("impersonate")
 
                 if username and machine and domain:
                     beacon_id = tools.generate_beacon_id()
@@ -104,11 +105,16 @@ class Handler(object):
                     self.shad0w.beacons[beacon_id]["num"]          = self.shad0w.beacon_count
 
                     # store basic info about beacon
-                    self.shad0w.beacons[beacon_id]["domain"]       = domain
-                    self.shad0w.beacons[beacon_id]["machine"]      = machine
-                    self.shad0w.beacons[beacon_id]["username"]     = username
-                    self.shad0w.beacons[beacon_id]["arch"]         = arch
-                    self.shad0w.beacons[beacon_id]["os"]           = opsystem
+                    self.shad0w.beacons[beacon_id]["domain"]              = domain
+                    self.shad0w.beacons[beacon_id]["machine"]             = machine
+                    self.shad0w.beacons[beacon_id]["username"]            = username
+                    self.shad0w.beacons[beacon_id]["arch"]                = arch
+                    self.shad0w.beacons[beacon_id]["os"]                  = opsystem
+                    self.shad0w.beacons[beacon_id]["impersonate"]         = None
+
+                    # if we are impersonating a session then tell that beacon
+                    if impersonate is not None:
+                        self.shad0w.beacons[impersonate]["impersonate"] = beacon_id
 
                     if secure == "SECURE":
                         self.shad0w.beacons[beacon_id]["secure"]       = True
@@ -122,10 +128,11 @@ class Handler(object):
                     self.shad0w.beacons[beacon_id]["stay_alive"]   = True
 
                     # let the user know whats happening
-                    if domain != "NULL":
-                        self.shad0w.debug.log(f"Beacon: {domain}\\{username}@{machine} (ARCH: {arch}, OS: {opsystem}, Type: {secure})", log=True)
-                    else:
-                        self.shad0w.debug.log(f"Beacon: {username}@{machine} (ARCH: {arch}, OS: {opsystem}, Type: {secure})", log=True)
+                    if impersonate is None:
+                        if domain != "NULL":
+                            self.shad0w.debug.log(f"Beacon: {domain}\\{username}@{machine} (ARCH: {arch}, OS: {opsystem}, Type: {secure})", log=True)
+                        else:
+                            self.shad0w.debug.log(f"Beacon: {username}@{machine} (ARCH: {arch}, OS: {opsystem}, Type: {secure})", log=True)
 
                     # give the beacon there id, this is how we will identify them now
                     return self.builder.build(beacon_id=beacon_id, id=beacon_id)
