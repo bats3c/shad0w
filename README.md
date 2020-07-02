@@ -1,5 +1,10 @@
 # shad0w
 
+<p align="center">
+  <img alt="pwndrop logo" src="shad0w.jpg" />
+</p>
+<!-- [![shad0w](shad0w.jpg)]() -->
+
 [![Project Status](https://img.shields.io/badge/status-BETA-yellow?style=flat-square)]()
 
 shad0w is a post exploitation framework designed to operate covertly on heavily monitored environments
