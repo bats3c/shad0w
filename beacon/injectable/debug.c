@@ -12,7 +12,5 @@ void DEBUG(const char* text, ...)
     }
     va_end(ap);
 
-    #ifdef DEBUG_MODE
-        printf("[DEBUG] %s\n", string);
-    #endif
+    printf("[DEBUG] %s\n", string); 
 }

