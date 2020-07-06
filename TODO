@@ -1,3 +1,3 @@
 generate beacons at c2 startup an store in memory
-process name as well a pid
+ps
 compatible with metasploit callbacks
