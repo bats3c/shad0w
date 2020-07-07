@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import ssl
 import socket
 import asyncio
@@ -16,12 +17,16 @@ from lib import encryption
 from lib import buildtools
 from lib import mirror
 from lib import payload_format
+from lib import tools
 
 class Shad0wC2(object):
 
     def __init__(self, args):
 
         super(Shad0wC2, self).__init__()
+
+        # payload store
+        self.payloads       = {}
 
         # declare all the vitial variables to run.
         self.addr           = (args['address'], args['port'])
@@ -40,6 +45,9 @@ class Shad0wC2(object):
         self.beacon_count   = 0
         self.current_beacon = None
 
+        # loading screen stuff
+        self.screen_finish  = False
+
         # get the debug/logging stuff ready
         self.debug          = debug.Debug(self.debugv)
 
@@ -51,12 +59,28 @@ class Shad0wC2(object):
 
     def start(self):
 
-        # show the banner
-        banner.Banner()
-
         # mirror a website if we need to
         if self.mirror is not None:
             mirror.mirror_site(self, self.mirror)
+
+        # compile the payloads, this makes execution of modules quicker
+        self.compile_finished = False
+
+        # start the loading banner
+        Thread(target=tools.loading_banner, args=(self,)).start()
+
+        # start threads to do the compiling
+        asyncio.run(tools.compile_and_store_static(self))
+
+        # make sure we are in the rootdir
+        os.chdir("/root/shad0w")
+
+        # make sure the loading screen has finished
+        while self.screen_finish != True:
+            pass
+
+        # show the banner
+        banner.Banner()
 
         # start the http server thread
         # self.debug.log("starting http server thread")
@@ -65,7 +89,7 @@ class Shad0wC2(object):
         thttp.start()
         # asyncio.run(http_server.run_serv(self))
 
-        # start the console thread
+        # start the console
         asyncio.run(self.console.start())
         # tconsole = Thread(target=self.console.start)
         # tconsole.daemon = False
