@@ -607,18 +607,8 @@ BOOL Stdlib(char* Buffer)
         data = getpid();
         break;
 
-    // I have no idea why this doesnt work.
-    // case 0x7000:
-    //     // rewrite
-    //     if (strlen(args) == 0)
-    //     {
-    //         data = whoami(FALSE);
-    //     } else {
-    //         data = whoami(TRUE);
-    //     }
-    //     break;
-
     case 0x8000:
+        data = getps();
         break;
     }
 
