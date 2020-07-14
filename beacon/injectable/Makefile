@@ -13,7 +13,8 @@ WIN_C_SOURCES=debug.c core.c beacon.c syscalls.c loader.c
 WIN_STDLIB_DIR=../lib/stdlib/
 WIN_STDLIB_SOURCES=$(WIN_STDLIB_DIR)listdirs.c $(WIN_STDLIB_DIR)readfile.c \
 				   $(WIN_STDLIB_DIR)makedirectory.c $(WIN_STDLIB_DIR)removefile.c \
-				   $(WIN_STDLIB_DIR)getdir.c $(WIN_STDLIB_DIR)changedir.c $(WIN_STDLIB_DIR)getpid.c
+				   $(WIN_STDLIB_DIR)getdir.c $(WIN_STDLIB_DIR)changedir.c $(WIN_STDLIB_DIR)getpid.c \
+				   $(WIN_STDLIB_DIR)getps.c
 WIN_STDLIB_OUT=stdlib.lib
 
 WIN_STDLIB_FLAGS=-static
