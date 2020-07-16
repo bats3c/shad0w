@@ -79,6 +79,9 @@ def not_found(e):
                 return shad0w.beacons[shad0w.current_beacon]["serve"][obj]
     except: pass
 
+    if shad0w.mirror is None:
+        return ""
+
     path = shad0w.mirror + request.path
     shad0w.debug.log(f"proxying call to {path}")
 
