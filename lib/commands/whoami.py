@@ -32,7 +32,8 @@ def exit(status=0, message=None):
 
 def whoami_callback(shad0w, data):
     if len(data) > 1:
-        shad0w.debug.log(data, log=True, pre=False)
+        print("")
+        shad0w.debug.log(data.strip("\r\n"), log=True, pre=False, end='')
 
     return ""
 
@@ -72,7 +73,7 @@ whoami --privs
 whoami --groups
 """
     
-    parse = argparse.ArgumentParser(prog='ls',
+    parse = argparse.ArgumentParser(prog='whoami',
                                 formatter_class=argparse.RawDescriptionHelpFormatter,
                                 epilog=usage_examples)
     
