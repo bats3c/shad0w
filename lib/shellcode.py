@@ -3,6 +3,18 @@ import donut
 import base64
 import tempfile
 
+from lib.ShellcodeRDI import *
+
+def generate_srdi(file, flags):
+    """ generate shellcode from a reflective dll using sRDI """
+
+    hfunc = HashFunctionName("Entry")
+
+    with open(file, "rb") as file:
+        dll_data = file.read()
+
+    return ConvertToShellcode(dll_data, hfunc, b"None", flags)
+
 def parse_donut_error(data, filename):
     if "Error : File not found." in data:
         print(f"Unable to find '{filename}'")

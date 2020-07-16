@@ -26,36 +26,42 @@ class Shad0wC2(object):
         super(Shad0wC2, self).__init__()
 
         # payload store
-        self.payloads       = {}
+        self.payloads                = {}
 
         # declare all the vitial variables to run.
-        self.addr           = (args['address'], args['port'])
-        self.debugv         = args['debug']
-        self.sslkey         = args['key']
-        self.sslcrt         = args['cert']
+        self.addr                    = (args['address'], args['port'])
+        self.debugv                  = args['debug']
+        self.sslkey                  = args['key']
+        self.sslcrt                  = args['cert']
+
+        # framework variables
+        self.variables               = {}
+
+        # set the msf callback size
+        self.variables["MsfUriSize"] = 1337
 
         # website we can mirror
-        self.mirror         = args['mirror']
+        self.mirror                  = args['mirror']
 
         # endpoint for modules to callback to
-        self.endpoint       = args['endpoint']
+        self.endpoint                = args['endpoint']
 
         # runtime variables
-        self.beacons        = {}
-        self.beacon_count   = 0
-        self.current_beacon = None
+        self.beacons                 = {}
+        self.beacon_count            = 0
+        self.current_beacon          = None
 
         # loading screen stuff
         self.screen_finish  = False
 
         # get the debug/logging stuff ready
-        self.debug          = debug.Debug(self.debugv)
+        self.debug                   = debug.Debug(self.debugv)
 
         # console class
-        self.console        = console.Console(self)
+        self.console                 = console.Console(self)
 
         # super useful
-        self.crypt          = encryption
+        self.crypt                   = encryption
 
     def start(self):
 
@@ -69,8 +75,9 @@ class Shad0wC2(object):
         # start the loading banner
         Thread(target=tools.loading_banner, args=(self,)).start()
 
-        # start threads to do the compiling
+        # start to do the compiling
         asyncio.run(tools.compile_and_store_static(self))
+        asyncio.run(tools.compile_and_store_static_srdi(self))
 
         # make sure we are in the rootdir
         os.chdir("/root/shad0w")
