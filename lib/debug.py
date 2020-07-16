@@ -9,10 +9,10 @@ class Debug(object):
 
         self.stop_spinner = False
 
-    def log(self, text, log=False, pre=True, new=False):
+    def log(self, text, log=False, pre=True, new=False, end='\n'):
         if log and pre:
-            if new: print(f"\n\033[1;34m[i]\033[0m {text}")
-            if not new: print(f"\033[1;34m[i]\033[0m {text}")
+            if new: print(f"\n\033[1;34m[i]\033[0m {text}", end='\n')
+            if not new: print(f"\033[1;34m[i]\033[0m {text}", end='\n')
         elif log and not pre:
             print(f"{text}")
         elif self.debug_verbose:
