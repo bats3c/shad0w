@@ -130,7 +130,13 @@ class Shad0wBuilder(object):
         # copy the correct source files into build directory
         if self.static is not None:
             # then we are building a static beacon
-            buildtools.clone_source_files(asm=True)
+
+            # hacky workaround to fix the powershell beacons
+            if self.format != "exe":
+                buildtools.clone_source_files(asm=True, rootdir="injectable")
+            else:
+                buildtools.clone_source_files(asm=True)
+
         if self.static is None:
             # then we are building a stager
             buildtools.clone_source_files(asm=True, rootdir="stager")
