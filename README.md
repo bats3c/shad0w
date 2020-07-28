@@ -48,3 +48,7 @@ Current Modules:
 ## Usage
 
 https://labs.jumpsec.com/2020/06/03/shad0w/
+
+## Official Discord
+
+[![Porchetta Industries](https://discordapp.com/api/guilds/736724457258745996/widget.png?style=banner3)](https://discord.gg/ycXRvcD)
