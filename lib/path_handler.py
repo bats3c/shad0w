@@ -114,7 +114,7 @@ class Handler(object):
                     self.shad0w.beacons[beacon_id]["impersonate"]         = None
 
                     # if we are impersonating a session then tell that beacon
-                    if impersonate is not None:
+                    if str(impersonate) != "None":
                         self.shad0w.beacons[impersonate]["impersonate"] = beacon_id
 
                     if secure == "SECURE":
@@ -129,7 +129,7 @@ class Handler(object):
                     self.shad0w.beacons[beacon_id]["stay_alive"]   = True
 
                     # let the user know whats happening
-                    if impersonate is None:
+                    if str(impersonate) == "None":
                         if domain != "NULL":
                             self.shad0w.debug.log(f"Beacon: {domain}\\{username}@{machine} (ARCH: {arch}, OS: {opsystem}, Type: {secure})", log=True)
                         else:
@@ -150,6 +150,8 @@ class Handler(object):
         # this will be hit when a stager is requesting a beacon. We will need to parse
         # the request for the beacon and generate the correct one, once this is done we
         # will to to send it back to the stager.
+
+        print("hit")
 
         # a stager should request a beacon via a post request
         if request.method == "POST":
