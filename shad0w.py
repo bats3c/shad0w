@@ -131,11 +131,11 @@ class Shad0wBuilder(object):
         if self.static is not None:
             # then we are building a static beacon
 
-            # hacky workaround to fix the powershell beacons
-            if self.format != "exe":
-                buildtools.clone_source_files(asm=True, rootdir="injectable")
-            else:
+            # what type we need?
+            if self.format == "exe":
                 buildtools.clone_source_files(asm=True)
+            else:
+                buildtools.clone_source_files(asm=True, rootdir="injectable")
 
         if self.static is None:
             # then we are building a stager
@@ -145,7 +145,10 @@ class Shad0wBuilder(object):
         buildtools.update_settings_file(self)
 
         # now we need to run 'make' inside the cloned dir
-        buildtools.make_in_clone(arch=self.arch, platform=self.platform, secure=self.secure, static=self.static, debug=self.debugv)
+        if self.format == "dll":
+            buildtools.make_in_clone(arch=self.arch, platform=self.platform, secure=self.secure, static=self.static, debug=self.debugv, modlocation="/root/shad0w/beacon/beacon.dll")
+        else:
+            buildtools.make_in_clone(arch=self.arch, platform=self.platform, secure=self.secure, static=self.static, debug=self.debugv)
 
         length = payload_format.create(self)
 

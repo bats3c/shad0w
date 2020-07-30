@@ -159,7 +159,6 @@ def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=N
     try:
         open(modlocation, 'rb')
     except FileNotFoundError:
-        print("ERROR: building module")
         return False
 
     return True
@@ -196,7 +195,7 @@ def extract_shellcode(beacon_file="/root/shad0w/beacon/beacon.exe", want_base64=
 
     return code
 
-def write_and_bridge(filename, rcode):
+def write_and_bridge(filename, rcode, noremove=False):
     # write the supplied code to the file given
     # by the user and then make sure they can access it
 
@@ -205,7 +204,8 @@ def write_and_bridge(filename, rcode):
 
     # remove the old beacon file, this wont always be the name though
     try:
-        os.unlink("/root/shad0w/beacon/beacon.exe")
+        if not noremove: os.unlink("/root/shad0w/beacon/beacon.exe")
+        if not noremove: os.unlink("/root/shad0w/beacon/beacon.dll")
     except FileNotFoundError: pass
 
     with open(filename, 'wb') as file:

@@ -21,6 +21,7 @@ WIN_STDLIB_FLAGS=-static
 WIN_VITAL_SOURCES=base64.c
 
 x64: win_beacon_64
+x64_debug: win_beacon_64
 
 win_stdlib_64:
 	$(WIN_CC) -c $(WIN_STDLIB_SOURCES) $(WIN_STDLIB_FLAGS) $(WIN_STDLIB_FLAGS)
