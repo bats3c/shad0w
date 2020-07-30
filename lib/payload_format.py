@@ -5,9 +5,10 @@ import tempfile
 from lib import buildtools
 
 from lib.templates import exe
+from lib.templates import dll
 from lib.templates import powershell
 
-formats = ('raw', 'exe', 'psh', 'dll', 'rdll', 'inj')
+formats = ('raw', 'exe', 'psh', 'dll')
 
 def get_size(filename):
     # get the bytes of the exe
@@ -78,12 +79,37 @@ def format_powershell(builder, length=True, code=False):
     if code:
         return pcode
 
+def format_dll(builder, length=True, code=False):
+
+    # get the the beacon shellcode
+    rcode = format_raw(builder, length=False, code=True)
+
+    # create an exe from the shellcode
+    ecode = dll.generate(rcode, debug=builder.debugv)
+
+    length = buildtools.write_and_bridge(builder.outfile, ecode)
+
+    if length:
+        return length
+
+    if code:
+        with open(builder.outfile, 'rb') as file:
+            return file.read()
+
 def create(builder):
     if builder.format == "raw":
         return format_raw(builder)
 
     if builder.format == "exe":
         return format_exe(builder)
+
+    if builder.format == "dll":
+
+        if builder.static == None:
+            print("[!] Staged dll payloads are not currently supported")
+            return False
+
+        return format_dll(builder)
 
     if builder.format == "psh":
 
