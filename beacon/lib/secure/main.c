@@ -17,7 +17,7 @@ NTSTATUS __stdcall _LdrLoadDll(PWSTR SearchPath OPTIONAL, PULONG DllCharacterist
 
     for (size_t i = 0; i < AllowDllCount; i++)
     {
-        if (strcmp(name, AllowDlls[i]) == 0)
+        if (_stricmp(name, AllowDlls[i]) == 0)
         {
             Allowed = TRUE;
 
