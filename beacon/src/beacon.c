@@ -114,6 +114,8 @@ void main()
             return;
         }
 
+        free(Buffer);
+
         if (!Success)
         {
             ReportExecutionFail();
