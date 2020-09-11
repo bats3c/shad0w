@@ -15,4 +15,6 @@ void DEBUG(const char* text, ...)
     #ifdef DEBUG_MODE
         printf("[DEBUG] %s\n", string);
     #endif
+
+    free(string);
 }
