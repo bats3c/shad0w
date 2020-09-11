@@ -486,6 +486,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
         LPSTR pszOutBuffer;
 
         ResBuffer = "";
+        char* tmp;
 
         do
         {
@@ -528,7 +529,12 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
             }
             else
             {
+                tmp = &ResBuffer;
                 asprintf(&ResBuffer, "%s%s", ResBuffer, pszOutBuffer);
+                // If ResBuffer was reallocated to fit pszOutBuffer free the previous chunk saved in tmp
+                if (tmp != &ResBuffer) {
+                    free(tmp);
+                }
             }
 
             // free the memory allocated to the buffer.
