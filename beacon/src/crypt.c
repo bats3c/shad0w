@@ -7,7 +7,7 @@ char* decrypt_string(char* string, int key)
 
     size_t out_len   = strlen(string) + 1;
     size_t b64_len   = b64_decoded_size(string);
-    char*  b64_out   = (char*)malloc(out_len);
+    char*  b64_out;
 
     b64_out = base64_decode((const char*)string, out_len - 1, &out_len);
 
