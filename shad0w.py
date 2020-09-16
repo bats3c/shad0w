@@ -161,62 +161,44 @@ class Shad0wBuilder(object):
 if __name__ == '__main__':
 
     # sort the first cmd switch to decide weather we beacon or listen
-    first_parser = argparse.ArgumentParser()
-    first_parser.add_argument("listen", action="store_true", help="Tell shad0w to listen for connections")
-    first_parser.add_argument("beacon", action="store_true", help="Tell shad0w to create a beacon")
-    first_parser.add_argument("update", action="store_true", help="Update shad0w")
+    parser = argparse.ArgumentParser(prog='shad0w')
+    subparsers = parser.add_subparsers(dest='mode', help='shad0w C2 functions')
+    listen_parser = subparsers.add_parser('listen', help="Tell shad0w to listen for connections")
+    beacon_parser = subparsers.add_parser('beacon', help="Tell shad0w to create a beacon")
+    update_parser = subparsers.add_parser('update', help="Update shad0w")
+
+    listen_parser.add_argument("-a", "--address", required=False, default="0.0.0.0", help="Address shad0w will listen on (default will be 0.0.0.0)")
+    listen_parser.add_argument("-p", "--port", required=False, default=443, help="Port the C2 will bind to (default is 443)")
+    listen_parser.add_argument("-k", "--key", required=False, default="certs/key.pem", help="Private key for the HTTPS server")
+    listen_parser.add_argument("-c", "--cert", required=False, default="certs/cert.pem", help="Certificate for the HTTPS server")
+    listen_parser.add_argument("-m", "--mirror", required=False, default=None, help="Website to mirror for if a client connects to the C2 via a web browser")
+    listen_parser.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
+    listen_parser.add_argument("-e", "--endpoint", required=False, default="NULL", help="The endpoint shad0w modules will callback to")
+
+    beacon_parser.add_argument("-p", "--payload", required=True, help="Beacon payload to use")
+    beacon_parser.add_argument("-H", "--address", required=True, help="Address the beacon will connect to")
+    beacon_parser.add_argument("-P", "--port", required=False, default=443, help="Port the beacon will connect on")
+    beacon_parser.add_argument("-j", "--jitter", required=False, default=1, type=int, help="Jitter the beacon should use when connecting back")
+    beacon_parser.add_argument("-f", "--format", required=True, choices=payload_format.formats, help="Format to store the beacon payload as")
+    beacon_parser.add_argument("-o", "--out", required=True, help="File to store the beacon in")
+    beacon_parser.add_argument("-n", "--no-shrink", required=False, action='store_true', help="Leave the file at its final size, do not attempt to shrink it")
+    beacon_parser.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
 
     # parse the args
-    args, unk = first_parser.parse_known_args()
-
-    # if we not been given any args then quit
-    try:
-        mode = ''.join(unk[0])
-    except IndexError:
-        first_parser.print_help()
-        exit(-1)
-
-    # if its neither beacon or listen then quit
-    if (mode != "listen") and (mode != "beacon") and (mode != "update"):
-        first_parser.print_help()
-        exit(-1)
+    args = vars(parser.parse_args())
 
     # first check if we need to update
-    if mode == "update":
+    if args["mode"] == "update":
         print("Updating...")
         os.system("git pull")
 
     # set the arguments for the listen
-    if mode == "listen":
-        listen_parser = argparse.ArgumentParser(prog="listen")
-        listen_parser.add_argument("-a", "--address", required=False, default="0.0.0.0", help="Address shad0w will listen on (default will be 0.0.0.0)")
-        listen_parser.add_argument("-p", "--port", required=False, default=443, help="Port the C2 will bind to (default is 443)")
-        listen_parser.add_argument("-k", "--key", required=False, default="certs/key.pem", help="Private key for the HTTPS server")
-        listen_parser.add_argument("-c", "--cert", required=False, default="certs/cert.pem", help="Certificate for the HTTPS server")
-        listen_parser.add_argument("-m", "--mirror", required=False, default=None, help="Website to mirror for if a client connects to the C2 via a web browser")
-        listen_parser.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
-        listen_parser.add_argument("-e", "--endpoint", required=False, default="NULL", help="The endpoint shad0w modules will callback to")
-
-        args = vars(listen_parser.parse_args(unk[1:]))
-
-        # start the C2 listening
+    if args["mode"] == "listen":
         shad0w = Shad0wC2(args)
         asyncio.run(shad0w.start())
 
     # set the arguments for creating the beacon
-    if mode == "beacon":
-        beacon_parser = argparse.ArgumentParser(prog="beacon")
-        beacon_parser.add_argument("-p", "--payload", required=True, help="Beacon payload to use")
-        beacon_parser.add_argument("-H", "--address", required=True, help="Address the beacon will connect to")
-        beacon_parser.add_argument("-P", "--port", required=False, default=443, help="Port the beacon will connect on")
-        beacon_parser.add_argument("-j", "--jitter", required=False, default=1, type=int, help="Jitter the beacon should use when connecting back")
-        beacon_parser.add_argument("-f", "--format", required=True, choices=payload_format.formats, help="Format to store the beacon payload as")
-        beacon_parser.add_argument("-o", "--out", required=True, help="File to store the beacon in")
-        beacon_parser.add_argument("-n", "--no-shrink", required=False, action='store_true', help="Leave the file at its final size, do not attempt to shrink it")
-        beacon_parser.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
-
-        args = vars(beacon_parser.parse_args(unk[1:]))
-
+    if args["mode"] == "beacon":
         # build the beacon
         shad0w = Shad0wBuilder(args)
         shad0w.build()
