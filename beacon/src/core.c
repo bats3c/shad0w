@@ -28,6 +28,9 @@
 
 #include "settings.h"
 
+// Include stdlib function prototypes
+#include "../lib/stdlib/stdlib.h"
+
 // core functions
 BOOL GetBasicUserInfo(struct BasicUserInfo *UserInfo)
 {

