@@ -92,7 +92,7 @@ class Shad0wC2(object):
         # start the http server thread
         # self.debug.log("starting http server thread")
         thttp = Thread(target=http_server.run_serv, args=(self,))
-        thttp.daemon = False
+        thttp.daemon = True
         thttp.start()
         # asyncio.run(http_server.run_serv(self))
 
