@@ -47,7 +47,7 @@ Current Modules:
 
 ## Usage
 
-https://labs.jumpsec.com/2020/06/03/shad0w/
+https://blog.dylan.codes/shad0w/
 
 ## Official Discord
 
