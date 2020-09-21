@@ -155,17 +155,24 @@ class Shad0wBuilder(object):
         if length != False:
             print("\033[1;32m[+]\033[0m", f"Created {self.outfile} ({length} bytes)")
 
+class Shad0wTeamServer(object):
 
+    def __init__(self, args):
+
+        super(Shad0wTeamServer, self).__init__()
+
+        self.config = args['config']
 
 
 if __name__ == '__main__':
 
-    # sort the first cmd switch to decide weather we beacon or listen
+    # sort the first cmd switch to decide what we do
     parser = argparse.ArgumentParser(prog='shad0w')
-    subparsers = parser.add_subparsers(dest='mode', help='shad0w C2 functions')
-    listen_parser = subparsers.add_parser('listen', help="Tell shad0w to listen for connections")
+    subparsers = parser.add_subparsers(dest='mode')
+    listen_parser = subparsers.add_parser('listen', help="Start the local C2 instance")
     beacon_parser = subparsers.add_parser('beacon', help="Tell shad0w to create a beacon")
     update_parser = subparsers.add_parser('update', help="Update shad0w")
+    teamsrv_parse = subparsers.add_parser('teamserver', help="Start the teamserver")
 
     listen_parser.add_argument("-a", "--address", required=False, default="0.0.0.0", help="Address shad0w will listen on (default will be 0.0.0.0)")
     listen_parser.add_argument("-p", "--port", required=False, default=443, help="Port the C2 will bind to (default is 443)")
@@ -184,10 +191,13 @@ if __name__ == '__main__':
     beacon_parser.add_argument("-n", "--no-shrink", required=False, action='store_true', help="Leave the file at its final size, do not attempt to shrink it")
     beacon_parser.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
 
+    teamsrv_parse.add_argument("-c", "--config", required=True, help="The configuration for the team server")
+
     # parse the args
     args = vars(parser.parse_args())
 
     # first check if we need to update
+    # TODO: This is trash, find a proper way to do this.
     if args["mode"] == "update":
         print("Updating...")
         os.system("git pull")
