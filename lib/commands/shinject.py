@@ -111,6 +111,7 @@ def get_file_data(filename):
     return data
 
 def main(shad0w, args):
+    global error_list
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
@@ -148,6 +149,7 @@ shinject -p 8725 -f shellcode.bin
     if ERROR:
         print(error_list)
         parse.print_help()
+        error_list = ""
         return
 
     # create the beacon

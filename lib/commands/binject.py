@@ -116,6 +116,7 @@ def generate_beacon_dll(shad0w, rcode):
     return get_dll_data("/root/shad0w/modules/windows/shinject/module.dll")
 
 def main(shad0w, args):
+    global error_list
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
@@ -154,6 +155,7 @@ binject -b x64/windows/secure -p 9207
     if ERROR:
         print(error_list)
         parse.print_help()
+        error_list = ""
         return
 
     # create the beacon

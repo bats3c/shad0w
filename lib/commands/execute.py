@@ -34,6 +34,7 @@ def exit(status=0, message=None):
     return
 
 def main(shad0w, args):
+    global error_list
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
@@ -78,6 +79,7 @@ execute -f msg.js
     if ERROR:
         print(error_list) 
         parse.print_help()
+        error_list = ""
         return
 
     # give a message to the user

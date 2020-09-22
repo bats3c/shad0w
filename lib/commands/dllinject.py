@@ -60,6 +60,7 @@ def get_file_data(filename):
     return base64.b64encode(data).decode()
 
 def main(shad0w, args):
+    global error_list
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
@@ -97,6 +98,7 @@ dllinject -p 4267 -f yourfile.dll
     if ERROR:
         print(error_list)
         parse.print_help()
+        error_list = ""
         return
 
     rcode = get_file_data(args.file)

@@ -35,6 +35,7 @@ def rubeus_callback(shad0w, data):
     return ""
 
 def main(shad0w, args):
+    global error_list
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
@@ -72,6 +73,7 @@ rubeus -x help
     if not args.execute:
         print(error_list)
         parse.print_help()
+        error_list = ""
         return
 
     if args.execute:
