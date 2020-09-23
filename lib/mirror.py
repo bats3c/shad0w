@@ -38,10 +38,9 @@ def fix_internal_links(shad0w, html, site):
     else:
 
         if type(html) != bytes:
+            endpoint = shad0w.endpoint
             if not shad0w.endpoint.startswith("https://"):
                 endpoint = "https://" + shad0w.endpoint
-            elif not shad0w.endpoint.startswith("http://"):
-                endpoint = "http://" + shad0w.endpoint
 
             html = re.sub(r'=\"/', '="%s/' % endpoint, html)
 
@@ -62,4 +61,4 @@ def mirror_site(shad0w, site, dynamic=False, method=None, headers=None, data=Non
     if dynamic:
         data, headers, status_code = get_base_page(shad0w, site, dynamic=dynamic, method=method, headers=headers, data=data, cookies=cookies)
         data = fix_internal_links(shad0w, data, site)
-        return data, headers, status_code
+        return data, status_code, headers
