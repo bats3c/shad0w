@@ -7,3 +7,4 @@ donut-shellcode
 requests
 PrettyTable
 pygments
+pyyaml
