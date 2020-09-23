@@ -27,20 +27,27 @@ def get_base_page(shad0w, site, dynamic=False, htmlonly=False, method=None, head
     if not htmlonly:
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in req.raw.headers.items() if name.lower() not in excluded_headers]
-        return req.content, headers, req.status_code
+        return req.content, req.status_code, headers
     if htmlonly:
         return req.text
 
 def fix_internal_links(shad0w, html, site):
     # add us to paths
-    if type(html) != bytes:
-        endpoint = "https://" + shad0w.endpoint
+    if shad0w.endpoint is None:
+        print(f"\033[1;33mMirror mode: Parameter -e (endpoint) not set. Internal links cannot be patched.\033[0m")
+    else:
 
-        html = re.sub(r'=\"/', '="%s/' % (endpoint), html)
+        if type(html) != bytes:
+            if not shad0w.endpoint.startswith("https://"):
+                endpoint = "https://" + shad0w.endpoint
+            elif not shad0w.endpoint.startswith("http://"):
+                endpoint = "http://" + shad0w.endpoint
 
-        # make sure we cover http and https
-        html = re.sub(r'http://' + get_base_domain(shad0w.mirror), endpoint, html)
-        html = re.sub(r'https://' + get_base_domain(shad0w.mirror), endpoint, html)
+            html = re.sub(r'=\"/', '="%s/' % endpoint, html)
+
+            # make sure we cover http and https
+            html = re.sub(r'http://' + get_base_domain(shad0w.mirror), endpoint, html)
+            html = re.sub(r'https://' + get_base_domain(shad0w.mirror), endpoint, html)
 
     return html
 
