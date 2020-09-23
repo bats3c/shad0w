@@ -16,7 +16,6 @@ DLLINJECT_EXEC_ID = 0x5000
 
 
 def build_inject_info(args, rcode):
-
     # create the json object to tell the beacon
     # where to execute the code.
 
@@ -62,7 +61,7 @@ dllinject -p 4267 -f yourfile.dll
 
     def run(self, shad0w):
         rcode = get_file_data(self.args.file)
-        if rcode == None:
+        if rcode is None:
             shad0w.debug.error(f"DLL '{self.args.file}' does not exist")
             return
 
@@ -72,7 +71,6 @@ dllinject -p 4267 -f yourfile.dll
 
 
 def main(shad0w, args):
-
     # check we actually have a beacon
     if shad0w.current_beacon is None:
         shad0w.debug.log("ERROR: No active beacon", log=True)
