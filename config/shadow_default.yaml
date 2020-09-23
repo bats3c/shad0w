@@ -1,0 +1,14 @@
+teamserver:
+  host: 0.0.0.0
+  port: 1337
+
+paths:
+  login:
+    path: /login
+  poll:
+    path: /poll
+  cmd:
+    path: /cmd
+
+db:
+  path: ../db/shad0w_teamsrv.sqlite
