@@ -3,12 +3,7 @@
 #
 
 import os
-import sys
-import zlib
-import base64
-import argparse
 
-from lib import auxiliary
 from lib import shellcode
 
 __description__ = "Execute a .NET assembly, EXE, DLL, VBS, JS or XSL file in memory on the target"
@@ -65,7 +60,7 @@ execute -f msg.js
         # do we have arguments to pass to the function?
         if params is not None:
             b64_comp_data = shellcode.generate(file, self.args, params)
-        elif params is None:
+        else:
             b64_comp_data = shellcode.generate(file, self.args, None)
 
         if b64_comp_data is None:
@@ -79,7 +74,6 @@ execute -f msg.js
 
         # inform the user of the change
         shad0w.debug.log(f"Tasked beacon ({shad0w.current_beacon})", log=True)
-        print("TODO")
 
 
 def main(shad0w, args):
