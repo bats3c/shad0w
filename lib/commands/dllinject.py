@@ -10,7 +10,7 @@ __description__ = "Inject a DLL into a process"
 __author__ = "@_batsec_"
 
 # identify the task as dll injection
-from lib.commands.basecommand import BaseCommand
+from lib.basecommand import BaseCommand
 
 DLLINJECT_EXEC_ID = 0x5000
 

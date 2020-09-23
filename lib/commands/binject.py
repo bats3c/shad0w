@@ -12,7 +12,7 @@ __description__ = "Inject a new beacon into a process"
 __author__ = "@_batsec_"
 
 # identify the task as shellcode execute
-from lib.commands.basecommand import BaseCommand
+from lib.basecommand import BaseCommand
 
 DLLINJECT_EXEC_ID = 0x5000
 SHINJECT_EXEC_ID = 0x2000

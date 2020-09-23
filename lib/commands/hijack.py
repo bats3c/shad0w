@@ -10,7 +10,7 @@ __description__ = "Hijack a running process, forcing it to run your shellcode"
 __author__ = "@_batsec_"
 
 # identify the task as shellcode execute
-from lib.commands.basecommand import BaseCommand
+from lib.basecommand import BaseCommand
 
 SHINJECT_EXEC_ID = 0x2000
 

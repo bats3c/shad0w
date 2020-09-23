@@ -8,7 +8,7 @@ __description__ = "A toolset for raw Kerberos interaction and abuses"
 __author__ = "@_batsec_, @harmj0y"
 
 # identify the task as shellcode execute
-from lib.commands.basecommand import BaseCommand
+from lib.basecommand import BaseCommand
 
 USERCD_EXEC_ID = 0x3000
 

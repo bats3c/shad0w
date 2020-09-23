@@ -10,7 +10,7 @@ __description__ = "Execute a .NET assembly, EXE, DLL, VBS, JS or XSL file in mem
 __author__ = "@_batsec_"
 
 # identify the task as shellcode execute
-from lib.commands.basecommand import BaseCommand
+from lib.basecommand import BaseCommand
 
 USERCD_EXEC_ID = 0x3000
 
