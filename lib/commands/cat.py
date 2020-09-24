@@ -48,6 +48,7 @@ def cat_callback(shad0w, data):
 
     return ""
 
+
 def main(shad0w, args):
     
     # check we actually have a beacon
