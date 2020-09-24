@@ -34,7 +34,7 @@ def usage(shad0w):
         try:
             author = mod.__author__
         except:
-            author = "No author avalible"
+            author = "No author available"
 
         t.add_row([command, description, author])
         if num != num_of_modules - 1:
