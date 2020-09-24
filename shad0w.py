@@ -287,7 +287,7 @@ if __name__ == '__main__':
     listen_parser.add_argument("-c", "--cert", required=False, default="certs/cert.pem", help="Certificate for the HTTPS server")
     listen_parser.add_argument("-m", "--mirror", required=False, default=None, help="Website to mirror for if a client connects to the C2 via a web browser")
     listen_parser.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
-    listen_parser.add_argument("-e", "--endpoint", required=False, default="NULL", help="The endpoint shad0w modules will callback to")
+    listen_parser.add_argument("-e", "--endpoint", required=False, default=None, help="The endpoint shad0w modules will callback to")
 
     beacon_parser.add_argument("-p", "--payload", required=True, help="Beacon payload to use")
     beacon_parser.add_argument("-H", "--address", required=True, help="Address the beacon will connect to")
