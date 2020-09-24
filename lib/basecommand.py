@@ -9,6 +9,7 @@ class BaseCommand:
         self.__error_list = ""
 
         self.args = args
+        self.raw_args = args
 
         # init argparse
         self.parser = argparse.ArgumentParser(prog=self.__commandName,
