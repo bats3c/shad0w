@@ -1,0 +1,12 @@
+teamserver:
+  host: 0.0.0.0
+  port: 1337
+
+ssl:
+  cert: teamsrv_cert.pem
+  key: teamsrv_key.pem
+
+c2:
+  address: 0.0.0.0
+  port: 443
+  endpoint: 192.168.1.81
