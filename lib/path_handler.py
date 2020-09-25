@@ -29,8 +29,6 @@ class Handler(object):
 
         jdata = request.get_json(force=True)
 
-        # print("jdata: ", jdata)
-
         beacon_id, opcode, data = tools.get_data_from_json(jdata)
 
         # only if were given an id by the beacon
@@ -59,20 +57,16 @@ class Handler(object):
                     return task
 
                 # get the callback
-                print("setting callback variable")
                 callback = self.shad0w.beacons[beacon_id]["callback"]
 
                 # clear the callback
-                print("cleared callback")
                 self.shad0w.beacons[beacon_id]["callback"] = None
 
                 # call the callback
-                print("DOing callback")
+                if callback is not None:
+                    func_name = str(callback).split()[1]
+                    self.shad0w.event.debug_log(f"Calling ({func_name}) for ({beacon_id}) ({len(data)} bytes)")
                 return callback(self.shad0w, data)
-
-                # another session has returned data
-                # if beacon_id != self.shad0w.current_beacon:
-                #     return task
 
             except:
                 # there aint a task, so tell em that
