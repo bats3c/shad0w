@@ -47,10 +47,16 @@ class TeamServer(object):
         except KeyError:
             error = True
 
+        teamsrv.shad0w.event.debug_log(f"Trying to login '{username}'")
+
         loggedin, cookie = teamsrv.auth_obj.login(username, password)
+
         if loggedin:
+            teamsrv.shad0w.event.debug_log(f"Logged in '{username}'")
             teamsrv.shad0w.event._add_new(cookie)
             success = True
+        else:
+            teamsrv.shad0w.event.debug_log(f"Login for '{username}' failed")
 
         response = {"success": False}
 
@@ -110,11 +116,17 @@ class TeamServer(object):
         except KeyError:
             error = True
 
+        if len(cmd) == 0:
+            return jsonify({"failed": True})
+
         # base64 decode the command
-        cmd = base64.b64decode(cmd)
+        cmd = base64.b64decode(cmd).decode()
+
+        # display infomation
+        teamsrv.shad0w.event.debug_log("Running command: '" + cmd + "'")
 
         # run the command
-        loop.run_until_complete(teamsrv.cmd_handler.do(cmd.decode(), beacon))
+        loop.run_until_complete(teamsrv.cmd_handler.do(cmd, beacon))
 
         return jsonify({"success": True})
 
