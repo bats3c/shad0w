@@ -62,14 +62,11 @@ class Shad0wC2(object):
         # loading screen stuff
         self.screen_finish  = False
 
-        # get the debug/logging stuff ready
-        self.event                   = event.EventHandler(self)
-
         # console class
-        self.console                  = console.Console(self)
+        self.console                 = console.Console(self)
 
         # super useful
-        self.crypt                    = encryption
+        self.crypt                   = encryption
 
     def start(self):
 
@@ -165,6 +162,7 @@ class Shad0wTeamServer(object):
         super(Shad0wTeamServer, self).__init__()
 
         self.config = args['config']
+        self.debugv = args['debug']
 
         self.ready_to_go = False
 
@@ -234,6 +232,10 @@ class Shad0wTeamServer(object):
         # create the object
         self.shad0w = Shad0wC2(args)
 
+        # get the debug/logging stuff ready
+        self.shad0w.event = event.EventHandler(self)
+        self.shad0w.event.debug_mode = self.debugv
+
         # init the command handler
         self.cmd_handler  = input_handler.Handler(self.shad0w)
 
@@ -274,7 +276,7 @@ class Shad0wTeamServer(object):
         # teamserver is ready
         print("")
         print(f"[i] Team Server is ready on {self.addr}:{self.port}")
-        print(f"[i] C2 is ready on {self.c2_addr}:{self.c2_port}")
+        print(f"[i] C2 is ready on {self.c2_addr}:{self.c2_port}\n")
 
         # keep the main thread active
         while True: pass
@@ -308,6 +310,7 @@ if __name__ == '__main__':
     beacon_parser.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
 
     teamsrv_parse.add_argument("-c", "--config", required=False, default="config/shad0w_default.yaml", help="The configuration for the team server")
+    teamsrv_parse.add_argument("-d", "--debug", required=False, action='store_true', help="Start debug mode")
 
     # parse the args
     args = vars(parser.parse_args())
