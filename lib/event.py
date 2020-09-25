@@ -8,7 +8,7 @@ class EventHandler(object):
     def __init__(self, arg):
         super(EventHandler, self).__init__()
 
-        self.debug_mode = False
+        self.debug_mode = arg.debugv
         self.buffer_mode = False
 
         self.event_buffer = {
@@ -26,14 +26,10 @@ class EventHandler(object):
         # give it a copy of everything so far
         self.event_buffer[cookie.decode()] = self.event_buffer["master"]
 
-        # print(self.event_buffer["master"])
-
     def _clear_buffer(self, cookie):
         """
         Clear the event buffer, without clearing all the non standard dicts
         """
-
-        print("clearing events")
 
         values = []
 
@@ -66,12 +62,8 @@ class EventHandler(object):
 
         for cookie in self.event_buffer:
             for storage in self.event_buffer[cookie]:
-                print(storage, location)
                 if storage == location:
-                    print("USING COOKIE: ", cookie)
                     self.event_buffer[cookie][storage].append(event)
-                    print(self.event_buffer)
-                    # return
 
     def debug_log(self, text):
         """
@@ -79,7 +71,7 @@ class EventHandler(object):
         """
 
         if self.debug_mode:
-            print(text)
+            print("[DEBUG]", text)
 
         return
 
@@ -115,5 +107,4 @@ class EventHandler(object):
         if self.buffer_mode is False:
             print(text)
         else:
-            print(f"ADDING {text} to {beacon}")
             self._add_new_event(text, beacon)
