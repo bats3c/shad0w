@@ -2,8 +2,6 @@
 # Get infomation about the current user
 #
 
-import inspect
-
 import json
 import base64
 import argparse
@@ -33,13 +31,9 @@ def exit(status=0, message=None):
 def whoami_callback(shad0w, data):
     global current_beacon
 
-    print("WHOAMI CALLBACK")
-    print("calling FUNC:", inspect.stack()[2][3])
-
     data = data.strip("\r\n")
     if len(data) > 1:
         if current_beacon is not None:
-            print("ADDING BEACON INFO")
             shad0w.event.beacon_info(current_beacon, data.strip())
 
     return ""
@@ -118,5 +112,3 @@ whoami --groups
 
     shad0w.beacons[beacon]["callback"] = whoami_callback
     shad0w.beacons[beacon]["task"] = (TMP_EXEC_ID, rcode)
-
-    print("executed")
