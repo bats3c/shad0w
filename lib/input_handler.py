@@ -12,9 +12,13 @@ class Handler(object):
         super(Handler, self).__init__()
         self.shad0w = shad0w
 
-    async def do(self, cmd):
+    async def do(self, cmd, beacon):
 
         # split command into name + args
+
+        print(cmd)
+
+        print(type(cmd))
 
         splitcommand = cmd.split(" ")
         basecmd      = splitcommand[0]
@@ -48,6 +52,6 @@ class Handler(object):
             if self.shad0w.debugv: importlib.reload(cmd_func)
 
             if basecmd == "whoami":
-                await cmd_func.main(self.shad0w, cmd_args)
+                await cmd_func.main(self.shad0w, cmd_args, beacon)
             else:
-                cmd_func.main(self.shad0w, cmd_args)
+                cmd_func.main(self.shad0w, cmd_args, beacon)
