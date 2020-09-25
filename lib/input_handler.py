@@ -16,10 +16,6 @@ class Handler(object):
 
         # split command into name + args
 
-        print(cmd)
-
-        print(type(cmd))
-
         splitcommand = cmd.split(" ")
         basecmd      = splitcommand[0]
         cmd_args     = splitcommand[0:]
