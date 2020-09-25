@@ -31,7 +31,7 @@ def log_request():
 def web_blank_page():
     # this page should never be hit by a legit beacon, so if it is then its not a beacon.
     # either return a blank page or a mirrored page depending on what the user has set.
-    shad0w.debug.log("HTTP - '/' was hit")
+    shad0w.event.debug_log("HTTP - '/' was hit")
 
     if shad0w.mirror is None:
         return phandle.blank_page()
@@ -43,7 +43,7 @@ def web_blank_page():
 def web_register_beacon():
     # register the beacon
 
-    shad0w.debug.log("HTTP - '/register' was hit, attempting to register")
+    shad0w.event.debug_log("HTTP - '/register' was hit, attempting to register")
 
     # just give it the request so it can pull stuff out itsself
     return phandle.register_beacon(request)
@@ -68,7 +68,7 @@ def not_found(e):
     # check if it is a msf stager
     try:
         if req_path_len == int(shad0w.variables["MsfUriSize"]):
-            shad0w.debug.log(f"MSF callback...", log=True, new=True)
+            shad0w.output.debug_log(f"MSF callback...", log=True, new=True)
             return shad0w.payloads["x64_secure_static_srdi"]["bin"]
     except ValueError:
         shad0w.debug.error(f"Value Error: {shad0w.variables['MsfUriSize']}")
@@ -97,13 +97,12 @@ def run_serv(*args):
 
     phandle = Handler(shad0w)
 
-    shad0w.debug.log("starting flask http server")
-    shad0w.debug.log(f"Starting HTTPS server ({shad0w.addr[0]}:{shad0w.addr[1]})", log=True)
+    shad0w.event.global_info(f"Starting HTTPS server ({shad0w.addr[0]}:{shad0w.addr[1]})")
 
-    shad0w.debug.log(f"creating ssl context with {shad0w.sslkey} & {shad0w.sslcrt}")
+    shad0w.event.debug_log(f"creating ssl context with {shad0w.sslkey} & {shad0w.sslcrt}")
 
     try:
         app.run(host=shad0w.addr[0], port=shad0w.addr[1], ssl_context=(shad0w.sslcrt, shad0w.sslkey))
     except FileNotFoundError:
-        shad0w.debug.error(f"Unable to find cert: {shad0w.sslcrt} or private key: {shad0w.sslkey}. You should exit.")
+        shad0w.event.global_error(f"Unable to find cert: {shad0w.sslcrt} or private key: {shad0w.sslkey}. You should exit.")
         return
