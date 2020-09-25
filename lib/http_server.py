@@ -99,8 +99,6 @@ def run_serv(*args):
 
     shad0w.event.global_info(f"Starting HTTPS server ({shad0w.addr[0]}:{shad0w.addr[1]})")
 
-    shad0w.event.debug_log(f"creating ssl context with {shad0w.sslkey} & {shad0w.sslcrt}")
-
     try:
         app.run(host=shad0w.addr[0], port=shad0w.addr[1], ssl_context=(shad0w.sslcrt, shad0w.sslkey))
     except FileNotFoundError:
