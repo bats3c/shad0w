@@ -1,4 +1,5 @@
 import sys
+import json
 import base64
 from datetime import datetime
 
@@ -54,18 +55,24 @@ class Handler(object):
                     # clear the task
                     self.shad0w.beacons[beacon_id]["task"] = None
                     # inform user
-                    self.shad0w.debug.log(f"Beacon ({beacon_id}) received task", log=True)
+                    self.shad0w.event.debug_log(f"Beacon ({beacon_id}) received task")
                     return task
 
-                # check if the data is for the current beacon
-                if beacon_id == self.shad0w.current_beacon:
-                    # check if we should display the data
-                    callback = self.shad0w.beacons[beacon_id]["callback"]
-                    return callback(self.shad0w, data)
+                # get the callback
+                print("setting callback variable")
+                callback = self.shad0w.beacons[beacon_id]["callback"]
+
+                # clear the callback
+                print("cleared callback")
+                self.shad0w.beacons[beacon_id]["callback"] = None
+
+                # call the callback
+                print("DOing callback")
+                return callback(self.shad0w, data)
 
                 # another session has returned data
-                if beacon_id != self.shad0w.current_beacon:
-                    return task
+                # if beacon_id != self.shad0w.current_beacon:
+                #     return task
 
             except:
                 # there aint a task, so tell em that
@@ -129,11 +136,23 @@ class Handler(object):
                     self.shad0w.beacons[beacon_id]["stay_alive"]   = True
 
                     # let the user know whats happening
-                    if str(impersonate) == "None":
-                        if domain != "NULL":
-                            self.shad0w.debug.log(f"Beacon: {domain}\\{username}@{machine} (ARCH: {arch}, OS: {opsystem}, Type: {secure})", log=True)
-                        else:
-                            self.shad0w.debug.log(f"Beacon: {username}@{machine} (ARCH: {arch}, OS: {opsystem}, Type: {secure})", log=True)
+                    if self.shad0w.event.buffer_mode is False:
+                        if str(impersonate) == "None":
+                            if domain != "NULL":
+                                self.shad0w.event.global_info(f"Beacon: {domain}\\{username}@{machine} (ARCH: {arch}, OS: {opsystem}, Type: {secure})")
+                            else:
+                                self.shad0w.event.global_info(f"Beacon: {username}@{machine} (ARCH: {arch}, OS: {opsystem}, Type: {secure})")
+                    else:
+                        # format the beacon data
+                        beacon_obj = self.shad0w.beacons[beacon_id]
+                        beacon_obj["last_checkin_raw"] = None
+                        reg_event = {"new_beacon": beacon_id, "details": json.dumps(beacon_obj)}
+
+                        # set the event
+                        self.shad0w.event.global_info(reg_event)
+
+                        # create the dict to store its output
+                        self.shad0w.event._create_beacon_holder(beacon_id)
 
                     # give the beacon there id, this is how we will identify them now
                     return self.builder.build(beacon_id=beacon_id, id=beacon_id)
