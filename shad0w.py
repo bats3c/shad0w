@@ -9,7 +9,7 @@ import argparse
 
 from threading import Thread
 
-from lib import debug
+from lib import event
 from lib import banner
 from lib import http_server
 from lib import console
@@ -21,6 +21,8 @@ from lib import tools
 from lib import configparse
 from lib import treeprint
 from lib import teamserver
+from lib import auth
+from lib import input_handler
 
 class Shad0wC2(object):
 
@@ -61,13 +63,13 @@ class Shad0wC2(object):
         self.screen_finish  = False
 
         # get the debug/logging stuff ready
-        self.debug                   = debug.Debug(self)
+        self.event                   = event.EventHandler(self)
 
         # console class
-        self.console                 = console.Console(self)
+        self.console                  = console.Console(self)
 
         # super useful
-        self.crypt                   = encryption
+        self.crypt                    = encryption
 
     def start(self):
 
@@ -121,7 +123,7 @@ class Shad0wBuilder(object):
         self.no_shrink = args['no_shrink']
 
         # get the debug/logging stuff ready
-        self.debug   = debug.Debug(self.debugv)
+        self.output    = event.EventHandler(self)
 
     def build(self):
 
@@ -179,6 +181,7 @@ class Shad0wTeamServer(object):
         self.db_location = None
 
         self.configparser = configparse.ConfigParse(self.config)
+        self.auth_obj     = auth.Authentication()
 
     def start(self):
         """
@@ -231,8 +234,14 @@ class Shad0wTeamServer(object):
         # create the object
         self.shad0w = Shad0wC2(args)
 
+        # init the command handler
+        self.cmd_handler  = input_handler.Handler(self.shad0w)
+
         # tell it we are running with a teamserver
         self.shad0w.teamserver = True
+
+        # set the output mode
+        self.shad0w.event.buffer_mode = self.shad0w.teamserver
 
         # start the http server thread
         thttp = Thread(target=http_server.run_serv, args=(self.shad0w,))
@@ -246,21 +255,21 @@ class Shad0wTeamServer(object):
         treeprint.print_sub_straight(f"SSL Key: {args['key']}")
         treeprint.print_sub_straight(f"SSL Cert: {args['cert']}")
 
-        # start building the payloads
-        treeprint.print_infomation("Building Payloads")
+        # # start building the payloads
+        # treeprint.print_infomation("Building Payloads")
 
-        # compile the the exe and get donut shellcode
-        treeprint.print_sub_pending("EXE")
-        asyncio.run(tools.compile_and_store_static(shad0w))
-        treeprint.print_sub_done("EXE")
+        # # compile the the exe and get donut shellcode
+        # treeprint.print_sub_pending("EXE")
+        # asyncio.run(tools.compile_and_store_static(shad0w))
+        # treeprint.print_sub_done("EXE")
 
-        # compile the the dll and get srdi shellcode
-        treeprint.print_sub_pending("DLL")
-        asyncio.run(tools.compile_and_store_static_srdi(shad0w))
-        treeprint.print_sub_done("DLL")
+        # # compile the the dll and get srdi shellcode
+        # treeprint.print_sub_pending("DLL")
+        # asyncio.run(tools.compile_and_store_static_srdi(shad0w))
+        # treeprint.print_sub_done("DLL")
 
-        # end of tree
-        treeprint.print_end()
+        # # end of tree
+        # treeprint.print_end()
 
         # teamserver is ready
         print("")
