@@ -47,7 +47,10 @@ class Handler(object):
             cmd_func = globals()[basecmd]
             if self.shad0w.debugv: importlib.reload(cmd_func)
 
-            if basecmd == "whoami":
-                await cmd_func.main(self.shad0w, cmd_args, beacon)
-            else:
-                cmd_func.main(self.shad0w, cmd_args, beacon)
+            try:
+                if basecmd == "whoami":
+                    await cmd_func.main(self.shad0w, cmd_args, beacon)
+                else:
+                    cmd_func.main(self.shad0w, cmd_args, beacon)
+            except TypeError:
+                self.shad0w.event.debug_log(f"ERROR: Failed to execute command '{basecmd}'")
