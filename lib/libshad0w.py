@@ -105,6 +105,14 @@ class SHAD0W(object):
         # make it json
         data_args = json.dumps(data_args)
 
+        # run the command
         req = self.http_session.post(cmd_url, data_args)
 
-        print(req.content)
+        # did we run it successfully
+        data = json.loads(req.text)
+
+        # give the result back
+        try:
+            return data["success"]
+        except:
+            return False
