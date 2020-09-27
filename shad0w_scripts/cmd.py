@@ -24,7 +24,8 @@ while True:
 while True:
     cmd = input(f"{beacon_id} >> ")
 
-    shad0w.run_command(beacon_id, cmd)
+    if shad0w.run_command(beacon_id, cmd):
+        print("Ran Command")
 
-    events = shad0w.poll()
-    print(events[beacon_id])
+    events = ''.join(shad0w.poll()[beacon_id])
+    print(events)
