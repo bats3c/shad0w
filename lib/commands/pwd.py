@@ -9,22 +9,24 @@ __author__ = "@_batsec_"
 EXEC_ID    = 0x4000
 OPCODE_PWD = 0x3000
 
+# beacon to exec command on
+current_beacon = None
+
 def pwd_callback(shad0w, data):
-    shad0w.debug.log(data, log=True, pre=False)
+    shad0w.event.beacon_info(current_beacon, data.strip())
 
     return ""
 
-def main(shad0w, args):
+def main(shad0w, args, beacon):
+    global current_beacon
 
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
-        return
+    # make beacon global
+    current_beacon = beacon
 
     # make the json
     data = {"op" : OPCODE_PWD, "args": "null"}
     data = json.dumps(data)
 
     # set a task for the current beacon to do
-    shad0w.beacons[shad0w.current_beacon]["callback"] = pwd_callback
-    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, data)
+    shad0w.beacons[current_beacon]["callback"] = pwd_callback
+    shad0w.beacons[current_beacon]["task"] = (EXEC_ID, data)
