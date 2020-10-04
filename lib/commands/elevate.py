@@ -1,4 +1,4 @@
-# 
+#
 # Elevate the current users privs
 #
 
@@ -17,13 +17,16 @@ ERROR = False
 error_list = ""
 RAN_COMMAND = False
 
+# beacon to exec command on
+current_beacon = None
+
 # let argparse error and exit nice
 def error(message):
     global ERROR, error_list
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
-def exit(status=0, message=None): 
+def exit(status=0, message=None):
     if message != None: print(message)
     return
 
@@ -31,15 +34,15 @@ def list_exploits(shad0w):
     sys.path.append("/root/shad0w/exploits/")
     all_exploits = importlib.import_module("__init__").__all__
 
-    shad0w.debug.log(f"{len(all_exploits)} avalible exploits:\n", log=True)
+    shad0w.event.beacon_info(current_beacon, f"{len(all_exploits)} avalible exploits:\n")
     t = PrettyTable(['Exploit', 'Description'])
-    
+
     for exploit in all_exploits:
         exploit_name = os.path.basename(exploit)
         description = importlib.import_module(exploit.replace("/", ".")).__description__["Details"]
         t.add_row([exploit_name, description])
-    
-    print(t)
+
+    shad0w.event.beacon_info(current_beacon, str(t))
 
 def show_details(shad0w, name):
     sys.path.append("/root/shad0w/exploits/")
@@ -58,14 +61,14 @@ def show_details(shad0w, name):
             if secure: secure = "Yes"
             else: secure = "No"
 
-            shad0w.debug.log("Exploit details:\n", log=True)
-            shad0w.debug.log(f"Name: {exploit_name}", log=True, pre=False)
-            shad0w.debug.log(f"Author: {author}", log=True, pre=False)
-            shad0w.debug.log(f"CVE: {cve}", log=True, pre=False)
-            shad0w.debug.log(f"Target: {target}", log=True, pre=False)
-            shad0w.debug.log(f"Versions: {versions}", log=True, pre=False)
-            shad0w.debug.log(f"Arch: {arch}", log=True, pre=False)
-            shad0w.debug.log(f"Supports Secure: {secure}", log=True, pre=False)
+            shad0w.event.beacon_info(current_beacon, "Exploit details:\n")
+            shad0w.event.beacon_info(current_beacon, f"Name: {exploit_name}")
+            shad0w.event.beacon_info(current_beacon, f"Author: {author}")
+            shad0w.event.beacon_info(current_beacon, f"CVE: {cve}")
+            shad0w.event.beacon_info(current_beacon, f"Target: {target}")
+            shad0w.event.beacon_info(current_beacon, f"Versions: {versions}")
+            shad0w.event.beacon_info(current_beacon, f"Arch: {arch}")
+            shad0w.event.beacon_info(current_beacon, f"Supports Secure: {secure}")
 
 def check_exploit(shad0w, name, arch):
     # run the exploit in check mode
@@ -76,7 +79,7 @@ def check_exploit(shad0w, name, arch):
     for exploit in all_exploits:
         exploit_name = os.path.basename(exploit)
         if name == exploit_name:
-            importlib.import_module(exploit.replace("/", ".")).check(shad0w, arch)
+            importlib.import_module(exploit.replace("/", ".")).check(shad0w, arch, current_beacon)
 
 def use_exploit(shad0w, name, arch):
     # run the exploit in exploit mode
@@ -88,16 +91,14 @@ def use_exploit(shad0w, name, arch):
         exploit_name = os.path.basename(exploit)
         if name == exploit_name:
             exploit_mod = importlib.import_module(exploit.replace("/", "."))
-            threading.Thread(target=exploit_mod.exploit, args=(shad0w, arch)).start()
+            threading.Thread(target=exploit_mod.exploit, args=(shad0w, arch, current_beacon)).start()
 
-def main(shad0w, args):
-    global RAN_COMMAND
-    
-    # check we got a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
-        return
-    
+def main(shad0w, args, beacon):
+    global RAN_COMMAND, current_beacon
+
+    # make beacon global
+    current_beacon = beacon
+
     # usage examples
     usage_examples = """
 
@@ -131,10 +132,10 @@ elevate --smart
         args = parse.parse_args(args[1:])
     except:
         pass
-    
+
     # we need a file to read so if we dont then fail
     if ERROR:
-        print(error_list) 
+        print(error_list)
         parse.print_help()
         return
 
@@ -142,7 +143,7 @@ elevate --smart
     if args.list:
         RAN_COMMAND = True
         list_exploits(shad0w)
-    
+
     # show the details for an exploit
     if args.details:
         RAN_COMMAND = True
@@ -151,15 +152,15 @@ elevate --smart
     # check if an exploit will work
     if args.check:
         RAN_COMMAND = True
-        session_arch = shad0w.beacons[shad0w.current_beacon]["arch"]
+        session_arch = shad0w.beacons[current_beacon]["arch"]
         check_exploit(shad0w, args.check, session_arch)
-    
+
     # check if an exploit will work
     if args.use:
         RAN_COMMAND = True
-        session_arch = shad0w.beacons[shad0w.current_beacon]["arch"]
+        session_arch = shad0w.beacons[current_beacon]["arch"]
         use_exploit(shad0w, args.use, session_arch)
-    
+
     if RAN_COMMAND == False:
         parse.print_help()
         return

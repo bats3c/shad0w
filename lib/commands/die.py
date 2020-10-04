@@ -10,6 +10,9 @@ import argparse
 # identify the task as shellcode execute
 DIE_ID = 0x6000
 
+# beacon to exec command on
+current_beacon = None
+
 # did the command error
 ERROR = False
 error_list = ""
@@ -24,12 +27,15 @@ def exit(status=0, message=None):
     if message != None: print(message)
     return
 
-def main(shad0w, args):
+def die_callback(shad0w, data):
+    # wont be hit
+    return
 
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
-        return
+def main(shad0w, args, beacon):
+    global current_beacon
+
+    # make beacon global
+    current_beacon = beacon
 
     # usage examples
     usage_examples = """
@@ -66,11 +72,12 @@ die -y
 
     # check that the user has confirmed
     if not args.yes:
-        shad0w.debug.log("Confirm you want to kill the current beacon with 'die -y'", log=True)
+        shad0w.event.beacon_info(current_beacon, "Confirm you want to kill the current beacon with 'die -y'")
         return
 
     # tell the beacon to die
     if args.yes:
-        shad0w.beacons[shad0w.current_beacon]["task"] = (DIE_ID, None)
+        shad0w.beacons[current_beacon]["callback"] = die_callback
+        shad0w.beacons[current_beacon]["task"] = (DIE_ID, None)
 
     return

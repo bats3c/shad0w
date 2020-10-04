@@ -7,27 +7,30 @@ from lib import buildtools
 __description__ = "Get the installed .NET versions"
 __author__ = "@_batsec_"
 
+# beacon to exec command on
+current_beacon = None
+
 EXEC_ID = 0x3000
 
 def format_data(shad0w, data):
     data = data.splitlines()
 
     if data[0] == "C:\\Windows\\Microsoft.NET\\Framework\\":
-        shad0w.debug.log(".NET (Universal)", log=True)
+        shad0w.event.beacon_info(current_beacon, ".NET (Universal)\n")
         for line in data:
             if "v" in line:
-                shad0w.debug.log(f"-\t{line}", log=True, pre=False)
+                shad0w.event.beacon_info(current_beacon, f"-\t{line}\n")
 
     if len(data[0]) == 0:
-        shad0w.debug.log(".NET (x64)", log=True)
+        shad0w.event.beacon_info(current_beacon, ".NET (x64)\n")
         for line in data:
             if "v" in line:
-                shad0w.debug.log(f"-\t{line}", log=True, pre=False)
+                shad0w.event.beacon_info(current_beacon, f"-\t{line}\n")
 
 def dotnet_callback(shad0w, data):
     # well its kinda true
     if "v" not in data:
-        shad0w.debug.error(".NET is not installed")
+        shad0w.event.beacon_info(current_beacon, ".NET is not installed")
         return ""
 
     data = data.split("C:\\Windows\\Microsoft.NET\\Framework64\\")
@@ -41,12 +44,11 @@ def dotnet_callback(shad0w, data):
     return ""
 
 
-def main(shad0w, args):
+def main(shad0w, args, beacon):
+    global current_beacon
 
-    # check we actually have a beacon
-    if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
-        return
+    # make beacon global
+    current_beacon = beacon
 
     # clone all the source files
     buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/dotnet/", builddir="/root/shad0w/modules/windows/dotnet/build")
@@ -58,5 +60,5 @@ def main(shad0w, args):
     rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/dotnet/module.exe", want_base64=True)
 
     # set a task for the current beacon to do
-    shad0w.beacons[shad0w.current_beacon]["callback"] = dotnet_callback
-    shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)
+    shad0w.beacons[current_beacon]["callback"] = dotnet_callback
+    shad0w.beacons[current_beacon]["task"] = (EXEC_ID, rcode)
