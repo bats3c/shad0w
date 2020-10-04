@@ -68,6 +68,9 @@ class Shad0wC2(object):
         # super useful
         self.crypt                   = encryption
 
+        # clear any callbacks
+        self.clear_callbacks         = True
+
     def start(self):
 
         # mirror a website if we need to
@@ -245,6 +248,9 @@ class Shad0wTeamServer(object):
         # set the output mode
         self.shad0w.event.buffer_mode = self.shad0w.teamserver
 
+        # give shad0w an instance of the team server
+        self.shad0w.teamsrv = self
+
         # start the http server thread
         thttp = Thread(target=http_server.run_serv, args=(self.shad0w,))
         thttp.daemon = True
@@ -257,21 +263,21 @@ class Shad0wTeamServer(object):
         treeprint.print_sub_straight(f"SSL Key: {args['key']}")
         treeprint.print_sub_straight(f"SSL Cert: {args['cert']}")
 
-        # # start building the payloads
-        # treeprint.print_infomation("Building Payloads")
+        # start building the payloads
+        treeprint.print_infomation("Building Payloads")
 
-        # # compile the the exe and get donut shellcode
-        # treeprint.print_sub_pending("EXE")
-        # asyncio.run(tools.compile_and_store_static(shad0w))
-        # treeprint.print_sub_done("EXE")
+        # compile the the exe and get donut shellcode
+        treeprint.print_sub_pending("EXE")
+        asyncio.run(tools.compile_and_store_static(self.shad0w))
+        treeprint.print_sub_done("EXE")
 
-        # # compile the the dll and get srdi shellcode
-        # treeprint.print_sub_pending("DLL")
-        # asyncio.run(tools.compile_and_store_static_srdi(shad0w))
-        # treeprint.print_sub_done("DLL")
+        # compile the the dll and get srdi shellcode
+        treeprint.print_sub_pending("DLL")
+        asyncio.run(tools.compile_and_store_static_srdi(self.shad0w))
+        treeprint.print_sub_done("DLL")
 
-        # # end of tree
-        # treeprint.print_end()
+        # end of tree
+        treeprint.print_end()
 
         # teamserver is ready
         print("")
