@@ -52,5 +52,6 @@ class Handler(object):
                     await cmd_func.main(self.shad0w, cmd_args, beacon)
                 else:
                     cmd_func.main(self.shad0w, cmd_args, beacon)
-            except TypeError:
+            except TypeError as e:
                 self.shad0w.event.debug_log(f"ERROR: Failed to execute command '{basecmd}'")
+                print(e)
