@@ -74,9 +74,10 @@ def not_found(e):
         shad0w.debug.error(f"Value Error: {shad0w.variables['MsfUriSize']}")
 
     try:
-        for obj in shad0w.beacons[shad0w.current_beacon]["serve"]:
-            if obj == request.path:
-                return shad0w.beacons[shad0w.current_beacon]["serve"][obj]
+        for beacon in shad0w.beacons:
+            for path in shad0w.beacons[beacon]["serve"]:
+                if path == request.path:
+                    return shad0w.beacons[beacon]["serve"][path]
     except: pass
 
     if shad0w.mirror is None:
