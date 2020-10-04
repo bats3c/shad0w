@@ -59,8 +59,9 @@ class Handler(object):
                 # get the callback
                 callback = self.shad0w.beacons[beacon_id]["callback"]
 
-                # clear the callback
-                self.shad0w.beacons[beacon_id]["callback"] = None
+                # clear the callback if we should
+                if self.shad0w.clear_callbacks:
+                    self.shad0w.beacons[beacon_id]["callback"] = None
 
                 # call the callback
                 if callback is not None:
@@ -163,8 +164,6 @@ class Handler(object):
         # this will be hit when a stager is requesting a beacon. We will need to parse
         # the request for the beacon and generate the correct one, once this is done we
         # will to to send it back to the stager.
-
-        print("hit")
 
         # a stager should request a beacon via a post request
         if request.method == "POST":
