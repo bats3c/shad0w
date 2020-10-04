@@ -100,7 +100,6 @@ def get_dll_data(file_loc):
 
     return base64.b64encode(data).decode()
 
-
 def generate_beacon_dll(shad0w, rcode):
     # write header file
     write_header(rcode, "/root/shad0w/modules/windows/shinject/beacon.h")
@@ -113,7 +112,7 @@ def generate_beacon_dll(shad0w, rcode):
 
     # check that the dll has built
     if not made:
-        shad0w.debug.error("Error building migrate dll")
+        shad0w.event.beacon_info(current_beacon, "Error building migrate dll")
         return
 
     # return the base64 dll data
