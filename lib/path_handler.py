@@ -47,6 +47,10 @@ class Handler(object):
                 # data then build a responce to give the beacon
 
                 if ((opcode == 0) and (data == "")):
+                    #Timestamping
+                    now = datetime.now()
+                    date_time = now.strftime("%m/%d/%Y %H:%M:%S")
+
                     # get the current task
                     tasklist = self.shad0w.beacons[beacon_id]["task"]
                     # build the responce
@@ -54,7 +58,7 @@ class Handler(object):
                     # clear the task
                     self.shad0w.beacons[beacon_id]["task"] = None
                     # inform user
-                    self.shad0w.debug.log(f"Beacon ({beacon_id}) received task", log=True)
+                    self.shad0w.debug.log(f"Beacon ({beacon_id}) received task at {date_time}", log=True)
                     return task
 
                 # check if the data is for the current beacon
