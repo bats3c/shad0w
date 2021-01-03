@@ -8,15 +8,15 @@ import random
 from lib import shellcode
 
 # warnings to the user about the module they are using
-secure_warning = """The secure payload makes heavy use of new windows features and ntdll api hooking.
-This can make the payload a lot more resistant to EDR products but can also make it more unstable.
-Its been tested on:
-    -   x64 Windows 8.1, x64 Windows 10 (Pro & Enterprise)
-    -   x64 Windows Server 2019
+secure_warning = """The secure payload makes heavy use of new Windows features and ntdll API hooking. This can
+make the payload a lot more resistant to EDR products, but can also make it more unstable.
+It has been tested on:
+    x64 Windows 8.1, x64 Windows 10 (Pro & Enterprise)
+    x64 Windows Server 2019
 It may work on other systems as well.
 """
-static_warning = """Static payloads can be very large and much easier to detect.
-For use in droppers, loaders, exploits etc staged payloads are recommended as they are much smaller, so easier to use.
+static_warning = """Static payloads can be very large and much easier to detect. For use in droppers, loaders, 
+exploits, etc, staged payloads are recommended as they are much smaller and easier to use.
 """
 
 def clone_source_files(rootdir="src", builddir="build", basedir="/root/shad0w/beacon", asm=False, backmake=False):
