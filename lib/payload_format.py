@@ -106,7 +106,7 @@ def create(builder):
     if builder.format == "dll":
 
         if builder.static == None:
-            print("[!] Staged dll payloads are not currently supported")
+            print("[!] Staged DLL payloads are not currently supported.")
             return False
 
         return format_dll(builder)
@@ -114,7 +114,7 @@ def create(builder):
     if builder.format == "psh":
 
         if builder.static == None:
-            print("[!] Staged powershell payloads are not currently supported")
+            print("[!] Staged PowerShell payloads are not currently supported.")
             return False
 
         return format_powershell(builder)
