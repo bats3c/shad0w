@@ -29,7 +29,7 @@ def get_file_data(filename):
 
     # so we are in the bridge
     bdir = os.getcwd()
-    os.chdir("/root/shad0w/.bridge")
+    os.chdir("/opt/shad0w/.bridge")
 
     try:
         with open(filename, 'rb') as file:
