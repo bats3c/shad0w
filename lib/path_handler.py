@@ -1,10 +1,9 @@
-import sys
 import base64
-from datetime import datetime
-
-from lib import tools
-from lib import buildtools
+import sys
 from .responce_builder import Builder
+from datetime import datetime
+from lib import buildtools
+from lib import tools
 
 DATA_CMD_OUT = 0x2000
 DATA_CMD_PRO = 0x3000
