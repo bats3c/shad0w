@@ -1,18 +1,17 @@
-import os
-import sys
-import json
-import time
-import random
 import hashlib
-from pathlib import Path
+import json
+import os
+import random
+import sys
+import time
 from datetime import datetime
-
 from lib import buildtools
+from pathlib import Path
 
 # list all command scripts in the commands dir, append to list of commands
 def get_commands():
     commandList = []
-    for _, _, f in os.walk("/root/shad0w/lib/commands/"):
+    for _, _, f in os.walk("/opt/shad0w/lib/commands/"):
         for file in f:
             if file.endswith(".py") and "_" not in file:
                 commandList.append(file.replace(".py",""))
@@ -64,7 +63,7 @@ async def compile_and_store_static(shad0w):
 
     mod_name       = f"{build_dir_name}../beacon.exe"
 
-    os.system(f"cp -r /root/shad0w/beacon/lib/* {lib_dir_name}")
+    os.system(f"cp -r /opt/shad0w/beacon/lib/* {lib_dir_name}")
 
     # clone the source files into the temp dir
     buildtools.clone_source_files(rootdir="injectable", builddir=build_dir_name)
@@ -111,7 +110,7 @@ async def compile_and_store_static_srdi(shad0w):
 
     mod_name       = f"{build_dir_name}../beacon.dll"
 
-    os.system(f"cp -r /root/shad0w/beacon/lib/* {lib_dir_name}")
+    os.system(f"cp -r /opt/shad0w/beacon/lib/* {lib_dir_name}")
 
     # clone the source files into the temp dir
     buildtools.clone_source_files(rootdir="reflection", builddir=build_dir_name)
