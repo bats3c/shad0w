@@ -2,8 +2,8 @@
 # Enumerate the running processes
 #
 
-import sys
 import json
+import sys
 
 __description__ = "Get the running processes"
 __author__ = "@_batsec_"
