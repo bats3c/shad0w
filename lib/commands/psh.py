@@ -10,7 +10,7 @@ import string
 import sys
 from lib import shellcode
 
-__description__ = "Run unmanaged powershell on a session"
+__description__ = "Run unmanaged PowerShell on a session"
 __author__ = "@_batsec_"
 
 # identify the task as shellcode execute
