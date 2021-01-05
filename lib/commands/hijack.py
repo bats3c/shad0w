@@ -2,9 +2,9 @@
 # Hijack the execution of a process
 #
 
+import base64
 import os
 import json
-import base64
 
 __description__ = "Hijack a running process, forcing it to run your shellcode"
 __author__ = "@_batsec_"
@@ -29,7 +29,7 @@ def get_file_data(filename):
 
     # so we are in the bridge
     bdir = os.getcwd()
-    os.chdir("/root/shad0w/.bridge")
+    os.chdir("/opt/shad0w/.bridge")
 
     try:
         with open(filename, 'rb') as file:
