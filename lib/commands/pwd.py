@@ -1,6 +1,7 @@
 # 
 # Display the current working directory
 #
+
 import json
 
 __description__ = "Display the current working directory of the beacon"
