@@ -3,7 +3,6 @@
 #
 
 import argparse
-
 from lib import shellcode
 
 __description__ = "Execute mimikatz commands in memory on the target"
@@ -13,7 +12,7 @@ __author__ = "@_batsec_, @gentilkiwi"
 USERCD_EXEC_ID = 0x3000
 
 # location of mimikatz binary
-MIMIKATZ_BIN = "/root/shad0w/bin/mimikatz.x64.exe"
+MIMIKATZ_BIN = "/opt/shad0w/bin/mimikatz.x64.exe"
 
 # did the command error
 ERROR = False
