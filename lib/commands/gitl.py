@@ -11,7 +11,7 @@ import argparse
 from lib import auxiliary
 from lib import shellcode
 
-__description__ = "Universally Evade Sysmon and ETW - Patch the kernel to disable windows event logging"
+__description__ = "Universally Evade Sysmon and ETW - patch the kernel to disable Windows event logging"
 __author__ = "@_batsec_"
 
 # identify the task as shellcode execute
