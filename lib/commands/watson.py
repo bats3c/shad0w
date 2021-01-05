@@ -3,7 +3,6 @@
 #
 
 import argparse
-
 from lib import shellcode
 
 __description__ = "Enumerate missing KBs and suggest exploits for PrivESC"
@@ -13,7 +12,7 @@ __author__ = "@Flangvik, @_RastaMouse"
 USERCD_EXEC_ID = 0x3000
 
 # location of watson binary
-WATSON_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Watson.exe"
+WATSON_BIN = "/opt/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Watson.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):
