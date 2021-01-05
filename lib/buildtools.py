@@ -7,7 +7,7 @@ import string
 from lib import shellcode
 
 # warnings to the user about the module they are using
-secure_warning = """\nThe secure payload makes heavy use of new windows features and ntdll api hooking.
+secure_warning = """The secure payload makes heavy use of new windows features and ntdll api hooking.
 This can make the payload a lot more resistant to EDR products but can also make it more unstable.
 Its been tested on:
     -   x64 Windows 8.1, x64 Windows 10 (Pro & Enterprise)
