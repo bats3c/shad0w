@@ -10,11 +10,10 @@ __description__ = "Get help information"
 __author__ = "@_batsec_"
 
 def usage(shad0w):
-    t = PrettyTable(["Command", "Description", "Author"])
+    t = PrettyTable(["Command", "Description"])
 
     t.align["Command"] = "l"
     t.align["Description"] = "l"
-    t.align["Author"] = "l"
 
     num_of_modules = len(cmd.Shad0wLexer.commands)
 
@@ -26,18 +25,13 @@ def usage(shad0w):
         if shad0w.debugv: importlib.reload(mod)
 
         try:
-            description = mod.__description__
-        except:
-            description = "No description avalible"
-
-        try:
             author = mod.__author__
         except:
             author = "No author avalible"
 
         t.add_row([command, description, author])
         if num != num_of_modules - 1:
-            t.add_row([" ", " ", " "])
+            t.add_row([" ", " "])
 
 
     return t
