@@ -2,8 +2,8 @@
 # List the files in a directory
 #
 
-import json
 import argparse
+import json
 
 __description__ = "List the files in a directory on the target"
 __author__ = "@_batsec_"
