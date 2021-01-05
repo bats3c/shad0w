@@ -1,5 +1,5 @@
-from prompt_toolkit.styles import Style
 from lib import tools
+from prompt_toolkit.styles import Style
 from pygments.lexer import Lexer, RegexLexer, do_insertions, bygroups, \
     include, default, this, using, words
 from pygments.token import Punctuation, \
