@@ -21,7 +21,7 @@ Main features of the SHAD0W C2 are:
 
 Main features of SHAD0W beacons are:
 
-- **Shellcode, EXE, Powershell & More** - Beacons can be generated and used in many different formats
+- **DLL, EXE, PowerShell & Shellcode** - Beacons can be generated and used in many different formats
 - **Process Injection** - Allowing you to `migrate`, `shinject`, `dllinject` and more
 - **Bypass AV** - Payloads are frequently updated to evade common Anti-Virus products
 - **Highly configurable** - Custom jitters, user agents and more
@@ -30,24 +30,18 @@ Main features of SHAD0W beacons are:
 
 Current Modules:
 
-- **GhostPack** - With the binarys compiled nightly via an Azure pipeline. Thanks to [@Flangvik](https://twitter.com/Flangvik)
-- **Unmanaged Powershell** - With built in AMSI bypass
-- **Ghost In The Logs** - Disable ETW & Sysmon, more info can be found [here](https://blog.dylan.codes/evading-sysmon-and-windows-event-logging/)
 - **Elevate** - Built in PrivEsc exploits
-- **SharpSocks** - Reverse socks proxy over HTTPS
-- **SharpCollection** - A ton of .NET offensive tools, more info can be found [here](https://github.com/Flangvik/SharpCollection)
+- **Ghost In The Logs** - Disable ETW & Sysmon, more info can be found [here](https://blog.dylan.codes/evading-sysmon-and-windows-event-logging/)
+- **GhostPack** - With the binarys compiled nightly via an Azure pipeline. Thanks to [@Flangvik](https://twitter.com/Flangvik)
 - **Mimikatz** - For all your credential theft needs
-- **Upload & Download** - Easy data exfiltration
+- **SharpCollection** - A ton of .NET offensive tools, more info can be found [here](https://github.com/Flangvik/SharpCollection)
+- **SharpSocks** - Reverse socks proxy over HTTPS
 - **StdAPI** - Common commands to interact with the file system
+- **Unmanaged Powershell** - With built in AMSI bypass
+- **Upload & Download** - Easy data exfiltration
 
-## Install
+## For install and usage information, see the wiki.
 
-    $ git clone --recurse-submodules https://github.com/bats3c/shad0w.git && cd shad0w
-    $ sudo ./shad0w install
-
-## Usage
-
-https://blog.dylan.codes/shad0w/
 
 ## Official Discord
 
