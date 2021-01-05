@@ -4,7 +4,7 @@
 
 import json
 
-__description__ = "Display the current working directory of the beacon"
+__description__ = "Display the current working directory on the target"
 __author__ = "@_batsec_"
 
 EXEC_ID    = 0x4000
