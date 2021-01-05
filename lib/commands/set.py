@@ -4,7 +4,7 @@
 
 import argparse
 
-__description__ = "Set the value of variables"
+__description__ = "Set the value of a variable"
 
 ERROR = False
 error_list = ""
