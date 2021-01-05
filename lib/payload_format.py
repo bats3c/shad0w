@@ -1,11 +1,9 @@
 # Format the created beacons
 
 import tempfile
-
 from lib import buildtools
-
-from lib.templates import exe
 from lib.templates import dll
+from lib.templates import exe
 from lib.templates import powershell
 
 formats = ('raw', 'exe', 'psh', 'dll')
@@ -30,7 +28,7 @@ def format_raw(builder, length=True, code=False):
 
 def format_exe(builder, length=True, code=False):
     # get the bytes of the exe
-    # with open("/root/shad0w/beacon/beacon.exe", 'rb') as file:
+    # with open("/opt/shad0w/beacon/beacon.exe", 'rb') as file:
     #     rcode = file.read()
 
     # then give them the exe and bridge it
