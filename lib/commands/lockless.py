@@ -3,7 +3,6 @@
 #
 
 import argparse
-
 from lib import shellcode
 
 __description__ = "A tool that allows for the enumeration of open file handles and the copying of locked files"
@@ -13,7 +12,7 @@ __author__ = "@_batsec_, @harmj0y"
 USERCD_EXEC_ID = 0x3000
 
 # location of lockless binary
-LOCKLESS_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/LockLess.exe"
+LOCKLESS_BIN = "/opt/shad0w/bin/SharpCollection/NetFramework_4.5_x86/LockLess.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):
