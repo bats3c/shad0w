@@ -1,8 +1,7 @@
-import os
-import donut
 import base64
+import donut
+import os
 import tempfile
-
 from lib.ShellcodeRDI import *
 
 def generate_srdi(file, flags):
@@ -55,7 +54,7 @@ def generate(file, args, params, parse=True):
     # if we need to parse the args an build it from them then
     if parse:
         # key variables we are going to use
-        donut = f"/root/shad0w/bin/donut.elf"
+        donut = f"/opt/shad0w/bin/donut.elf"
         cmdline = ""
 
         # create a temp file
@@ -89,7 +88,7 @@ def generate(file, args, params, parse=True):
 
     elif parse == False:
         # location of our donut binary
-        donut = f"/root/shad0w/bin/donut.elf"
+        donut = f"/opt/shad0w/bin/donut.elf"
 
         # create a temp file
         temp = tempfile.NamedTemporaryFile()
