@@ -1,8 +1,8 @@
 # Template for a exe beacon
 
 import os
-import string
 import random
+import string
 import tempfile
 
 TEMPLATE = """
