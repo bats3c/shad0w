@@ -5,7 +5,7 @@
 import argparse
 from lib import shellcode
 
-__description__ = "Create a minidump of a process"
+__description__ = "Create a mini dump of a process"
 __author__ = "@_batsec_, @harmj0y"
 
 # identify the task as shellcode execute
