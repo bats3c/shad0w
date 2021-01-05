@@ -2,10 +2,9 @@
 # Execute shellcode inside a process
 #
 
-import os
-import json
 import base64
-
+import json
+import os
 from lib import buildtools
 
 __description__ = "Execute shellcode inside a process"
@@ -95,12 +94,12 @@ def get_dll_data(file_loc):
 
 def generate_beacon_dll(shad0w, rcode):
     # write header file
-    write_header(rcode, "/root/shad0w/modules/windows/shinject/beacon.h")
+    write_header(rcode, "/opt/shad0w/modules/windows/shinject/beacon.h")
 
     # build the dll
-    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/shinject/",
-                                  basedir="/root/shad0w/modules/windows/shinject/")
-    made = buildtools.make_in_clone(modlocation="/root/shad0w/modules/windows/shinject/module.dll",
+    buildtools.clone_source_files(rootdir="/opt/shad0w/modules/windows/shinject/",
+                                  basedir="/opt/shad0w/modules/windows/shinject/")
+    made = buildtools.make_in_clone(modlocation="/opt/shad0w/modules/windows/shinject/module.dll",
                                     builddir=os.getcwd(), make_target="x64")
 
     # check that the dll has built
@@ -109,7 +108,7 @@ def generate_beacon_dll(shad0w, rcode):
         return
 
     # return the base64 dll data
-    return get_dll_data("/root/shad0w/modules/windows/shinject/module.dll")
+    return get_dll_data("/opt/shad0w/modules/windows/shinject/module.dll")
 
 
 def get_file_data(filename):
@@ -117,7 +116,7 @@ def get_file_data(filename):
 
     # so we are in the bridge
     bdir = os.getcwd()
-    os.chdir("/root/shad0w/.bridge")
+    os.chdir("/opt/shad0w/.bridge")
 
     try:
         with open(filename, 'rb') as file:
