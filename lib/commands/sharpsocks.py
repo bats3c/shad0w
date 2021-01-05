@@ -2,11 +2,10 @@
 # Execute sharpsocks on a session
 #
 
-import os
-import time
 import argparse
+import os
 import threading
-
+import time
 from lib import shellcode
 
 __description__ = "Create a socks tunnel over HTTP/HTTPS"
@@ -23,7 +22,7 @@ ERROR = False
 error_list = ""
 
 # location of sharpsocks binary
-sharpsocks_BIN = "/root/shad0w/bin/SharpSocks.x86.exe"
+sharpsocks_BIN = "/opt/shad0w/bin/SharpSocks.x86.exe"
 
 # let argparse error and exit nice
 def error(message):
@@ -43,7 +42,7 @@ def sharpsocks_callback(shad0w, data):
 
 def start_sharpsocks_server(http_listen=None, socks_listen=None, quick=True, cmd_line=None):
     # modules directory
-    modules_dir = "/root/shad0w/modules/windows/sharpsocks/"
+    modules_dir = "/opt/shad0w/modules/windows/sharpsocks/"
 
     # binary name
     bin_name = "SharpSocksServerCore"
