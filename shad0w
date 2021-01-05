@@ -4,7 +4,7 @@
 
 if [ -z "$1" ]
 then
-    exec sudo docker run -v $(pwd):/root/shad0w/.bridge --rm -it shad0w
+    exec sudo docker run -v $(pwd):/opt/shad0w/.bridge --rm -it shad0w
     exit
 fi
 
@@ -18,14 +18,14 @@ fi
 
 if [ "$1" = "beacon" ]
 then
-    exec sudo docker run -v $(pwd):/root/shad0w/.bridge --rm -it shad0w $@
+    exec sudo docker run -v $(pwd):/opt/shad0w/.bridge --rm -it shad0w $@
     exit
 fi
 
 if [ "$1" = "listen" ]
 then
-    exec sudo docker run -v $(pwd):/root/shad0w/.bridge -p 443:443 -p 80:8080 -p 43334:43334 --rm -it shad0w $@
+    exec sudo docker run -v $(pwd):/opt/shad0w/.bridge -p 443:443 -p 80:8080 -p 43334:43334 --rm -it shad0w $@
     exit
 fi
 
-exec sudo docker run -v $(pwd):/root/shad0w/.bridge -p 443:443 -p 80:8080 -p 43334:43334 --rm -it shad0w $@
+exec sudo docker run -v $(pwd):/opt/shad0w/.bridge -p 443:443 -p 80:8080 -p 43334:43334 --rm -it shad0w $@
