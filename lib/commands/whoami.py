@@ -7,7 +7,7 @@ import base64
 import json
 from lib import shellcode
 
-__description__ = "Get infomation about the current user the beacon is running as"
+__description__ = "Get information about the current user"
 __author__ = "@_batsec_"
 
 # using work around for stager bug
