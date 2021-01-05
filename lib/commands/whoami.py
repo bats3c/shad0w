@@ -2,10 +2,9 @@
 # Get infomation about the current user
 #
 
-import json
-import base64
 import argparse
-
+import base64
+import json
 from lib import shellcode
 
 __description__ = "Get infomation about the current user the beacon is running as"
@@ -113,7 +112,7 @@ whoami --groups
     # shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, data)
 
     # do we have arguments to pass to the function?
-    file = "/root/shad0w/bin/whoami.x64.exe"
+    file = "/opt/shad0w/bin/whoami.x64.exe"
 
     # rcode = buildtools.extract_shellcode(beacon_file=file, want_base64=True)
 
