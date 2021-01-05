@@ -10,23 +10,23 @@ SHAD0W is a modular C2 framework designed to successfully operate on mature envi
 
 It will use a range of methods to evade EDR and AV while allowing the operator to continue using tooling an tradecraft they are familiar with. Its powered by Python 3.8 and C, using [Donut](https://github.com/TheWover/donut) for payload generation. By using Donut along side the process injection capabilities of SHAD0W it gives the operator the ability to execute .NET assemblies, EXEs, DLLs, VBS, JS or XSLs fully inside memory. Dynamically resolved syscalls are heavily used to avoid userland API hooking, anti DLL injection to make it harder for EDR to load code into the beacons and offical microsoft mitigation methods to protect spawn processes.
 
-Main features of the SHAD0W C2 are:
+Main SHAD0W C2 features:
 
-- **Built For Docker** - It runs fully inside docker allowing cross platform usage
-- **Live Proxy & Mirror** - The C2 server is able to mirror any website in real time, relaying all non C2 traffic to that site making it look less subject when viewed in a web browser
-- **HTTPS C2 Communication** - All traffic between beacons and the C2 will be encrypted and transmitted over HTTPS
+- **Built for Docker** - It runs fully inside of Docker allowing cross platform usage
+- **Live proxy and mirror** - The C2 server is able to mirror any website in real time, relaying all non C2 traffic to that site making it look less subject when viewed in a web browser
+- **HTTPS C2 communication** - All traffic between beacons and the C2 are encrypted and transmitted over HTTPS
 - **Modern CLI** - The CLI is built on [prompt-toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit)
-- **JSON Based Protocol** - Custom beaons are able to built and used easily with an easy to implement protocol
-- **Extremely Modular** - Easy to create new modules to interact and task beacons
+- **JSON based protocol** - Custom beaons are able to be built and used with an easy to implement protocol
+- **Extremely modular** - Easy to create new modules to interact and task beacons
 
-Main features of SHAD0W beacons are:
+Main SHAD0W beacons features:
 
-- **DLL, EXE, PowerShell & Shellcode** - Beacons can be generated and used in many different formats
-- **Process Injection** - Allowing you to `migrate`, `shinject`, `dllinject` and more
-- **Bypass AV** - Payloads are frequently updated to evade common Anti-Virus products
+- **DLL, EXE, PowerShell and Shellcode** - Beacons can be generated and used in many different formats
+- **Process injection** - Allowing you to `migrate`, `shinject`, `dllinject` and more
+- **Bypass AV** - Payloads are frequently updated to evade common AV products
 - **Highly configurable** - Custom jitters, user agents and more
-- **Proxy Aware** - All callbacks will use the current system proxy
-- **HTTPS C2 Communication** - Traffic to and from the C2 is encrypted via HTTPS
+- **Proxy aware** - All callbacks will use the current system proxy
+- **HTTPS C2 communication** - Traffic to and from the C2 is encrypted via HTTPS
 
 Current Modules:
 
