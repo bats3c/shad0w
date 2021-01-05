@@ -13,7 +13,7 @@ from lib.basecommand import BaseCommand
 USERCD_EXEC_ID = 0x3000
 
 # location of rubeus binary
-RUBEUS_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Rubeus.exe"
+RUBEUS_BIN = "/opt/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Rubeus.exe"
 
 
 class RubeusCommand(BaseCommand):
