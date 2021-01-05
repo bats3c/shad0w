@@ -28,7 +28,7 @@ def exit(status=0, message=None):
     return
 
 def list_exploits(shad0w):
-    sys.path.append("/root/shad0w/exploits/")
+    sys.path.append("/opt/shad0w/exploits/")
     all_exploits = importlib.import_module("__init__").__all__
 
     shad0w.debug.log(f"{len(all_exploits)} avalible exploits:\n", log=True)
@@ -42,7 +42,7 @@ def list_exploits(shad0w):
     print(t)
 
 def show_details(shad0w, name):
-    sys.path.append("/root/shad0w/exploits/")
+    sys.path.append("/opt/shad0w/exploits/")
     all_exploits = importlib.import_module("__init__").__all__
 
     for exploit in all_exploits:
@@ -70,7 +70,7 @@ def show_details(shad0w, name):
 def check_exploit(shad0w, name, arch):
     # run the exploit in check mode
 
-    sys.path.append("/root/shad0w/exploits/")
+    sys.path.append("/opt/shad0w/exploits/")
     all_exploits = importlib.import_module("__init__").__all__
 
     for exploit in all_exploits:
@@ -81,7 +81,7 @@ def check_exploit(shad0w, name, arch):
 def use_exploit(shad0w, name, arch):
     # run the exploit in exploit mode
 
-    sys.path.append("/root/shad0w/exploits/")
+    sys.path.append("/opt/shad0w/exploits/")
     all_exploits = importlib.import_module("__init__").__all__
 
     for exploit in all_exploits:
