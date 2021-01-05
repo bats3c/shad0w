@@ -3,7 +3,6 @@
 #
 
 import argparse
-
 from lib import shellcode
 
 __description__ = "A tool to retrieve saved logins and cookies from chrome"
@@ -13,7 +12,7 @@ __author__ = "@_batsec_, @harmj0y"
 USERCD_EXEC_ID = 0x3000
 
 # location of sharpchrome binary
-SHARPCHROME_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SharpChrome.exe"
+SHARPCHROME_BIN = "/opt/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SharpChrome.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):
