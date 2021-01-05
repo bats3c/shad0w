@@ -1,20 +1,19 @@
+import datetime
 import os
 import signal
-import datetime
-import traceback
 import threading
-
+import traceback
 from lib import input_handler, cmd
-
 from prompt_toolkit import PromptSession
-from pygments.lexers.shell import PowerShellLexer
-from prompt_toolkit.history import FileHistory
-from prompt_toolkit.lexers import PygmentsLexer
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.formatted_text import HTML, ANSI
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.patch_stdout import patch_stdout
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.shortcuts import prompt, CompleteStyle, PromptSession
+from pygments.lexers.shell import PowerShellLexer
+
 
 class Console(object):
 
