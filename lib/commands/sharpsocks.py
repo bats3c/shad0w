@@ -8,7 +8,7 @@ import threading
 import time
 from lib import shellcode
 
-__description__ = "Create a socks tunnel over HTTP/HTTPS"
+__description__ = "Create a SOCKS tunnel over HTTP/HTTPS"
 __author__ = "@_batsec_, @rbmaslen"
 
 # identify the task as shellcode execute
