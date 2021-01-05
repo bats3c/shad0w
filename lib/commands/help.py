@@ -3,7 +3,6 @@
 #
 
 import importlib
-
 from lib import cmd
 from prettytable import PrettyTable
 
