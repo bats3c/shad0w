@@ -5,7 +5,7 @@
 import argparse
 from lib import shellcode
 
-__description__ = "A tool to retrieve saved logins and cookies from chrome"
+__description__ = "Retrieves saved logins and cookies from Google Chrome"
 __author__ = "@_batsec_, @harmj0y"
 
 # identify the task as shellcode execute
