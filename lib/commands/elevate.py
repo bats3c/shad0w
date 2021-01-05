@@ -10,7 +10,7 @@ import threading
 
 from prettytable import PrettyTable
 
-__description__ = "Attempt to elevate the beacons privilages on the target"
+__description__ = "Attempt to elevate privileges"
 __author__ = "@_batsec_"
 
 ERROR = False
