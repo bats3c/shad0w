@@ -6,7 +6,7 @@ import importlib
 from lib import cmd
 from prettytable import PrettyTable
 
-__description__ = "Show shad0ws help infomation"
+__description__ = "Get help infomation"
 __author__ = "@_batsec_"
 
 def usage(shad0w):
