@@ -2,7 +2,8 @@
 # exit shad0w
 #
 
-import os, signal
+import os
+import signal
 
 __description__ = "Exit shad0w C2"
 __author__ = "@_batsec_"
