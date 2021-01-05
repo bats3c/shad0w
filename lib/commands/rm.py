@@ -2,8 +2,8 @@
 # Delete something
 # 
 
-import json
 import argparse
+import json
 
 __description__ = "Delete a file on the target"
 __author__ = "@_batsec_"
