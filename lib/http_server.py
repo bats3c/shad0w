@@ -1,12 +1,10 @@
-import sys
 import logging
 import mimetypes
-
-from lib import mirror, buildtools
+import sys
 from .path_handler import Handler
-
-from OpenSSL import SSL
 from flask import Flask, request, jsonify, Response
+from lib import mirror, buildtools
+from OpenSSL import SSL
 
 app = Flask(__name__)
 
