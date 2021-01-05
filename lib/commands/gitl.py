@@ -18,7 +18,7 @@ __author__ = "@_batsec_"
 USERCD_EXEC_ID = 0x3000
 
 # location of rubeus binary
-RUBEUS_BIN = "/root/shad0w/bin/gitl.x64.exe"
+RUBEUS_BIN = "/opt/shad0w/bin/gitl.x64.exe"
 
 # did the command error
 ERROR = False
