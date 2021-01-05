@@ -3,7 +3,6 @@
 #
 
 import argparse
-
 from lib import shellcode
 
 __description__ = "A project that performs a number of security oriented host-survey \"safety checks\""
@@ -13,7 +12,7 @@ __author__ = "@_batsec_, @harmj0y"
 USERCD_EXEC_ID = 0x3000
 
 # location of seatbelt binary
-SEATBELT_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Seatbelt.exe"
+SEATBELT_BIN = "/opt/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Seatbelt.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):
