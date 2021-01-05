@@ -49,13 +49,13 @@ def main(shad0w, args):
         return
 
     # clone all the source files
-    buildtools.clone_source_files(rootdir="/root/shad0w/modules/windows/dotnet/", builddir="/root/shad0w/modules/windows/dotnet/build")
+    buildtools.clone_source_files(rootdir="/opt/shad0w/modules/windows/dotnet/", builddir="/opt/shad0w/modules/windows/dotnet/build")
 
     # compile the module
-    buildtools.make_in_clone(builddir="/root/shad0w/modules/windows/dotnet/build", modlocation="/root/shad0w/modules/windows/dotnet/module.exe", arch="x64")
+    buildtools.make_in_clone(builddir="/opt/shad0w/modules/windows/dotnet/build", modlocation="/opt/shad0w/modules/windows/dotnet/module.exe", arch="x64")
 
     # get the shellcode from the module
-    rcode = buildtools.extract_shellcode(beacon_file="/root/shad0w/modules/windows/dotnet/module.exe", want_base64=True)
+    rcode = buildtools.extract_shellcode(beacon_file="/opt/shad0w/modules/windows/dotnet/module.exe", want_base64=True)
 
     # set a task for the current beacon to do
     shad0w.beacons[shad0w.current_beacon]["callback"] = dotnet_callback
