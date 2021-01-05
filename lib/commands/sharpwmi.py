@@ -3,7 +3,6 @@
 #
 
 import argparse
-
 from lib import shellcode
 
 __description__ = "An implementation of various WMI functionality. Including local/remote WMI queries"
@@ -13,7 +12,7 @@ __author__ = "@_batsec_, @harmj0y"
 USERCD_EXEC_ID = 0x3000
 
 # location of sharpwmi binary
-SHARPWMI_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SharpWMI.exe"
+SHARPWMI_BIN = "/opt/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SharpWMI.exe"
 
 # little hack but lets us pass the args to donut
 class DummyClass(object):
