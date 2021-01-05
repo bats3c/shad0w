@@ -7,7 +7,7 @@ import argparse
 
 from lib import buildtools
 
-__description__ = "Display the contents of a file on the target machine"
+__description__ = "Display the contents of a file on the target"
 __author__ = "@_batsec_"
 
 EXEC_ID   = 0x4000
