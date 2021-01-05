@@ -2,8 +2,8 @@
 # Create a directory
 # 
 
-import json
 import argparse
+import json
 
 __description__ = "Create a new directory on the target"
 __author__ = "@_batsec_"
