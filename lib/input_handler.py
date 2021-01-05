@@ -1,9 +1,8 @@
-import os
 import importlib
-
+import os
+from lib.commands import *
 from prompt_toolkit.patch_stdout import patch_stdout
 
-from lib.commands import *
 
 class Handler(object):
 
@@ -25,7 +24,7 @@ class Handler(object):
             if cmd[0][0] == "!":
                 # lets execute the commands in the bridge
                 cwd = os.getcwd()
-                os.chdir("/root/shad0w/.bridge")
+                os.chdir("/opt/shad0w/.bridge")
 
                 # execute the command
                 self.shad0w.debug.log(f"Executing: {''.join(cmd[1:])}", log=True)
