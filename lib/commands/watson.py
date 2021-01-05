@@ -5,7 +5,7 @@
 import argparse
 from lib import shellcode
 
-__description__ = "Enumerate missing KBs and suggest exploits for PrivESC"
+__description__ = "Enumerate missing KBs and suggest exploits for privilege escalation"
 __author__ = "@Flangvik, @_RastaMouse"
 
 # identify the task as shellcode execute
