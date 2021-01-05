@@ -79,8 +79,8 @@ class Shad0wC2(object):
         asyncio.run(tools.compile_and_store_static(self))
         asyncio.run(tools.compile_and_store_static_srdi(self))
 
-        # make sure we are in the rootdir
-        os.chdir("/root/shad0w")
+        # make sure we are in the /opt/ directory
+        os.chdir("/opt/shad0w")
 
         # make sure the loading screen has finished
         while self.screen_finish != True:
