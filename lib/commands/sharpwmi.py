@@ -5,7 +5,7 @@
 import argparse
 from lib import shellcode
 
-__description__ = "An implementation of various WMI functionality. Including local/remote WMI queries"
+__description__ = "An implementation of various WMI functionality including local/remote WMI queries"
 __author__ = "@_batsec_, @harmj0y"
 
 # identify the task as shellcode execute
