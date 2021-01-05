@@ -55,7 +55,7 @@ execute -f msg.js
 
         # make sure we are in the users current dir
         b4dir = os.getcwd()
-        os.chdir("/root/shad0w/.bridge")
+        os.chdir("/opt/shad0w/.bridge")
 
         # do we have arguments to pass to the function?
         if params is not None:
