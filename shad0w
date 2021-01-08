@@ -2,13 +2,13 @@
 
 # This is a launcher script for shad0w.
 
-if [ -z "$1" ]
+if [ -z $1 ]
 then
     exec sudo docker run -v $(pwd):/root/shad0w/.bridge --rm -it shad0w
     exit
 fi
 
-if [ "$1" = "install" ]
+if [ $1 = "install" ]
 then
     cp shad0w /usr/bin/shad0w
     docker build -t shad0w .
@@ -16,13 +16,13 @@ then
     exit
 fi
 
-if [ "$1" = "beacon" ]
+if [ $1 = "beacon" ]
 then
     exec sudo docker run -v $(pwd):/root/shad0w/.bridge --rm -it shad0w $@
     exit
 fi
 
-if [ "$1" = "listen" ]
+if [ $1 = "listen" ]
 then
     exec sudo docker run -v $(pwd):/root/shad0w/.bridge -p 443:443 -p 80:8080 -p 43334:43334 --rm -it shad0w $@
     exit
