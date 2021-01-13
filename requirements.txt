@@ -1,9 +1,9 @@
-pyopenssl
-flask
-prompt_toolkit
-pefile
 cffi
 donut-shellcode
-requests
+flask
+pefile
 PrettyTable
+prompt_toolkit
 pygments
+pyopenssl
+requests
