@@ -24,4 +24,13 @@ if [ $1 = "listen" ]; then
     exit
 fi
 
+if [ $1 = "dev" ]; then
+    echo "This option should only be invoked from the base of the shad0w git repo"
+    echo "Once you enter the container shell you will be in /root/shad0w dir."
+    echo "To now run shad0w inside container:"
+    echo "  # python3.8 shad0w.py [listen <options>] [beacon <options>] [help]"
+    exec sudo docker run --entrypoint /bin/bash -v $(pwd):/root/shad0w -p 443:443 -p 80:8080 -p 43334:43334 --rm -it shad0w
+    exit
+fi
+
 exec sudo docker run -v $(pwd):/root/shad0w/.bridge -p 443:443 -p 80:8080 -p 43334:43334 --rm -it shad0w $@
