@@ -426,7 +426,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
     if (!hSession)
     {
-        // not really alot we can do about this, guess we just return and try again later...
+        // not really a lot we can do about this, guess we just return and try again later
         return FALSE;
     }
 
