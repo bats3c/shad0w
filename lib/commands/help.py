@@ -7,7 +7,7 @@ import importlib
 from lib import cmd
 from prettytable import PrettyTable
 
-__description__ = "Show shad0ws help infomation"
+__description__ = "Show shad0ws help information"
 __author__ = "@_batsec_"
 
 def usage(shad0w):
@@ -19,7 +19,7 @@ def usage(shad0w):
 
     num_of_modules = len(cmd.Shad0wLexer.commands)
 
-    shad0w.debug.log(f"{num_of_modules} avalible commands.", log=True)
+    shad0w.debug.log(f"{num_of_modules} available commands.", log=True)
     shad0w.debug.log(f"To get more info on the usage of the command use the flags -h/--help on it.\n", log=True)
 
     for num, command in enumerate(cmd.Shad0wLexer.commands):
@@ -29,12 +29,12 @@ def usage(shad0w):
         try:
             description = mod.__description__
         except:
-            description = "No description avalible"
+            description = "No description available."
 
         try:
             author = mod.__author__
         except:
-            author = "No author avalible"
+            author = "No author available."
 
         t.add_row([command, description, author])
         if num != num_of_modules - 1:

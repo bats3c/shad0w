@@ -1,6 +1,6 @@
-# 
+#
 # Delete something
-# 
+#
 
 import json
 import argparse
@@ -57,7 +57,7 @@ rm "C:\\Users\\thejoker\\deleteme.txt"
     # setup the args
     parse.add_argument("name", nargs='*', help="Name of what you want to delete")
 
-    # make sure we dont die from weird args
+    # make sure we don't die from weird args
     try:
         args = parse.parse_args(args[1:])
     except:

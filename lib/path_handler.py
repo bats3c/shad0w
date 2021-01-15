@@ -17,7 +17,7 @@ class Handler(object):
         super(Handler, self).__init__()
         self.shad0w = shad0w
 
-        # for building responces
+        # for building responses
         self.builder = Builder(shad0w)
 
     def task_beacon(self, request):
@@ -43,18 +43,18 @@ class Handler(object):
             except KeyError: pass
 
             try:
-                # if the beacon isnt just checking in to give us
-                # data then build a responce to give the beacon
+                # if the beacon isn't just checking in to give us
+                # data then build a response to give the beacon
 
                 if ((opcode == 0) and (data == "")):
                     # get the current task
                     tasklist = self.shad0w.beacons[beacon_id]["task"]
-                    # build the responce
+                    # build the response
                     task     = self.builder.build(beacon_id=beacon_id, task=tasklist[0], args=tasklist[1])
                     # clear the task
                     self.shad0w.beacons[beacon_id]["task"] = None
                     # inform user
-                    self.shad0w.debug.log(f"Beacon ({beacon_id}) received task", log=True)
+                    self.shad0w.debug.log(f"Beacon ({beacon_id}) received task.", log=True)
                     return task
 
                 # check if the data is for the current beacon
@@ -68,7 +68,7 @@ class Handler(object):
                     return task
 
             except:
-                # there aint a task, so tell em that
+                # there isn't a task, so tell the user that
                 return self.builder.build(beacon_id=beacon_id, task=None)
         else:
             # ignore
@@ -77,7 +77,7 @@ class Handler(object):
     def register_beacon(self, request):
             # register a new beacon
             # get the info from the initial request an store it
-            # just ignore if the request isnt correct
+            # just ignore if the request isn't correct
 
             if request.method == "POST":
 
@@ -139,11 +139,11 @@ class Handler(object):
                     return self.builder.build(beacon_id=beacon_id, id=beacon_id)
 
                 else:
-                    self.shad0w.debug.log("invalid register request")
+                    self.shad0w.debug.log("Invalid register request.")
                     return self.builder.build(blank=True)
 
             else:
-                self.shad0w.debug.log("invaild http method for register")
+                self.shad0w.debug.log("Invalid http method for register.")
                 return self.builder.build(blank=True)
 
     def stage_beacon(self, request):
@@ -199,7 +199,7 @@ class Handler(object):
             return rcode
 
         else:
-            self.shad0w.debug.log("invaild http method for stager")
+            self.shad0w.debug.log("invalid http method for stager")
             return self.builder.build(blank=True)
 
 

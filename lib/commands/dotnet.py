@@ -27,7 +27,7 @@ def format_data(shad0w, data):
 def dotnet_callback(shad0w, data):
     # well its kinda true
     if "v" not in data:
-        shad0w.debug.error(".NET is not installed")
+        shad0w.debug.error(".NET is not installed.")
         return ""
 
     data = data.split("C:\\Windows\\Microsoft.NET\\Framework64\\")
@@ -45,7 +45,7 @@ def main(shad0w, args):
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
+        shad0w.debug.error("ERROR: No active beacon.")
         return
 
     # clone all the source files

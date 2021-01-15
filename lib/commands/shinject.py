@@ -50,8 +50,7 @@ shinject -p 8725 -f shellcode.bin
 
 
 def build_inject_info(args, rcode):
-    # create the json object to tell the beacon
-    # where to execute the code.
+    # create the json object to tell the beacon where to execute the code
 
     info = {"pid": int(args.pid), "dll": rcode}
 
@@ -135,7 +134,7 @@ def main(shad0w, args):
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
+        shad0w.debug.log("ERROR: No active beacon.", log=True)
         return
 
     cmd = ShinjectCommand(args)

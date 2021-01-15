@@ -1,5 +1,5 @@
 """
-Compile the stuffz
+Compile the stuff
 """
 
 import os

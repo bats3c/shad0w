@@ -51,7 +51,7 @@ def start_sharpsocks_server(http_listen=None, socks_listen=None, quick=True, cmd
     # change to the modules directory
     os.chdir(modules_dir)
 
-    # create the defualt cmd line
+    # create the default cmd line
     if quick == True:
         cmd_line = f"-l http://{http_listen}"
         cmd = f"./{bin_name} {cmd_line} > /tmp/sharpsocks.log"
@@ -109,7 +109,7 @@ def main(shad0w, args):
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
+        shad0w.debug.log("ERROR: No active beacon.", log=True)
         return
 
     # save the raw args
@@ -140,7 +140,7 @@ sharpsocks client -s http://your.redirector:port/ -k key
     parse.add_argument("-v", "--verbose", action='store_true', help="Verbose output")
     parse.add_argument("--kill", action='store_true', help="Kill the socks tunnel")
 
-    # make sure we dont die from weird args
+    # make sure we don't die from weird args
     try:
         args = parse.parse_args(args[1:])
     except:
@@ -163,7 +163,7 @@ sharpsocks client -s http://your.redirector:port/ -k key
         http_listen_addr = f"*:8080"
         key = start_sharpsocks_server(http_listen=http_listen_addr)
         if key == None:
-            print("Failed to start server")
+            print("Failed to start the server.")
             return
 
         threading.Thread(target=await_for_socks_start, args=(shad0w,)).start()

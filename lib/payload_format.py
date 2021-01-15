@@ -65,7 +65,7 @@ def format_powershell(builder, length=True, code=False):
     builder.outfile = temp_file_name
     rcode = format_raw(builder, length=False, code=True)
 
-    # insert into the powershell template
+    # insert into the PowerShell template
     pcode = powershell.generate(rcode)
 
     with open(outfile, "w") as file:

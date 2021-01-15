@@ -132,9 +132,9 @@ psh --info GetHash
     parse.add_argument("-c", "--command", nargs="+", required=False, help="Powershell command to execute")
     parse.add_argument("-m", "--module", required=False, help="Powershell modules to load")
     parse.add_argument("-l", "--list", required=False, action='store_true', help="List all the available modules")
-    parse.add_argument("-i", "--info", required=False, help="Get infomation on a module")
+    parse.add_argument("-i", "--info", required=False, help="Get information on a module")
 
-    # make sure we dont die from weird args
+    # make sure we don't die from weird args
     try:
         args = parse.parse_args(args[1:])
     except:
@@ -146,7 +146,7 @@ psh --info GetHash
         parse.print_help()
         return
 
-    # kinda a hack to make sure we intergrate nice with the shellcode generator
+    # kind of a hack to make sure we integrate nice with the shellcode generator
     donut_args = DummyClass()
 
     psh_args = ""

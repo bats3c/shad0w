@@ -37,7 +37,7 @@ rubeus -x help
         if self.args.execute:
             params = ' '.join(self.args.execute)
 
-            # kinda a hack to make sure we intergrate nice with the shellcode generator
+            # kind of a hack to make sure we integrate nice with the shellcode generator
             self.args.param = self.args.execute
             self.args.cls = False
             self.args.method = False
@@ -59,7 +59,7 @@ def main(shad0w, args):
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
+        shad0w.debug.log("ERROR: No active beacon.", log=True)
         return
 
     cmd = RubeusCommand(args)

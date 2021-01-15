@@ -1,5 +1,5 @@
 # 
-# Get infomation about the current user
+# Get information about the current user
 #
 
 import json
@@ -8,7 +8,7 @@ import argparse
 
 from lib import shellcode
 
-__description__ = "Get infomation about the current user the beacon is running as"
+__description__ = "Get information about the current user the beacon is running as"
 __author__ = "@_batsec_"
 
 # using work around for stager bug
@@ -82,11 +82,11 @@ whoami --groups
     parse.error = error
 
     # setup the args
-    parse.add_argument("-a", "--all", action='store_true', help="Show all avalible infomation")
-    parse.add_argument("-p", "--privs", action='store_true', help="Show all privilages")
+    parse.add_argument("-a", "--all", action='store_true', help="Show all available information")
+    parse.add_argument("-p", "--privs", action='store_true', help="Show all privileges")
     parse.add_argument("-g", "--groups", action='store_true', help="Show all groups the user is a member of")
 
-    # make sure we dont die from weird args
+    # make sure we don't die from weird args
     try:
         args = parse.parse_args(args[1:])
     except:

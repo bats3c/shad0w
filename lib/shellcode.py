@@ -17,12 +17,12 @@ def generate_srdi(file, flags):
 
 def parse_donut_error(data, filename):
     if "Error : File not found." in data:
-        print(f"Unable to find '{filename}'")
+        print(f"Unable to find '{filename}'.")
     else:
-        print(f"Failed to execute '{filename}'")
+        print(f"Failed to execute '{filename}'.")
 
 def generate(file, args, params, parse=True):
-    """ generate shellcode from a pe using donut """
+    """ generate shellcode from a pe using Donut """
 
     """
     # build args, kinda messy but idk how else to do it
@@ -48,9 +48,9 @@ def generate(file, args, params, parse=True):
     return base64.b64encode(shellcode_bytes).decode()
     """
 
-    # using the python bindings for donut doesn't seem to let them
+    # using the python bindings for Donut doesn't seem to let them
     # build shellcode from a pe with any arguments? Using this as
-    # a dirty work around untill this is fixed
+    # a dirty work around until this is fixed
 
     # if we need to parse the args an build it from them then
     if parse:

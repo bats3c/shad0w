@@ -18,7 +18,7 @@ ERROR = False
 error_list = ""
 
 # name of the file to download
-FILE_TO_DOWLOAD = ""
+FILE_TO_DOWNLOAD = ""
 
 # let argparse error and exit nice
 def error(message):
@@ -31,20 +31,20 @@ def exit(status=0, message=None):
     return
 
 def download_callback(shad0w, data):
-    global FILE_TO_DOWLOAD
+    global FILE_TO_DOWNLOAD
 
     shad0w.beacons[shad0w.current_beacon]["callback"] = None
 
-    FILE_TO_DOWLOAD = ''.join(FILE_TO_DOWLOAD)
+    FILE_TO_DOWNLOAD = ''.join(FILE_TO_DOWNLOAD)
 
-    shad0w.debug.good(f"Downloading '{FILE_TO_DOWLOAD}' ({len(data)} bytes)")
+    shad0w.debug.good(f"Downloading '{FILE_TO_DOWNLOAD}' ({len(data)} bytes)")
 
     # change to the dir of the folder mapped to the users current dir
     os.chdir("/root/shad0w/.bridge")
 
-    # os.unlink(FILE_TO_DOWLOAD)
+    # os.unlink(FILE_TO_DOWNLOAD)
 
-    with open(FILE_TO_DOWLOAD, 'wb') as file:
+    with open(FILE_TO_DOWNLOAD, 'wb') as file:
         file.write(base64.b64decode(data))
 
     # change the dir to our root
@@ -56,11 +56,11 @@ def download_callback(shad0w, data):
 
 
 def main(shad0w, args):
-    global FILE_TO_DOWLOAD
+    global FILE_TO_DOWNLOAD
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
+        shad0w.debug.error("ERROR: No active beacon.")
         return
 
     # usage examples
@@ -83,13 +83,13 @@ download C:\\Users\\thejoker\\Desktop\\evil_plans.txt
     # setup the args
     parse.add_argument("file", nargs='*', help="File you want to download")
 
-    # make sure we dont die from weird args
+    # make sure we don't die from weird args
     try:
         args = parse.parse_args(args[1:])
     except:
         pass
     
-    # we need a file to read so if we dont then fail
+    # we need a file to read so if we don't then fail
     if len(args.file) == 0:
         print(error_list) 
         parse.print_help()
@@ -102,7 +102,7 @@ download C:\\Users\\thejoker\\Desktop\\evil_plans.txt
     os.chdir("/root/shad0w/.bridge")
     
     # make this variable global so the call back can access it 
-    FILE_TO_DOWLOAD = args.file
+    FILE_TO_DOWNLOAD = args.file
     
     # change back to our dir
     os.chdir(shad0w_cwd)

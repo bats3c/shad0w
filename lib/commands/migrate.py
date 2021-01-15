@@ -105,7 +105,7 @@ def generate_beacon_dll(shad0w, rcode):
 
     # check that the dll has built
     if made != True:
-        shad0w.debug.error("Error building migrate dll")
+        shad0w.debug.error("Error building migrate dll.")
         return
 
     # return the base64 dll data
@@ -119,7 +119,7 @@ def await_impersonate(shad0w, pid):
             imp_beacon_id = shad0w.beacons[shad0w.current_beacon]["impersonate"]
 
             shad0w.beacons[shad0w.current_beacon]["task"] = (0x6000, None)
-            shad0w.debug.log("Tasked beacon to die", log=True)
+            shad0w.debug.log("Tasked beacon to die.", log=True)
 
             shad0w.current_beacon = imp_beacon_id
             break
@@ -131,7 +131,7 @@ def main(shad0w, args):
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
+        shad0w.debug.log("ERROR: No active beacon.", log=True)
         return
 
     # usage examples
@@ -154,7 +154,7 @@ migrate -p 8725
     # set the args
     parse.add_argument("-p", "--pid", required=True, help="PID to migrate to")
 
-    # make sure we dont die from weird args
+    # make sure we don't die from weird args
     try:
         args = parse.parse_args(args[1:])
     except:
