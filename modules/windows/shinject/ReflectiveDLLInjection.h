@@ -31,7 +31,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-// we declare some common stuff in here...
+// we declare some common stuff in here
 
 #define DLL_QUERY_HMODULE		6
 

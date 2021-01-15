@@ -15,7 +15,7 @@ USERCD_EXEC_ID = 0x3000
 # location of seatbelt binary
 SEATBELT_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Seatbelt.exe"
 
-# little hack but lets us pass the args to donut
+# little hack but lets us pass the args to Donut
 class DummyClass(object):
     def __init__(self):
         pass

@@ -33,7 +33,7 @@ HINSTANCE hAppInstance = NULL;
 #pragma intrinsic( _ReturnAddress )
 // This function can not be inlined by the compiler or we will not get the address we expect. Ideally 
 // this code will be compiled with the /O2 and /Ob1 switches. Bonus points if we could take advantage of 
-// RIP relative addressing in this instance but I dont believe we can do so with the compiler intrinsics 
+// RIP relative addressing in this instance but I don't believe we can do so with the compiler intrinsics
 // available (and no inline asm available under x64).
 // __declspec(noinline) ULONG_PTR caller( VOID ) { return (ULONG_PTR)_ReturnAddress(); }
 __declspec(noinline) ULONG_PTR caller( VOID ) { return (ULONG_PTR)__builtin_return_address(0); }
@@ -87,7 +87,7 @@ DLLEXPORT ULONG_PTR WINAPI ReflectiveLoader( VOID )
 	uiLibraryAddress = caller();
 
 	// loop through memory backwards searching for our images base address
-	// we dont need SEH style search as we shouldnt generate any access violations with this
+	// we don't need SEH style search as we shouldn't generate any access violations with this
 	while( TRUE )
 	{
 		if( ((PIMAGE_DOS_HEADER)uiLibraryAddress)->e_magic == IMAGE_DOS_SIGNATURE )
@@ -108,9 +108,9 @@ DLLEXPORT ULONG_PTR WINAPI ReflectiveLoader( VOID )
 
 	lpParameter = (LPVOID)*((PULONG_PTR)((LPBYTE)uiLibraryAddress + 2));
 
-	// STEP 1: process the kernels exports for the functions our loader needs...
+	// STEP 1: process the kernels exports for the functions our loader needs.
 
-	// get the Process Enviroment Block
+	// get the Process Environment Block
 #ifdef WIN_X64
 	uiBaseAddress = __readgsqword( 0x60 );
 #else
@@ -400,7 +400,7 @@ DLLEXPORT ULONG_PTR WINAPI ReflectiveLoader( VOID )
 			while( uiValueB-- )
 			{
 				// perform the relocation, skipping IMAGE_REL_BASED_ABSOLUTE as required.
-				// we dont use a switch statement to avoid the compiler building a jump table
+				// we don't use a switch statement to avoid the compiler building a jump table
 				// which would not be very position independent!
 				if( ((PIMAGE_RELOC)uiValueD)->type == IMAGE_REL_BASED_DIR64 )
 					*(ULONG_PTR *)(uiValueA + ((PIMAGE_RELOC)uiValueD)->offset) += uiLibraryAddress;
@@ -417,7 +417,7 @@ DLLEXPORT ULONG_PTR WINAPI ReflectiveLoader( VOID )
 					dwInstruction = *(DWORD *)( uiValueA + ((PIMAGE_RELOC)uiValueD)->offset + sizeof(DWORD) );
 					// flip the words to get the instruction as expected
 					dwInstruction = MAKELONG( HIWORD(dwInstruction), LOWORD(dwInstruction) );
-					// sanity chack we are processing a MOV instruction...
+					// sanity check we are processing a MOV instruction
 					if( (dwInstruction & ARM_MOV_MASK) == ARM_MOVT )
 					{
 						// pull out the encoded 16bit value (the high portion of the address-to-relocate)

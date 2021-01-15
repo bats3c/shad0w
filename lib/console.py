@@ -21,7 +21,7 @@ class Console(object):
     def __init__(self, shad0w):
 
         super(Console, self).__init__()
-        # cause its kinda useful
+        # cause its kind of useful
         self.shad0w        = shad0w
 
         # prompts, might add a way to customize this

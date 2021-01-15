@@ -39,7 +39,7 @@ def clone_source_files(rootdir="src", builddir="build", basedir="/root/shad0w/be
 def update_settings_file(shad0wbuild, custom_template=None, custom_path=None):
     # update the settings so that when we build, we will use our new args
 
-    # this is hardcoded so will need docker
+    # this is hardcoded so will need Docker
     if custom_path == None:
         settings_path = "/root/shad0w/beacon/build/settings.h"
     elif custom_path != None:

@@ -25,7 +25,7 @@ def format_data(shad0w, data):
                 shad0w.debug.log(f"-\t{line}", log=True, pre=False)
 
 def dotnet_callback(shad0w, data):
-    # well its kinda true
+    # well its kind of true
     if "v" not in data:
         shad0w.debug.error(".NET is not installed.")
         return ""

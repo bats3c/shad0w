@@ -1,6 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 
-// kinda important
+// kind of important
 
 #include <ntdef.h>
 #include <stdio.h>

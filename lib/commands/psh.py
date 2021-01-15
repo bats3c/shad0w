@@ -37,7 +37,7 @@ def exit(status=0, message=None):
     if message != None: print(message)
     return
 
-# little hack but lets us pass the args to donut
+# little hack but lets us pass the args to Donut
 class DummyClass(object):
     def __init__(self):
         pass
@@ -102,7 +102,7 @@ def main(shad0w, args):
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
+        shad0w.debug.log("ERROR: No active beacon.", log=True)
         return
 
     # usage examples

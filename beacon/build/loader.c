@@ -1,6 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 
-// kinda important 
+// kind of important 
 
 #include <ntdef.h>
 #include <stdio.h>
@@ -46,7 +46,7 @@ HANDLE FindProcess(const char* process)
 
         if (hProcess)
         {
-            // if we can use the process, check it aint us an if it aint return the pid to the injector
+            // if we can use the process, check it isn't us. If it isn't, return the pid to the injector
             if ((GetCurrentProcessId() != pWPIs[i].ProcessId) && (pWPIs[i].ProcessId != 0))
             {
                 // free up the memory
@@ -106,7 +106,7 @@ BOOL InjectModule(CHAR* Bytes, DWORD Size)
 
     if (threadId == 0)
     {
-        // this means that we couldnt find a thread to inject into
+        // this means that we couldn't find a thread to inject into
         return FALSE;
     }
 

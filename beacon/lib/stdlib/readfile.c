@@ -44,7 +44,7 @@ char* readfile(char* szFile)
         return errbuf;
     }
 
-    // we dont need this anymore
+    // we don't need this anymore
     CloseHandle(hFile);
     
     // open it again so we can use it

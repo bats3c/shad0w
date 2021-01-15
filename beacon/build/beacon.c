@@ -33,7 +33,7 @@ void main()
 
     if (!GetBasicUserInfo(&UserInfo))
     {
-        // thats kinda a tuff one, we need this info to function and if we can't get this basic info straight up we cant follow the protocol properly.
+        // thats kind of a tuff one, we need this info to function and if we can't get this basic info straight up we cant follow the protocol properly.
         // let still callback to the C2 but lets just inform them of the error, via NULLs. therefore we still get to keep the session cause other stuff might work.
 
         strcpy( UserInfo.UserName, "NULL" );

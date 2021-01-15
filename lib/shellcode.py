@@ -25,7 +25,7 @@ def generate(file, args, params, parse=True):
     """ generate shellcode from a pe using Donut """
 
     """
-    # build args, kinda messy but idk how else to do it
+    # build args, kind of messy but idk how else to do it
     call_donut = "donut.create(file=file"
     if args.param:
         call_donut += f", params='{params}'"
@@ -39,7 +39,7 @@ def generate(file, args, params, parse=True):
         call_donut += f", appdomain='{args.appdomain}'"
     call_donut += f")"
 
-    # get the shellcode from the file with <3 from donut
+    # get the shellcode from the file with <3 from Donut
     shellcode_bytes = eval(call_donut)
 
     # shellcode_bytes = donut.create(file=file, params='arg1 arg2')

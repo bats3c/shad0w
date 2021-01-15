@@ -49,7 +49,7 @@ char* listdirs(char* Dir)
         return oBuffer;
     }
 
-    // make a nicely formated display of it all
+    // make a nicely formatted display of it all
     sprintf(oBuffer, "Directory: %s\n\n", szDir);   
     sprintf(oBuffer, "%sType\tCreated\t\t  Last Access\t     Length\t Name\n", oBuffer);
     sprintf(oBuffer, "%s----\t-------\t\t  -----------\t     ------\t ----\n", oBuffer);

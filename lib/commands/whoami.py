@@ -59,7 +59,7 @@ async def main(shad0w, args):
     
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
+        shad0w.debug.error("ERROR: No active beacon.")
         return
 
     # usage examples
