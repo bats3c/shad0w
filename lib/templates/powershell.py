@@ -1,4 +1,4 @@
-# Template for a powershell dropper
+# Template for a PowerShell dropper
 
 import random
 import string
