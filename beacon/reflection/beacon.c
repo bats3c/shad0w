@@ -96,6 +96,8 @@ void Entry()
             return;
         }
 
+        free(Buffer);
+
         if (!Success)
         {
             ReportExecutionFail();
