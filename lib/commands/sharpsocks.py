@@ -9,8 +9,9 @@ import threading
 
 from lib import shellcode
 
-__description__ = "Create a socks tunnel over HTTP/HTTPS"
+__description__ = "Create a SOCKS tunnel over HTTP/HTTPS"
 __author__ = "@_batsec_, @rbmaslen"
+__type__ = "module"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

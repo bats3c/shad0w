@@ -2,10 +2,11 @@
 # Kill the beacon
 #
 
+import argparse
+
 __description__ = "Kill the current beacon"
 __author__ = "@_batsec_"
-
-import argparse
+__type__ = "beacon"
 
 # identify the task as shellcode execute
 DIE_ID = 0x6000

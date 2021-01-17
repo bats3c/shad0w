@@ -4,7 +4,8 @@
 
 import argparse
 
-__description__ = "Set the value of variables"
+__description__ = "Set the value of a variable"
+__type__ = "beacon"
 
 ERROR = False
 error_list = ""

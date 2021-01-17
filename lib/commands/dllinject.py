@@ -8,6 +8,7 @@ import base64
 
 __description__ = "Inject a DLL into a process"
 __author__ = "@_batsec_"
+__type__ = "process"
 
 # identify the task as dll injection
 from lib.basecommand import BaseCommand

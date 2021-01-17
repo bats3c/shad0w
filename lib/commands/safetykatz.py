@@ -6,8 +6,9 @@ import argparse
 
 from lib import shellcode
 
-__description__ = "A tool to minidump lsass then use Mimikatz sekurlsa::logonpasswords & sekurlsa::ekeys on it"
+__description__ = "Mini dump LSASS then use Mimikatz sekurlsa::logonpasswords and sekurlsa::ekeys on it"
 __author__ = "@_batsec_, @harmj0y"
+__type__ = "module"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

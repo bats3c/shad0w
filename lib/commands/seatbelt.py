@@ -6,8 +6,9 @@ import argparse
 
 from lib import shellcode
 
-__description__ = "A project that performs a number of security oriented host-survey \"safety checks\""
+__description__ = "Perform a number of security oriented host-survey \"safety checks\""
 __author__ = "@_batsec_, @harmj0y"
+__type__ = "enumeration"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

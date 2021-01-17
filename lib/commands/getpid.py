@@ -1,10 +1,12 @@
 #
 # Get the current pid info
 #
+
 import json
 
-__description__ = "Get the current process info"
+__description__ = "Show current process info"
 __author__ = "@_batsec_"
+__type__ = "process"
 
 EXEC_ID    = 0x4000
 OPCODE_PID = 0x7000

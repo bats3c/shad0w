@@ -6,8 +6,9 @@ import argparse
 
 from lib import shellcode
 
-__description__ = "Enumerate missing KBs and suggest exploits for PrivESC"
+__description__ = "Show missing KBs and suggest exploits for priv esc"
 __author__ = "@Flangvik, @_RastaMouse"
+__type__ = "enumeration"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

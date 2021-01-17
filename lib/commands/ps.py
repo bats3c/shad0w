@@ -5,8 +5,9 @@
 import sys
 import json
 
-__description__ = "Get the running processes"
+__description__ = "Show running processes"
 __author__ = "@_batsec_"
+__type__ = "process"
 
 EXEC_ID    = 0x4000
 OPCODE_PID = 0x8000

@@ -6,8 +6,9 @@ import argparse
 
 from lib import shellcode
 
-__description__ = "A tool that allows for the enumeration of open file handles and the copying of locked files"
+__description__ = "Allows for the enumeration of open file handles and the copying of locked files"
 __author__ = "@_batsec_, @harmj0y"
+__type__ = "module"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

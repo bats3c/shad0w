@@ -9,8 +9,9 @@ import traceback
 
 from lib import buildtools
 
-__description__ = "Download a file from the target machine to shad0ws current directory"
+__description__ = "Download a file from a target"
 __author__ = "@_batsec_"
+__type__ = "file system"
 
 EXEC_ID = 0x3000
 

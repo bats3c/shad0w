@@ -3,8 +3,9 @@
 #
 import json
 
-__description__ = "Display the current working directory of the beacon"
+__description__ = "Show the current working directory on a target"
 __author__ = "@_batsec_"
+__type__ = "file system"
 
 EXEC_ID    = 0x4000
 OPCODE_PWD = 0x3000

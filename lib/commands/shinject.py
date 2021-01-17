@@ -7,12 +7,12 @@ import json
 import base64
 
 from lib import buildtools
+# identify the task as shellcode execute
+from lib.basecommand import BaseCommand
 
 __description__ = "Execute shellcode inside a process"
 __author__ = "@_batsec_"
-
-# identify the task as shellcode execute
-from lib.basecommand import BaseCommand
+__type__ = "process"
 
 DLLINJECT_EXEC_ID = 0x5000
 

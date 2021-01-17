@@ -6,8 +6,9 @@ import argparse
 
 from lib import shellcode
 
-__description__ = "C# Rewrite of the BloodHound3 Ingestor, targeted for NET 4.5"
+__description__ = "C# rewrite of the BloodHound3 Ingestor, targeted for .NET 4.5"
 __author__ = "@Flangvik, @CptJesus"
+__type__ = "module"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

@@ -6,8 +6,9 @@ import argparse
 
 from lib import shellcode
 
-__description__ = "A tool to retrieve saved logins and cookies from chrome"
+__description__ = "Retrieve saved logins and cookies from Google Chrome"
 __author__ = "@_batsec_, @harmj0y"
+__type__ = "enumeration"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

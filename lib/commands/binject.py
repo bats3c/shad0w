@@ -10,6 +10,7 @@ from lib import buildtools
 
 __description__ = "Inject a new beacon into a process"
 __author__ = "@_batsec_"
+__type__ = "process"
 
 # identify the task as shellcode execute
 from lib.basecommand import BaseCommand
