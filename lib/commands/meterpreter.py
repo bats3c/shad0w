@@ -6,8 +6,9 @@ from lib import buildtools, tools, shellcode
 import os
 import argparse
 
-__description__ = "Metasploit handover module, will generate and deploy metasploit payload into memory"
+__description__ = "Metasploit handover module that generates and deploys a Metasploit payload in memory"
 __author__ = "@Flangvik"
+__type__ = "module"
 
 EXEC_ID = 0x3000
 

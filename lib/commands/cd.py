@@ -5,8 +5,9 @@
 import json
 import argparse
 
-__description__ = "Change the beacons working directory on the target"
+__description__ = "Change the working directory on a target"
 __author__ = "@_batsec_"
+__type__ = "file system"
 
 EXEC_ID   = 0x4000
 OPCODE_CD = 0x6000

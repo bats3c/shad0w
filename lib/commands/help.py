@@ -7,8 +7,9 @@ import importlib
 from lib import cmd
 from prettytable import PrettyTable
 
-__description__ = "Show shad0ws help information"
+__description__ = "Show help information"
 __author__ = "@_batsec_"
+__type__ = "system"
 
 def usage(shad0w):
     t = PrettyTable(["Command", "Description", "Author"])

@@ -6,8 +6,9 @@ import os
 import json
 import base64
 
-__description__ = "Hijack a running process, forcing it to run your shellcode"
+__description__ = "Hijack a running process and force it to run your shellcode"
 __author__ = "@_batsec_"
+__type__ = "process"
 
 # identify the task as shellcode execute
 from lib.basecommand import BaseCommand

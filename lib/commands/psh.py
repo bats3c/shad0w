@@ -13,6 +13,7 @@ from lib import shellcode
 
 __description__ = "Run unmanaged PowerShell on a session"
 __author__ = "@_batsec_"
+__type__ = "module"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

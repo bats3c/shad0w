@@ -6,8 +6,9 @@ import argparse
 
 from lib import shellcode
 
-__description__ = "A C# port of some DPAPI functionality from mimikatz"
+__description__ = "A C# port of some DPAPI functionality from Mimikatz"
 __author__ = "@_batsec_, @harmj0y"
+__type__ = "module"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

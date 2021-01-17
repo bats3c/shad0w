@@ -6,6 +6,7 @@ from lib import shellcode
 
 __description__ = "A toolset for raw Kerberos interaction and abuses"
 __author__ = "@_batsec_, @harmj0y"
+__type__ = "module"
 
 # identify the task as shellcode execute
 from lib.basecommand import BaseCommand

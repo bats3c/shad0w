@@ -5,8 +5,9 @@
 import json
 import argparse
 
-__description__ = "Create a new directory on the target"
+__description__ = "Create a new directory on a target"
 __author__ = "@_batsec_"
+__type__ = "file system"
 
 EXEC_ID      = 0x4000
 OPCODE_MKDIR = 0x5000

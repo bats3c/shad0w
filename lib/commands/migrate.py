@@ -10,8 +10,9 @@ import threading
 
 from lib import buildtools
 
-__description__ = "Migrate the beacon to a different process"
+__description__ = "Migrate a beacon to a different process"
 __author__ = "@_batsec_"
+__type__ = "process"
 
 # identify the task as shellcode execute
 DLLINJECT_EXEC_ID = 0x5000

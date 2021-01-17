@@ -5,8 +5,9 @@
 import json
 import argparse
 
-__description__ = "Delete a file on the target"
+__description__ = "Delete a file on a target"
 __author__ = "@_batsec_"
+__type__ = "file system"
 
 EXEC_ID   = 0x4000
 OPCODE_RM = 0x4000

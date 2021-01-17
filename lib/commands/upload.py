@@ -8,8 +8,9 @@ import argparse
 
 from lib import buildtools
 
-__description__ = "Upload a file to the target"
+__description__ = "Upload a file to a target"
 __author__ = "@_batsec_"
+__type__ = "file system"
 
 EXEC_ID = 0x3000
 

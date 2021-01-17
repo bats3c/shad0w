@@ -6,8 +6,9 @@ import argparse
 
 from lib import shellcode
 
-__description__ = "A tool to create a minidump of a process"
+__description__ = "Create a mini dump of a process"
 __author__ = "@_batsec_, @harmj0y"
+__type__ = "process"
 
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000

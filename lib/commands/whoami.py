@@ -8,8 +8,9 @@ import argparse
 
 from lib import shellcode
 
-__description__ = "Get information about the current user the beacon is running as"
+__description__ = "Show info about the current user"
 __author__ = "@_batsec_"
+__type__ = "enumeration"
 
 # using work around for stager bug
 # EXEC_ID       = 0x4000
