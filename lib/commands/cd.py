@@ -52,7 +52,7 @@ def main(shad0w, args):
     
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
+        shad0w.debug.error("ERROR: No active beacon.")
         return
 
     # usage examples
@@ -75,7 +75,7 @@ cd "C:\\Documents and Settings"
     # setup the args
     parse.add_argument("dir", nargs='*', help="Location of the dir you want to change to")
 
-    # make sure we dont die from weird args
+    # make sure we don't die from weird args
     try:
         args = parse.parse_args(args[1:])
     except:

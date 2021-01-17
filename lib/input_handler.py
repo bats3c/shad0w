@@ -41,7 +41,7 @@ class Handler(object):
 
         if len(basecmd) > 0:
 
-            # reimport so dont have to restart whole c2 for every file change
+            # reimport so don't have to restart whole c2 for every file change
             # but only do this in debug mode
 
             cmd_func = globals()[basecmd]

@@ -35,7 +35,7 @@ def main(shad0w, args):
     
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
+        shad0w.debug.error("ERROR: No active beacon.")
         return
     
     # usage examples
@@ -60,13 +60,13 @@ cat C:\\Users\\thejoker\\Desktop\\evil_plans.txt
     # setup the args
     parse.add_argument("file", nargs='*', help="file you want to display the contents of")
 
-    # make sure we dont die from weird args
+    # make sure we don't die from weird args
     try:
         args = parse.parse_args(args[1:])
     except:
         pass
     
-    # we need a file to read so if we dont then fail
+    # we need a file to read so if we don't then fail
     if len(args.file) == 0:
         print(error_list) 
         parse.print_help()

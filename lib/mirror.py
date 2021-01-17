@@ -21,7 +21,7 @@ def get_base_page(shad0w, site, dynamic=False, htmlonly=False, method=None, head
         elif not dynamic:
             req = requests.get(site)
     except requests.exceptions.MissingSchema:
-        shad0w.debug.error(f"Need a correctly formatted url e.g https://example.com/")
+        shad0w.debug.error(f"Need a correctly formatted URL (e.g https://example.com).")
         exit(-1)
 
     if not htmlonly:
@@ -53,7 +53,7 @@ def fix_internal_links(shad0w, html, site):
 def mirror_site(shad0w, site, dynamic=False, method=None, headers=None, data=None, cookies=None):
 
     if not dynamic:
-        shad0w.debug.log(f"Connecting to {site}...")        
+        shad0w.debug.log(f"Connecting to {site}.")
         html = get_base_page(shad0w, site, htmlonly=True)
         html = fix_internal_links(shad0w, html, site)
         shad0w.page_data = html

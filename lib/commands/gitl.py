@@ -17,7 +17,7 @@ __author__ = "@_batsec_"
 # identify the task as shellcode execute
 USERCD_EXEC_ID = 0x3000
 
-# location of rubeus binary
+# location of Rubeus binary
 RUBEUS_BIN = "/root/shad0w/bin/gitl.x64.exe"
 
 # did the command error
@@ -70,7 +70,7 @@ def main(shad0w, args):
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
+        shad0w.debug.log("ERROR: No active beacon.", log=True)
         return
 
     # usage examples
@@ -102,7 +102,7 @@ gitl --disable
     parse.add_argument("-e", "--enable", action='store_true', help="Enable the hook (drop all events)")
     parse.add_argument("-d", "--disable", action='store_true', help="Disable the hook (allow all events)")
 
-    # make sure we dont die from weird args
+    # make sure we don't die from weird args
     try:
         args = parse.parse_args(args[1:])
     except:

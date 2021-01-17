@@ -88,7 +88,7 @@ typedef struct _UNICODE_STR
 //__declspec( align(8) ) 
 typedef struct __LDR_DATA_TABLE_ENTRY
 {
-	//LIST_ENTRY InLoadOrderLinks; // As we search from PPEB_LDR_DATA->InMemoryOrderModuleList we dont use the first entry.
+	//LIST_ENTRY InLoadOrderLinks; // As we search from PPEB_LDR_DATA->InMemoryOrderModuleList we don't use the first entry.
 	LIST_ENTRY InMemoryOrderModuleList;
 	LIST_ENTRY InInitializationOrderModuleList;
 	PVOID DllBase;
@@ -252,7 +252,7 @@ static DWORD GetReflectiveLoaderOffset(VOID * lpReflectiveDllBuffer)
 	// get the File Offset of the modules NT Header
 	uiExportDir = uiBaseAddress + ((PIMAGE_DOS_HEADER)uiBaseAddress)->e_lfanew;
 
-	// currenlty we can only process a PE file which is the same type as the one this fuction has
+	// currently we can only process a PE file which is the same type as the one this function has
 	// been compiled as, due to various offset in the PE structures being defined at compile time.
 	if (((PIMAGE_NT_HEADERS)uiExportDir)->OptionalHeader.Magic == 0x010B) // PE32
 	{

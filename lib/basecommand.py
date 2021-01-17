@@ -32,7 +32,7 @@ class BaseCommand:
         return
 
     def parse(self):
-        # make sure we dont die from weird args
+        # make sure we don't die from weird args
         try:
             self.args = self.parser.parse_args(self.args[1:])
         except:

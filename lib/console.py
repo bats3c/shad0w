@@ -21,7 +21,7 @@ class Console(object):
     def __init__(self, shad0w):
 
         super(Console, self).__init__()
-        # cause its kinda useful
+        # cause its kind of useful
         self.shad0w        = shad0w
 
         # prompts, might add a way to customize this
@@ -76,7 +76,7 @@ class Console(object):
         except ValueError: pass
         while True:
             try:
-                # display a prompt depending on wheather we got an active beacon or not
+                # display a prompt depending on whether we got an active beacon or not
                 if self.shad0w.current_beacon is None:
                     input = await self.prompt_session.prompt_async(ANSI(self.prompt), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE)
                 else:
@@ -92,7 +92,7 @@ class Console(object):
                         with patch_stdout():
                             input = await self.prompt_session.prompt_async(ANSI(self.active_prompt % (username, machine)), completer=self.autocomplete, complete_style=CompleteStyle.READLINE_LIKE, refresh_interval=0.5)
 
-                # handle the input we just recived
+                # handle the input we just received
                 try:
                     with patch_stdout():
                         await self.cmd_handler.do(input)

@@ -88,7 +88,7 @@ typedef struct _UNICODE_STR
 //__declspec( align(8) ) 
 typedef struct _LDR_DATA_TABLE_ENTRY
 {
-	//LIST_ENTRY InLoadOrderLinks; // As we search from PPEB_LDR_DATA->InMemoryOrderModuleList we dont use the first entry.
+	//LIST_ENTRY InLoadOrderLinks; // As we search from PPEB_LDR_DATA->InMemoryOrderModuleList we don't use the first entry.
 	LIST_ENTRY InMemoryOrderModuleList;
 	LIST_ENTRY InInitializationOrderModuleList;
 	PVOID DllBase;

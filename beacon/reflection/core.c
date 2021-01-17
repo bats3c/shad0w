@@ -263,7 +263,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     CheckIfDie(&ReadBuffer);
 
     // Decrement json object reference count
-    json_object_put(parsed_json);   
+    json_object_put(parsed_json);
 
     return TRUE;
 }

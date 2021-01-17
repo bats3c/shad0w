@@ -24,7 +24,7 @@ def log_request():
 
     # shad0w.debug.log(request)
 
-    # do nothin jus return
+    # do nothing just return
     return None
 
 @app.route("/")
@@ -45,7 +45,7 @@ def web_register_beacon():
 
     shad0w.debug.log("HTTP - '/register' was hit, attempting to register")
 
-    # just give it the request so it can pull stuff out itsself
+    # just give it the request so it can pull stuff out itself
     return phandle.register_beacon(request)
 
 @app.route("/tasks", methods=["GET", "POST"])
@@ -97,10 +97,10 @@ def run_serv(*args):
 
     phandle = Handler(shad0w)
 
-    shad0w.debug.log("starting flask http server")
+    shad0w.debug.log("Starting flask HTTP server")
     shad0w.debug.log(f"Starting HTTPS server ({shad0w.addr[0]}:{shad0w.addr[1]})", log=True)
 
-    shad0w.debug.log(f"creating ssl context with {shad0w.sslkey} & {shad0w.sslcrt}")
+    shad0w.debug.log(f"Creating SSL context with {shad0w.sslkey} & {shad0w.sslcrt}")
 
     try:
         app.run(host=shad0w.addr[0], port=shad0w.addr[1], ssl_context=(shad0w.sslcrt, shad0w.sslkey))

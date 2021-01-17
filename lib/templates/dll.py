@@ -66,9 +66,9 @@ def compile_exe(code, debug=False):
 def generate(raw_shellcode, debug=False):
 
     enc_shellcode = format_shellcode(raw_shellcode)
-    formated_code = TEMPLATE % (enc_shellcode, len(raw_shellcode))
+    formatted_code = TEMPLATE % (enc_shellcode, len(raw_shellcode))
 
-    filename = compile_exe(formated_code, debug=debug)
+    filename = compile_exe(formatted_code, debug=debug)
 
     with open(filename, "rb") as file:
         return file.read()

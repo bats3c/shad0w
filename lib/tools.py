@@ -29,8 +29,7 @@ def get_data_from_json(jdata):
     opcode = 0
     data   = ""
 
-    # if we get any errors, just return the above values
-    # and this req will then be ignored
+    # if we get any errors, just return the above values and this req will then be ignored
     try:
         id = jdata['id']
         if jdata['opcode']:
@@ -46,7 +45,6 @@ def get_data_from_json(jdata):
 
 async def compile_and_store_static(shad0w):
     # compile a static secure beacon and store it in memory
-
     shad0w.payloads["x64_secure_static"] = {}
 
     arch     = "x64"
@@ -93,7 +91,6 @@ async def compile_and_store_static(shad0w):
 
 async def compile_and_store_static_srdi(shad0w):
     # compile a static secure beacon and store it in memory
-
     shad0w.payloads["x64_secure_static_srdi"] = {}
 
     arch     = "x64"

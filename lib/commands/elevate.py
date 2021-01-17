@@ -10,7 +10,7 @@ import threading
 
 from prettytable import PrettyTable
 
-__description__ = "Attempt to elevate the beacons privilages on the target"
+__description__ = "Attempt to elevate the beacons privileges on the target"
 __author__ = "@_batsec_"
 
 ERROR = False
@@ -31,7 +31,7 @@ def list_exploits(shad0w):
     sys.path.append("/root/shad0w/exploits/")
     all_exploits = importlib.import_module("__init__").__all__
 
-    shad0w.debug.log(f"{len(all_exploits)} avalible exploits:\n", log=True)
+    shad0w.debug.log(f"{len(all_exploits)} available exploits:\n", log=True)
     t = PrettyTable(['Exploit', 'Description'])
     
     for exploit in all_exploits:
@@ -95,7 +95,7 @@ def main(shad0w, args):
     
     # check we got a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.error("ERROR: No active beacon")
+        shad0w.debug.error("ERROR: No active beacon.")
         return
     
     # usage examples
@@ -120,25 +120,25 @@ elevate --smart
     parse.error = error
 
     # setup the args
-    parse.add_argument("-l", "--list", required=False, action='store_true', help="List the exploits avalible for the current session")
+    parse.add_argument("-l", "--list", required=False, action='store_true', help="List the exploits available for the current session")
     parse.add_argument("-d", "--details", required=False, help="Display the details of an exploit")
     parse.add_argument("-c", "--check", required=False, help="Check if the exploit will work")
     parse.add_argument("-u", "--use", required=False, help="Use the exploit to attempt to elevate the session")
     parse.add_argument("-s", "--smart", required=False, action='store_true', help="Attempt to auto elevate by letting shad0w decide what exploits to use")
 
-    # make sure we dont die from weird args
+    # make sure we don't die from weird args
     try:
         args = parse.parse_args(args[1:])
     except:
         pass
     
-    # we need a file to read so if we dont then fail
+    # we need a file to read so if we don't then fail
     if ERROR:
         print(error_list) 
         parse.print_help()
         return
 
-    # list the avalible exploits
+    # list the available exploits
     if args.list:
         RAN_COMMAND = True
         list_exploits(shad0w)

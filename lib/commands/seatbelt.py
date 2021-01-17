@@ -15,7 +15,7 @@ USERCD_EXEC_ID = 0x3000
 # location of seatbelt binary
 SEATBELT_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Seatbelt.exe"
 
-# little hack but lets us pass the args to donut
+# little hack but lets us pass the args to Donut
 class DummyClass(object):
     def __init__(self):
         pass
@@ -111,7 +111,7 @@ def usage():
           RPCMappedEndpoints     - Current RPC endpoints mapped
         + SCCM                   - System Center Configuration Manager (SCCM) settings, if applicable
         + ScheduledTasks         - Scheduled tasks (via WMI) that aren't authored by 'Microsoft', "-full" dumps all Scheduled tasks
-          SearchIndex            - Query results from the Windows Search Index, default term of 'passsword'. (argument(s) == <search path> <pattern1,pattern2,...>
+          SearchIndex            - Query results from the Windows Search Index, default term of 'password'. (argument(s) == <search path> <pattern1,pattern2,...>
           SecurityPackages       - Enumerates the security packages currently available using EnumerateSecurityPackagesA()
           Services               - Services with file info company names that don't contain 'Microsoft', "-full" dumps all processes
           SlackDownloads         - Parses any found 'slack-downloads' files
@@ -209,12 +209,12 @@ def main(shad0w, args):
 
     # check we actually have a beacon
     if shad0w.current_beacon is None:
-        shad0w.debug.log("ERROR: No active beacon", log=True)
+        shad0w.debug.log("ERROR: No active beacon.", log=True)
         return
 
     seatbelt_args = ' '.join(args[1:])
 
-    # kinda a hack to make sure we intergrate nice with the shellcode generator
+    # kind of a hack to make sure we integrate nice with the shellcode generator
     args = DummyClass()
 
     if len(seatbelt_args) != 0:

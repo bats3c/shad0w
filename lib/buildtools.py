@@ -20,10 +20,9 @@ exploits, etc, staged payloads are recommended as they are much smaller and easi
 """
 
 def clone_source_files(rootdir="src", builddir="build", basedir="/root/shad0w/beacon", asm=False, backmake=False):
-    # move the source files of the beacon over
-    # to the build directory
+    # move the source files of the beacon over to the build directory
 
-    # put us in the correct dir (this obviously needs to be inside docker)
+    # put us in the correct dir (this obviously needs to be inside Docker)
     os.chdir(basedir)
 
     # clean the build dir
@@ -38,10 +37,9 @@ def clone_source_files(rootdir="src", builddir="build", basedir="/root/shad0w/be
     return
 
 def update_settings_file(shad0wbuild, custom_template=None, custom_path=None):
-    # update the settings so that when we build
-    # we will use our new args
+    # update the settings so that when we build, we will use our new args
 
-    # this is hardcoded so will need docker
+    # this is hardcoded so will need Docker
     if custom_path == None:
         settings_path = "/root/shad0w/beacon/build/settings.h"
     elif custom_path != None:
@@ -79,7 +77,7 @@ def _gen_key(name):
 
 def _crypt_strings():
     # encrypt strings so they are not hanging around in the binary waiting to be
-    # thrown into a yara rule. This is obsfication not encryption
+    # thrown into a Yara rule. This is obfuscation not encryption
 
     new_file = ""
 
@@ -164,11 +162,10 @@ def make_in_clone(arch=None, platform=None, secure=None, static=None, builddir=N
     return True
 
 def extract_shellcode(beacon_file="/root/shad0w/beacon/beacon.exe", want_base64=False, donut=True, srdi=False):
-    # use donut or srdi to extract the shellcode from
-    # our newly created beacon
+    # use Donut or srdi to extract the shellcode from our newly created beacon
 
     if donut and not srdi:
-        # use donut to get it
+        # use Donut to get it
         if want_base64 is False:
             code = shellcode.generate(beacon_file, None, None, parse=False)
 
@@ -184,7 +181,7 @@ def extract_shellcode(beacon_file="/root/shad0w/beacon/beacon.exe", want_base64=
         # null out the pe header
         flags |= 0x1
 
-        # obfusicate the imports, with no delay
+        # obfuscate the imports, with no delay
         flags = flags | 0x4 | 0 << 16
 
         if want_base64 is False:
@@ -241,7 +238,7 @@ def get_payload_variables(payload_string, warn=True):
         except IndexError:
             raise_issue_payload(payload_string)
 
-        # these two dont matter as much
+        # these two don't matter as much
         try:
             secure   = payload[2]
             static   = payload[3]
@@ -329,14 +326,14 @@ def shellcode_to_array(data):
             line_len += 1
             continue
 
-        # keep the correct sytax at the start
+        # keep the correct syntax at the start
         if length == 0:
             array += f"{hex(i)}, "
             length += 1
             line_len += 1
             continue
 
-        # keep the correct synatx though out
+        # keep the correct syntax though out
         elif length != 0:
             array += f"{hex(i)}, "
             length += 1
@@ -368,7 +365,7 @@ def elevate_build_stage(shad0w, rootdir=None, os=None, arch=None, secure=None, f
         update_settings_file(None, custom_template=settings_template)
 
         # now we need to run 'make' inside the cloned dir
-        # shad0w.debug.spinner(f"Preparing exploit...")
+        # shad0w.debug.spinner(f"Preparing exploit.")
         make_in_clone(arch=arch, platform=os, secure=secure, static=True)
         # shad0w.debug.stop_spinner = True
 
