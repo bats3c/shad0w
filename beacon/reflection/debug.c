@@ -13,4 +13,5 @@ void DEBUG(const char* text, ...)
     va_end(ap);
 
     printf("[DEBUG] %s\n", string); 
+    free(string);
 }

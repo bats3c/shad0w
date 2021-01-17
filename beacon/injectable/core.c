@@ -261,6 +261,9 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
 
     // now check we dont need to kill ourselves
     CheckIfDie(&ReadBuffer);
+    
+    // Decrement json object reference count
+    json_object_put(parsed_json);
 
     // Decrement json object reference count
     json_object_put(parsed_json);
