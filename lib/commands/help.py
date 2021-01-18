@@ -1,9 +1,8 @@
 #
-#   Help    -   Kinda self explanatory what this does...
+#   Help
 #
 
 import importlib
-
 from lib import cmd
 from prettytable import PrettyTable
 
@@ -12,16 +11,16 @@ __author__ = "@_batsec_"
 __type__ = "system"
 
 def usage(shad0w):
-    t = PrettyTable(["Command", "Description", "Author"])
+    t = PrettyTable(["Type", "Command", "Description"])
 
+    t.align["Type"] = "l"
     t.align["Command"] = "l"
     t.align["Description"] = "l"
-    t.align["Author"] = "l"
 
     num_of_modules = len(cmd.Shad0wLexer.commands)
 
     shad0w.debug.log(f"{num_of_modules} available commands.", log=True)
-    shad0w.debug.log(f"To get more info on the usage of the command use the flags -h/--help on it.\n", log=True)
+    shad0w.debug.log(f"To get more info on a command, use the -h flag.\n", log=True)
 
     for num, command in enumerate(cmd.Shad0wLexer.commands):
         mod = importlib.import_module("lib.commands." + command)
@@ -32,15 +31,9 @@ def usage(shad0w):
         except:
             description = "No description available."
 
-        try:
-            author = mod.__author__
-        except:
-            author = "No author available."
-
-        t.add_row([command, description, author])
+        t.add_row([type, command, description])
         if num != num_of_modules - 1:
             t.add_row([" ", " ", " "])
-
 
     return t
 
