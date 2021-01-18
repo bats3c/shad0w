@@ -5,6 +5,7 @@ import tempfile
 
 from lib.ShellcodeRDI import *
 
+
 def generate_srdi(file, flags):
     """ generate shellcode from a reflective dll using sRDI """
 
@@ -15,11 +16,13 @@ def generate_srdi(file, flags):
 
     return ConvertToShellcode(dll_data, hfunc, b"None", flags)
 
+
 def parse_donut_error(data, filename):
     if "Error : File not found." in data:
         print(f"Unable to find '{filename}'.")
     else:
         print(f"Failed to execute '{filename}'.")
+
 
 def generate(file, args, params, parse=True):
     """ generate shellcode from a pe using Donut """

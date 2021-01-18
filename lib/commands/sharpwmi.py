@@ -16,18 +16,22 @@ USERCD_EXEC_ID = 0x3000
 # location of sharpwmi binary
 SHARPWMI_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SharpWMI.exe"
 
-# little hack but lets us pass the args to Donut
+
 class DummyClass(object):
+    # little hack but lets us pass the args to Donut
     def __init__(self):
         pass
+
 
 def sharpwmi_callback(shad0w, data):
     print(data)
 
     return ""
 
+
 def usage():
     pass
+
 
 def main(shad0w, args):
 

@@ -1,5 +1,6 @@
 import json
 
+
 class Builder(object):
 
     def __init__(self, shad0w):
@@ -27,7 +28,8 @@ class Builder(object):
             try:
                 if resp["task"] == None:
                     resp["task"] = 0x1000
-            except KeyError: pass
+            except KeyError:
+                pass
 
             # now return the dict in json format
 

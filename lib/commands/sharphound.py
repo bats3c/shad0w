@@ -16,8 +16,9 @@ USERCD_EXEC_ID = 0x3000
 # location of sharphound binary
 SHARPHOUND_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SharpHound.exe"
 
-# little hack but lets us pass the args to Donut
+
 class DummyClass(object):
+    # little hack but lets us pass the args to Donut
     def __init__(self):
         pass
 
@@ -25,6 +26,7 @@ def sharphound_callback(shad0w, data):
     print(data)
 
     return ""
+
 
 def main(shad0w, args):
 

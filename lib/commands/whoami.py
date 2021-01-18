@@ -21,15 +21,17 @@ TMP_EXEC_ID = 0x3000
 ERROR = False
 error_list = ""
 
-# let argparse error and exit nice
+
 def error(message):
     global ERROR, error_list
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
+
 def exit(status=0, message=None):
     if message != None: print(message)
     return
+
 
 def whoami_callback(shad0w, data):
     if len(data) > 1:
@@ -37,6 +39,7 @@ def whoami_callback(shad0w, data):
         shad0w.debug.log(data.strip("\r\n"), log=True, pre=False, end='')
 
     return ""
+
 
 def get_whoami_args(args):
     data = ""
@@ -51,6 +54,7 @@ def get_whoami_args(args):
         data += "/priv"
     
     return data
+
 
 async def main(shad0w, args):
     global ERROR

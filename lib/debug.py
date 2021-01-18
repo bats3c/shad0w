@@ -2,6 +2,7 @@ import sys
 import time
 import threading
 
+
 class Debug(object):
     def __init__(self, arg):
         super(Debug, self).__init__()
@@ -36,7 +37,6 @@ class Debug(object):
         
         sys.stdout.write("\r")
 
-    
     def spinner(self, text):
         spin_thread = threading.Thread(target=self.do_spinner, args=(text,))
         spin_thread.daemon = False

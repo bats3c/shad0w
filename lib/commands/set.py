@@ -10,15 +10,17 @@ __type__ = "beacon"
 ERROR = False
 error_list = ""
 
-# let argparse error and exit nice
+
 def error(message):
     global ERROR, error_list
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
+
 def exit(status=0, message=None):
     if message != None: print(message)
     return
+
 
 def main(shad0w, args):
     global ERROR

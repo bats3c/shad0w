@@ -16,6 +16,7 @@ from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.shortcuts import prompt, CompleteStyle, PromptSession
 
+
 class Console(object):
 
     def __init__(self, shad0w):
@@ -102,7 +103,8 @@ class Console(object):
                     print("ERROR:", e)
 
                     # if in debug mode drop the full traceback
-                    if self.shad0w.debugv:  traceback.print_exc()
+                    if self.shad0w.debugv:
+                        traceback.print_exc()
 
                     pass
             except KeyboardInterrupt:

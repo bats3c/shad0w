@@ -9,8 +9,9 @@ from datetime import datetime
 
 from lib import buildtools
 
-# list all command scripts in the commands dir, append to list of commands
+
 def get_commands():
+    # list all command scripts in the commands dir, append to list of commands
     commandList = []
     for _, _, f in os.walk("/root/shad0w/lib/commands/"):
         for file in f:
@@ -18,16 +19,18 @@ def get_commands():
                 commandList.append(file.replace(".py",""))
     return commandList
 
+
 def generate_beacon_id():
     # get md5 hash of the current date + time
     return hashlib.md5(str(datetime.now()).encode()).hexdigest()
 
+
 def get_data_from_json(jdata):
     # get the data from data
 
-    id     = ""
+    id = ""
     opcode = 0
-    data   = ""
+    data = ""
 
     # if we get any errors, just return the above values and this req will then be ignored
     try:
@@ -43,18 +46,19 @@ def get_data_from_json(jdata):
 
     return id, opcode, data
 
+
 async def compile_and_store_static(shad0w):
     # compile a static secure beacon and store it in memory
     shad0w.payloads["x64_secure_static"] = {}
 
-    arch     = "x64"
+    arch = "x64"
     platform = "windows"
-    secure   = "secure"
-    static   = "static"
+    secure = "secure"
+    static = "static"
 
     # basically just make a random string
-    dir_name       = generate_beacon_id()
-    lib_dir_name   = "/tmp/" + dir_name + "/lib/"
+    dir_name = generate_beacon_id()
+    lib_dir_name = "/tmp/" + dir_name + "/lib/"
     build_dir_name = "/tmp/" + dir_name + "/build/"
 
     Path(lib_dir_name).mkdir(parents=True, exist_ok=True)
@@ -89,6 +93,7 @@ async def compile_and_store_static(shad0w):
 
     return
 
+
 async def compile_and_store_static_srdi(shad0w):
     # compile a static secure beacon and store it in memory
     shad0w.payloads["x64_secure_static_srdi"] = {}
@@ -99,14 +104,14 @@ async def compile_and_store_static_srdi(shad0w):
     static   = "static"
 
     # basically just make a random string
-    dir_name       = generate_beacon_id()
-    lib_dir_name   = "/tmp/" + dir_name + "/lib/"
+    dir_name = generate_beacon_id()
+    lib_dir_name = "/tmp/" + dir_name + "/lib/"
     build_dir_name = "/tmp/" + dir_name + "/build/"
 
     Path(lib_dir_name).mkdir(parents=True, exist_ok=True)
     Path(build_dir_name).mkdir(parents=True, exist_ok=True)
 
-    mod_name       = f"{build_dir_name}../beacon.dll"
+    mod_name = f"{build_dir_name}../beacon.dll"
 
     os.system(f"cp -r /root/shad0w/beacon/lib/* {lib_dir_name}")
 
@@ -136,13 +141,15 @@ async def compile_and_store_static_srdi(shad0w):
     shad0w.compile_finished = True
     return
 
+
 def loading_banner(shad0w):
     while shad0w.compile_finished != True:
         loading = list("Starting SHAD0W C2...")
         iter = 1
-        colour = random.choice([1,2,3,4,5,6])
+        colour = random.choice([1, 2, 3, 4, 5, 6])
         for i in loading:
-            if shad0w.compile_finished == True: break
+            if shad0w.compile_finished == True:
+                break
             time.sleep(0.15)
 
             i = f"\033[1;3{colour}m" + i + "\033[0m"

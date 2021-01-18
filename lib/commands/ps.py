@@ -9,13 +9,15 @@ __description__ = "Show running processes"
 __author__ = "@_batsec_"
 __type__ = "process"
 
-EXEC_ID    = 0x4000
+EXEC_ID = 0x4000
 OPCODE_PID = 0x8000
+
 
 def ps_callback(shad0w, data):
     sys.stdout.write(data)
 
     return ""
+
 
 def main(shad0w, args):
 

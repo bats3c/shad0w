@@ -28,20 +28,23 @@ error_list = ""
 # make the command output a bit cleaner
 FIRST_OUTPUT = True
 
-# let argparse error and exit nice
+
 def error(message):
     global ERROR, error_list
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
+
 def exit(status=0, message=None):
     if message != None: print(message)
     return
 
-# little hack but lets us pass the args to Donut
+
 class DummyClass(object):
+    # little hack but lets us pass the args to Donut
     def __init__(self):
         pass
+
 
 def psh_callback(shad0w, data):
     global FIRST_OUTPUT
@@ -59,8 +62,10 @@ def psh_callback(shad0w, data):
 
     return ""
 
+
 def encode_string(data):
     return base64.b64encode(data.encode())
+
 
 def random_string():
     rstring = ""
@@ -71,9 +76,11 @@ def random_string():
 
     return rstring
 
+
 def do_copy():
     os.system("cp /root/shad0w/modules/windows/psh/*.cs /root/shad0w/modules/windows/psh/build")
     os.system("cp /root/shad0w/modules/windows/psh/*.dll /root/shad0w/modules/windows/psh/build")
+
 
 def write_args(pwsh):
     do_copy()
@@ -90,12 +97,14 @@ def write_args(pwsh):
     with open("/root/shad0w/modules/windows/psh/build/main.cs", "w") as file:
         file.write(new_file)
 
+
 def compile_binary():
     cwd = os.getcwd()
 
     os.chdir("/root/shad0w/modules/windows/psh/build/")
     os.system("mcs /reference:System.Management.Automation.dll -out:psh.exe main.cs")
     os.chdir(cwd)
+
 
 def main(shad0w, args):
 
