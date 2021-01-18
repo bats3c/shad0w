@@ -2,6 +2,7 @@ __description__ = "Go back to the initial shell"
 __author__ = "@HashtagMarkus"
 __type__ = "beacon"
 
+
 def main(shad0w, args):
 
     # check we actually have a beacon

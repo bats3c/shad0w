@@ -7,8 +7,9 @@ if sys.version_info < (3,0):
 import struct
 from struct import pack
 
-MACHINE_IA64=512
-MACHINE_AMD64=34404
+MACHINE_IA64 = 512
+MACHINE_AMD64 = 34404
+
 
 def is64BitDLL(bytes):
     header_offset = struct.unpack("<L", bytes[60:64])[0]
@@ -16,16 +17,18 @@ def is64BitDLL(bytes):
     if machine == MACHINE_IA64 or machine == MACHINE_AMD64:
         return True   
     return False
-    
+
+
 ror = lambda val, r_bits, max_bits: \
     ((val & (2**max_bits-1)) >> r_bits%max_bits) | \
     (val << (max_bits-(r_bits%max_bits)) & (2**max_bits-1))
 
-def HashFunctionName(name, module = None):
+
+def HashFunctionName(name, module=None):
 
         function = name.encode() + b'\x00'
 
-        if(module):
+        if module:
                 module = module.upper().encode('UTF-16LE') + b'\x00\x00'
 
                 functionHash = 0
@@ -52,6 +55,7 @@ def HashFunctionName(name, module = None):
                         functionHash += b
 
         return functionHash
+
 
 def ConvertToShellcode(dllBytes, functionHash=0x10, userData=b'None', flags=0):
 
@@ -139,7 +143,8 @@ def ConvertToShellcode(dllBytes, functionHash=0x10, userData=b'None', flags=0):
         # User data
         return bootstrap + rdiShellcode + dllBytes + userData
 
-    else: # 32 bit
+    else:
+        # 32 bit
         rdiShellcode = rdiShellcode32
 
         bootstrap = b''

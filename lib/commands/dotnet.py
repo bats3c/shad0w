@@ -10,6 +10,7 @@ __type__ = "enumeration"
 
 EXEC_ID = 0x3000
 
+
 def format_data(shad0w, data):
     data = data.splitlines()
 
@@ -24,6 +25,7 @@ def format_data(shad0w, data):
         for line in data:
             if "v" in line:
                 shad0w.debug.log(f"-\t{line}", log=True, pre=False)
+
 
 def dotnet_callback(shad0w, data):
     # well its kind of true

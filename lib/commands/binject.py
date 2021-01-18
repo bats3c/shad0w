@@ -41,13 +41,13 @@ def generate_beacon_code(shad0w, beacon):
     buildtools.update_settings_file(None, custom_template=settings_template)
 
     if beacon is None:
-        os = shad0w.beacons[shad0w.current_beacon]["os"]
+        os_ = shad0w.beacons[shad0w.current_beacon]["os"]
         arch = shad0w.beacons[shad0w.current_beacon]["arch"]
         secure = shad0w.beacons[shad0w.current_beacon]["secure"]
     else:
         arch, arch, secure, _ = buildtools.get_payload_variables(beacon)
 
-    buildtools.make_in_clone(arch=arch, platform=os, secure=secure, static=True)
+    buildtools.make_in_clone(arch=arch, platform=os_, secure=secure, static=True)
 
     return buildtools.extract_shellcode()
 

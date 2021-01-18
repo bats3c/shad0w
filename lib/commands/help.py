@@ -10,6 +10,7 @@ __description__ = "Show help information"
 __author__ = "@_batsec_"
 __type__ = "system"
 
+
 def usage(shad0w):
     t = PrettyTable(["Type", "Command", "Description"])
 
@@ -28,7 +29,7 @@ def usage(shad0w):
 
         try:
             description = mod.__description__
-        except:
+        except Exception:
             description = "No description available."
 
         t.add_row([type, command, description])
@@ -36,6 +37,7 @@ def usage(shad0w):
             t.add_row([" ", " ", " "])
 
     return t
+
 
 def main(shad0w, args):
     info = usage(shad0w)

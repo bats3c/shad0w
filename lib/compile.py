@@ -4,6 +4,7 @@ Compile the stuff
 
 import os
 
+
 class Binary(object):
     def __init__(self):
         super(Binary, self).__init__()

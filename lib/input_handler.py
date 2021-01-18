@@ -5,6 +5,7 @@ from prompt_toolkit.patch_stdout import patch_stdout
 
 from lib.commands import *
 
+
 class Handler(object):
 
     def __init__(self, shad0w):
@@ -17,8 +18,8 @@ class Handler(object):
         # split command into name + args
 
         splitcommand = cmd.split(" ")
-        basecmd      = splitcommand[0]
-        cmd_args     = splitcommand[0:]
+        basecmd = splitcommand[0]
+        cmd_args = splitcommand[0:]
 
         # see if we need to execute a local command
         try:
@@ -35,7 +36,8 @@ class Handler(object):
                 os.chdir(cwd)
 
                 return
-        except IndexError: pass
+        except IndexError:
+            pass
 
         # find the handle for the module in the globals list an call it with args
 

@@ -16,15 +16,18 @@ USERCD_EXEC_ID = 0x3000
 # location of safetykatz binary
 SAFETYKATZ_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/SafetyKatz.exe"
 
-# little hack but lets us pass the args to Donut
+
 class DummyClass(object):
+    # little hack but lets us pass the args to Donut
     def __init__(self):
         pass
+
 
 def safetykatz_callback(shad0w, data):
     print(data)
 
     return ""
+
 
 def main(shad0w, args):
 

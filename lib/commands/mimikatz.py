@@ -20,16 +20,17 @@ MIMIKATZ_BIN = "/root/shad0w/bin/mimikatz.x64.exe"
 ERROR = False
 error_list = ""
 
-# let argparse error and exit nice
 
 def error(message):
     global ERROR, error_list
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
+
 def exit(status=0, message=None):
     if message != None: print(message)
     return
+
 
 def mimikatz_callback(shad0w, data):
     data = data.replace(".#####.", "\033[1;32m.#####.\033[0m")
@@ -42,6 +43,7 @@ def mimikatz_callback(shad0w, data):
     print(data)
 
     return ""
+
 
 def main(shad0w, args):
 
