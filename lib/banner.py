@@ -1,5 +1,6 @@
 import random
 
+
 class Banner(object):
     def __init__(self):
         super(Banner, self).__init__()

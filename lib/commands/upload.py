@@ -21,15 +21,17 @@ error_list = ""
 FILE_TO_UPLOAD = ""
 FILE_DATA      = ""
 
-# let argparse error and exit nice
+
 def error(message):
     global ERROR, error_list
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
+
 def exit(status=0, message=None): 
     if message != None: print(message)
     return
+
 
 def upload_callback(shad0w, data):
     global FILE_TO_UPLOAD, FILE_DATA
@@ -66,8 +68,8 @@ upload -f fake_secret_plans.txt -d C:\\Users\\thejoker\\Desktop\\batmans_secret_
 
     # init the parser
     parse = argparse.ArgumentParser(prog='upload',
-                                formatter_class=argparse.RawDescriptionHelpFormatter,
-                                epilog=usage_examples)
+                                    formatter_class=argparse.RawDescriptionHelpFormatter,
+                                    epilog=usage_examples)
     
     # keep it behaving nice
     parse.exit = exit

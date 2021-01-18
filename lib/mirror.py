@@ -3,8 +3,10 @@
 import re
 import requests
 
+
 def get_base_domain(site):
     return site.replace("https://", "").replace("http://", "").replace("/", "")
+
 
 def get_base_page(shad0w, site, dynamic=False, htmlonly=False, method=None, headers=None, data=None, cookies=None):
     try:
@@ -31,6 +33,7 @@ def get_base_page(shad0w, site, dynamic=False, htmlonly=False, method=None, head
     if htmlonly:
         return req.text
 
+
 def fix_internal_links(shad0w, html, site):
     # add us to paths
     if shad0w.endpoint is None:
@@ -49,6 +52,7 @@ def fix_internal_links(shad0w, html, site):
             html = re.sub(r'https://' + get_base_domain(shad0w.mirror), endpoint, html)
 
     return html
+
 
 def mirror_site(shad0w, site, dynamic=False, method=None, headers=None, data=None, cookies=None):
 

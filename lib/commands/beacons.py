@@ -8,6 +8,7 @@ __description__ = "Interact with or display current beacons"
 __author__ = "@_batsec_"
 __type__ = "beacon"
 
+
 def _list_beacons(shad0w):
     # I have gcse english, I gonna use it
     if shad0w.beacon_count == 1:
@@ -22,15 +23,15 @@ def _list_beacons(shad0w):
         # stuff we will display
 
         # beacon number
-        num        = shad0w.beacons[beacon]["num"]
+        num = shad0w.beacons[beacon]["num"]
 
         # get last check in time
-        checkin    = shad0w.beacons[beacon]["last_checkin"]
+        checkin = shad0w.beacons[beacon]["last_checkin"]
 
         # stuff to format for name
-        domain     = shad0w.beacons[beacon]["domain"]
-        username   = shad0w.beacons[beacon]["username"]
-        machine    = shad0w.beacons[beacon]["machine"]
+        domain = shad0w.beacons[beacon]["domain"]
+        username = shad0w.beacons[beacon]["username"]
+        machine = shad0w.beacons[beacon]["machine"]
 
         # format of name
         if domain != "NULL":
@@ -44,7 +45,6 @@ def _list_beacons(shad0w):
     
     print(t)
 
-    return
 
 def _interact_beacon(shad0w, args):
     # get beacon number
@@ -54,7 +54,7 @@ def _interact_beacon(shad0w, args):
     try:
         interact_with = int(interact_with)
     except ValueError:
-        shad0w.debug.log(f"'{interact_with}' is an invaild beacon", log=True)
+        shad0w.debug.log(f"'{interact_with}' is an invalid beacon", log=True)
         return
 
     # match the beacon number to the id and then set the current id as that

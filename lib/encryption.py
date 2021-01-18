@@ -1,5 +1,6 @@
 import random
 
+
 class XOR(object):
     def __init__(self):
         super(XOR, self).__init__()
@@ -7,6 +8,7 @@ class XOR(object):
 
     def gen_key(self):
         self.key = random.randint(10, 100)
+
 
     def crypt_file(self, crypt, key, infile=None, data=None, data_length=None):
         bytes = ""

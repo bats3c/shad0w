@@ -8,13 +8,15 @@ __description__ = "Show current process info"
 __author__ = "@_batsec_"
 __type__ = "process"
 
-EXEC_ID    = 0x4000
+EXEC_ID = 0x4000
 OPCODE_PID = 0x7000
+
 
 def pid_callback(shad0w, data):
     shad0w.debug.log(data, log=True, pre=False)
 
     return ""
+
 
 def main(shad0w, args):
 

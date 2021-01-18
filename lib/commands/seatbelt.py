@@ -16,15 +16,18 @@ USERCD_EXEC_ID = 0x3000
 # location of seatbelt binary
 SEATBELT_BIN = "/root/shad0w/bin/SharpCollection/NetFramework_4.5_x86/Seatbelt.exe"
 
-# little hack but lets us pass the args to Donut
+
 class DummyClass(object):
+    # little hack but lets us pass the args to Donut
     def __init__(self):
         pass
+
 
 def seatbelt_callback(shad0w, data):
     print(data)
 
     return ""
+
 
 def usage():
     help_stuff = """
@@ -205,6 +208,7 @@ def usage():
         'Seatbelt.exe -group=user -q -outputfile="C:\\Temp\\out.json"' will run in quiet mode with user checks and output to a .json file.
 """
     print(help_stuff)
+
 
 def main(shad0w, args):
 

@@ -5,6 +5,7 @@ from pygments.lexer import Lexer, RegexLexer, do_insertions, bygroups, \
 from pygments.token import Punctuation, \
     Text, Comment, Operator, Keyword, Name, String, Number, Generic
 
+
 class Shad0wLexer(RegexLexer):
     name = 'shad0w'
     aliases = ['shad0w']

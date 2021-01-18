@@ -26,21 +26,24 @@ error_list = ""
 # location of sharpsocks binary
 sharpsocks_BIN = "/root/shad0w/bin/SharpSocks.x86.exe"
 
-# let argparse error and exit nice
+
 def error(message):
     global ERROR, error_list
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
+
 def exit(status=0, message=None):
     if message != None: print(message)
     return
+
 
 def sharpsocks_callback(shad0w, data):
     if shad0w.sharpsocks_verbose:
         print(data)
 
     return ""
+
 
 def start_sharpsocks_server(http_listen=None, socks_listen=None, quick=True, cmd_line=None):
     # modules directory
@@ -64,8 +67,8 @@ def start_sharpsocks_server(http_listen=None, socks_listen=None, quick=True, cmd
 
     try:
         os.unlink("/tmp/sharpsocks.log")
-    except: pass
-
+    except:
+        pass
 
     data = ""
     for _ in range(0, 5):
@@ -89,9 +92,11 @@ def start_sharpsocks_server(http_listen=None, socks_listen=None, quick=True, cmd
 
     return key
 
+
 def kill_server():
     os.popen("killall -9 SharpSocksServe")
     return
+
 
 def await_for_socks_start(shad0w):
     while True:
@@ -104,6 +109,7 @@ def await_for_socks_start(shad0w):
                 break
         except FileNotFoundError: pass
     return
+
 
 def main(shad0w, args):
     global EXEC_SHARPSOCKS
@@ -148,7 +154,7 @@ sharpsocks client -s http://your.redirector:port/ -k key
         pass
 
     # make sure we have an argument
-    if (len(raw_args) == 1):
+    if len(raw_args) == 1:
         parse.print_help()
         return
 

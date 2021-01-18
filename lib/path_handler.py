@@ -8,7 +8,8 @@ from .responce_builder import Builder
 
 DATA_CMD_OUT = 0x2000
 DATA_CMD_PRO = 0x3000
-DO_CALLBACK  = 0x4000
+DO_CALLBACK = 0x4000
+
 
 class Handler(object):
 
@@ -106,12 +107,12 @@ class Handler(object):
                     self.shad0w.beacons[beacon_id]["num"]          = self.shad0w.beacon_count
 
                     # store basic info about beacon
-                    self.shad0w.beacons[beacon_id]["domain"]              = domain
-                    self.shad0w.beacons[beacon_id]["machine"]             = machine
-                    self.shad0w.beacons[beacon_id]["username"]            = username
-                    self.shad0w.beacons[beacon_id]["arch"]                = arch
-                    self.shad0w.beacons[beacon_id]["os"]                  = opsystem
-                    self.shad0w.beacons[beacon_id]["impersonate"]         = None
+                    self.shad0w.beacons[beacon_id]["domain"] = domain
+                    self.shad0w.beacons[beacon_id]["machine"] = machine
+                    self.shad0w.beacons[beacon_id]["username"] = username
+                    self.shad0w.beacons[beacon_id]["arch"] = arch
+                    self.shad0w.beacons[beacon_id]["os"] = opsystem
+                    self.shad0w.beacons[beacon_id]["impersonate"] = None
 
                     # if we are impersonating a session then tell that beacon
                     if str(impersonate) != "None":
@@ -201,7 +202,6 @@ class Handler(object):
         else:
             self.shad0w.debug.log("invalid http method for stager")
             return self.builder.build(blank=True)
-
 
     def blank_page(self):
         # does what the function says

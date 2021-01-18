@@ -11,7 +11,7 @@ __description__ = "Show the contents of a file on a target"
 __author__ = "@_batsec_"
 __type__ = "file system"
 
-EXEC_ID   = 0x4000
+EXEC_ID = 0x4000
 OPCODE_LS = 0x2000
 
 ERROR = False
@@ -23,22 +23,24 @@ def error(message):
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
+
 def exit(status=0, message=None): 
     if message != None: print(message)
     return
+
 
 def cat_callback(shad0w, data):
     shad0w.debug.log(data, log=True, pre=False)
 
     return ""
 
+
 def main(shad0w, args):
-    
     # check we actually have a beacon
     if shad0w.current_beacon is None:
         shad0w.debug.error("ERROR: No active beacon.")
         return
-    
+
     # usage examples
     usage_examples = """
 Don't try to cat binary files, it doesnt work very well.

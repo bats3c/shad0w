@@ -18,15 +18,17 @@ ERROR = False
 error_list = ""
 RAN_COMMAND = False
 
-# let argparse error and exit nice
+
 def error(message):
     global ERROR, error_list
     ERROR = True
     error_list += f"\033[0;31m{message}\033[0m\n"
 
+
 def exit(status=0, message=None): 
-    if message != None: print(message)
-    return
+    if message is not None:
+        print(message)
+
 
 def list_exploits(shad0w):
     sys.path.append("/root/shad0w/exploits/")
@@ -42,6 +44,7 @@ def list_exploits(shad0w):
     
     print(t)
 
+
 def show_details(shad0w, name):
     sys.path.append("/root/shad0w/exploits/")
     all_exploits = importlib.import_module("__init__").__all__
@@ -56,8 +59,11 @@ def show_details(shad0w, name):
             arch = importlib.import_module(exploit.replace("/", ".")).__description__["Arch"]
 
             secure = importlib.import_module(exploit.replace("/", ".")).__description__["Secure"]
-            if secure: secure = "Yes"
-            else: secure = "No"
+
+            if secure:
+                secure = "Yes"
+            else:
+                secure = "No"
 
             shad0w.debug.log("Exploit details:\n", log=True)
             shad0w.debug.log(f"Name: {exploit_name}", log=True, pre=False)
@@ -67,6 +73,7 @@ def show_details(shad0w, name):
             shad0w.debug.log(f"Versions: {versions}", log=True, pre=False)
             shad0w.debug.log(f"Arch: {arch}", log=True, pre=False)
             shad0w.debug.log(f"Supports Secure: {secure}", log=True, pre=False)
+
 
 def check_exploit(shad0w, name, arch):
     # run the exploit in check mode
@@ -79,6 +86,7 @@ def check_exploit(shad0w, name, arch):
         if name == exploit_name:
             importlib.import_module(exploit.replace("/", ".")).check(shad0w, arch)
 
+
 def use_exploit(shad0w, name, arch):
     # run the exploit in exploit mode
 
@@ -90,6 +98,7 @@ def use_exploit(shad0w, name, arch):
         if name == exploit_name:
             exploit_mod = importlib.import_module(exploit.replace("/", "."))
             threading.Thread(target=exploit_mod.exploit, args=(shad0w, arch)).start()
+
 
 def main(shad0w, args):
     global RAN_COMMAND
@@ -113,8 +122,8 @@ elevate --smart
 
     # init the parser
     parse = argparse.ArgumentParser(prog='elevate',
-                                formatter_class=argparse.RawDescriptionHelpFormatter,
-                                epilog=usage_examples)
+                                    formatter_class=argparse.RawDescriptionHelpFormatter,
+                                    epilog=usage_examples)
 
     # keep it behaving nice
     parse.exit = exit
@@ -163,4 +172,3 @@ elevate --smart
     
     if RAN_COMMAND == False:
         parse.print_help()
-        return
