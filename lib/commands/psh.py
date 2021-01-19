@@ -36,7 +36,8 @@ def error(message):
 
 
 def exit(status=0, message=None):
-    if message != None: print(message)
+    if message is not None:
+        print(message)
     return
 
 

@@ -9,7 +9,7 @@ __description__ = "List the files in a directory on a target"
 __author__ = "@_batsec_"
 __type__ = "file system"
 
-EXEC_ID   = 0x4000
+EXEC_ID = 0x4000
 OPCODE_LS = 0x1000
 
 ERROR = False
@@ -23,7 +23,8 @@ def error(message):
 
 
 def exit(status=0, message=None): 
-    if message != None: print(message)
+    if message is not None:
+        print(message)
     return
 
 
@@ -97,7 +98,7 @@ ls "C:\\Documents and Settings"
     dir = get_list_directory(raw_args, args)
 
     # make the json
-    data = {"op" : OPCODE_LS, "args": dir}
+    data = {"op": OPCODE_LS, "args": dir}
     data = json.dumps(data)
 
     # set a task for the current beacon to do

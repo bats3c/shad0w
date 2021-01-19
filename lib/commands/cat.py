@@ -17,7 +17,7 @@ OPCODE_LS = 0x2000
 ERROR = False
 error_list = ""
 
-# let argparse error and exit nice
+
 def error(message):
     global ERROR, error_list
     ERROR = True
@@ -25,7 +25,8 @@ def error(message):
 
 
 def exit(status=0, message=None): 
-    if message != None: print(message)
+    if message != None:
+        print(message)
     return
 
 
@@ -53,8 +54,8 @@ cat C:\\Users\\thejoker\\Desktop\\evil_plans.txt
 
     # init the parser
     parse = argparse.ArgumentParser(prog='cat',
-                                formatter_class=argparse.RawDescriptionHelpFormatter,
-                                epilog=usage_examples)
+                                    formatter_class=argparse.RawDescriptionHelpFormatter,
+                                    epilog=usage_examples)
     
     # keep it behaving nice
     parse.exit = exit

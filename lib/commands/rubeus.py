@@ -52,8 +52,8 @@ rubeus -x help
 
 
 def rubeus_callback(shad0w, data):
-        print(data)
-        return ""
+    print(data)
+    return ""
 
 
 def main(shad0w, args):
