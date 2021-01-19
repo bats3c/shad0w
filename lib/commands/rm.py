@@ -9,7 +9,7 @@ __description__ = "Delete a file on a target"
 __author__ = "@_batsec_"
 __type__ = "file system"
 
-EXEC_ID   = 0x4000
+EXEC_ID = 0x4000
 OPCODE_RM = 0x4000
 
 ERROR = False
@@ -23,7 +23,8 @@ def error(message):
 
 
 def exit(status=0, message=None): 
-    if message != None: print(message)
+    if message is not None:
+        print(message)
     return
 
 
@@ -75,7 +76,7 @@ rm "C:\\Users\\thejoker\\deleteme.txt"
     del_file = ' '.join(args.name).replace('\\', "\\\\").replace('"', '')
 
     # make the json
-    data = {"op" : OPCODE_RM, "args": del_file}
+    data = {"op": OPCODE_RM, "args": del_file}
     data = json.dumps(data)
 
     # set a task for the current beacon to do

@@ -172,3 +172,4 @@ elevate --smart
     
     if RAN_COMMAND == False:
         parse.print_help()
+        return
