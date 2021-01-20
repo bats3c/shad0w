@@ -12,4 +12,4 @@ RUN ./install.sh
 
 COPY . /root/shad0w
 
-ENTRYPOINT ["python3.8", "./shad0w.py"]
+ENTRYPOINT ["python3", "./shad0w.py"]
