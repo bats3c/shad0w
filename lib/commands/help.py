@@ -25,7 +25,8 @@ def usage(shad0w):
 
     for num, command in enumerate(cmd.Shad0wLexer.commands):
         mod = importlib.import_module("lib.commands." + command)
-        if shad0w.debugv: importlib.reload(mod)
+        if shad0w.debugv:
+            importlib.reload(mod)
 
         try:
             description = mod.__description__
