@@ -23,7 +23,7 @@ def usage(shad0w):
     shad0w.debug.log(f"{num_of_modules} available commands.", log=True)
     shad0w.debug.log(f"To get more info on a command, use the -h flag.\n", log=True)
 
-    # TODO: sort by system, beacon, process, enumeration, file system, priv esc and module
+    # TODO: sort on Type by system, beacon, process, enumeration, file system, priv esc and module
 
     for num, command in enumerate(cmd.Shad0wLexer.commands):
         mod = importlib.import_module("lib.commands." + command)
