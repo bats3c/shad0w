@@ -29,6 +29,11 @@ def usage(shad0w):
             importlib.reload(mod)
 
         try:
+            type = mod.__type__
+        except Exception:
+            type = "No type available."
+
+        try:
             description = mod.__description__
         except Exception:
             description = "No description available."
