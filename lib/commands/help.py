@@ -12,10 +12,10 @@ __type__ = "system"
 
 
 def usage(shad0w):
-    t = PrettyTable(["Type", "Command", "Description"])
+    t = PrettyTable(["Command", "Type", "Description"])
 
-    t.align["Type"] = "l"
     t.align["Command"] = "l"
+    t.align["Type"] = "l"
     t.align["Description"] = "l"
 
     num_of_modules = len(cmd.Shad0wLexer.commands)
@@ -23,8 +23,7 @@ def usage(shad0w):
     shad0w.debug.log(f"{num_of_modules} available commands.", log=True)
     shad0w.debug.log(f"To get more info on a command, use the -h flag.\n", log=True)
 
-    # TODO: sort on Type by system, beacon, process, enumeration, file system, priv esc and module
-
+    tDict = dict()
     for num, command in enumerate(cmd.Shad0wLexer.commands):
         mod = importlib.import_module("lib.commands." + command)
         if shad0w.debugv:
@@ -40,10 +39,12 @@ def usage(shad0w):
         except Exception:
             description = "No description available."
 
-        t.add_row([type, command, description])
-        if num != num_of_modules - 1:
-            t.add_row([" ", " ", " "])
+        tDict[command] = ([command, type, description], num)
 
+    for tup in (sorted(tDict.items())):
+        t.add_row(tup[1][0])
+        if tup[1][1] != num_of_modules - 1:
+            t.add_row([" ", " ", " "])
     return t
 
 

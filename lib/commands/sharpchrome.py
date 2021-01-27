@@ -25,7 +25,6 @@ class DummyClass(object):
 
 def sharpchrome_callback(shad0w, data):
     print(data)
-
     return ""
 
 
