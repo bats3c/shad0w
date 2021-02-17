@@ -31,7 +31,7 @@ Main features of SHAD0W beacons:
 Current Modules:
 - **Elevate** - Built in PrivEsc exploits
 - **Ghost in the Logs** - Disable ETW & Sysmon, more info can be found [here](https://blog.dylan.codes/evading-sysmon-and-windows-event-logging/)
-- **GhostPack** - Ninarys compiled nightly via an Azure pipeline. Thanks to [@Flangvik](https://twitter.com/Flangvik)
+- **GhostPack** - Binarys compiled nightly via an Azure pipeline. Thanks to [@Flangvik](https://twitter.com/Flangvik)
 - **Mimikatz** - For all your credential theft needs
 - **SharpCollection** - A ton of .NET offensive tools, more info can be found [here](https://github.com/Flangvik/SharpCollection)
 - **SharpSocks** - Reverse SOCKS proxy over HTTPS
