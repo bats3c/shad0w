@@ -1,0 +1,48 @@
+{
+  "name": "shad0w-gui",
+  "version": "1.0.0",
+  "description": "First version of shad0w gui",
+  "private": true,
+  "dependencies": {
+    "bootstrap-css-only": "^4.3.1",
+    "enzyme": "^3.10.0",
+    "golden-layout": "^1.5.9",
+    "grpc": "^1.24.2",
+    "js-file-download": "^0.4.8",
+    "md5": "^2.2.1",
+    "react": "^16.12.0",
+    "react-confirm-alert": "^2.4.1",
+    "react-contextmenu": "^2.13.0",
+    "react-dom": "^16.12.0",
+    "react-file-drop": "^0.2.8",
+    "react-fontawesome": "^1.7.1",
+    "react-icons": "^3.8.0",
+    "react-router-dom": "^4.3.1",
+    "react-vis-network": "^1.0.0",
+    "sync-fetch": "^0.3.0"
+  },
+  "homepage": "./",
+  "main": "electron-starter.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "electron-build": "npm run build && electron ."
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "electron": "^5.0.13",
+    "electron-packager": "^14.1.1",
+    "react-scripts": "^2.1.8"
+  }
+}

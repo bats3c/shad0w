@@ -1,5 +1,6 @@
 pyopenssl
 flask
+flask-cors
 prompt_toolkit
 pefile
 cffi

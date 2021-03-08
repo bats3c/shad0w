@@ -8,6 +8,7 @@ from lib import mirror, buildtools
 
 from OpenSSL import SSL
 from flask import Flask, request, jsonify, Response, make_response
+from flask_cors import CORS
 
 # shut flask output up
 log                    = logging.getLogger('werkzeug')
@@ -17,6 +18,7 @@ cli.show_server_banner = lambda *x: None
 
 loop = asyncio.get_event_loop()
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 
 class TeamServer(object):
     def __init__(self, arg):
@@ -89,6 +91,27 @@ class TeamServer(object):
 
         return events
 
+    @app.route("/beacons")
+    def teamserver_get_beacons():
+        """
+        Give infomation to the client about the current beacons. 
+        """
+
+        # get the cookie
+        cookie = request.cookies.get("SDWAuth")
+
+        # check it is valid
+        _, valid = teamsrv.auth_obj.validate_cookie(cookie)
+        if valid is False:
+            return jsonify({"failed": True})
+
+        teamsrv.shad0w.event.debug_log("Handling request for registered beacons")
+
+        events = jsonify(teamsrv.shad0w.beacons)
+
+        return events
+
+
     @app.route("/cmd", methods=["POST"])
     def teamserver_run_command():
         """
@@ -136,7 +159,8 @@ class TeamServer(object):
         teamsrv = args[1]
 
         try:
-            app.run(host=teamsrv.addr, port=teamsrv.port, ssl_context=(teamsrv.cert, teamsrv.key))
+#            app.run(host=teamsrv.addr, port=teamsrv.port, ssl_context=(teamsrv.cert, teamsrv.key))
+            app.run(host=teamsrv.addr, port=teamsrv.port)
         except FileNotFoundError:
             print("[!] Failed to find ssl cert and key")
             exit()

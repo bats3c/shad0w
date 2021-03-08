@@ -1,0 +1,4 @@
+1. Fix cookie auth
+	- since electron hosts the app using file:/// instead of an IP address the cookies won't set.  Resolve this.
+2. Finish adding agents and agent panels
+3. Finish designs.  Remove old Jyang branding, make it shad0w compatible.
