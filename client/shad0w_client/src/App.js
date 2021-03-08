@@ -72,6 +72,13 @@ export default class App extends React.Component {
           alert("BAD CREDENTIALS.  Try again!")
         } else {
           console.log('OK');
+          var now = new Date();
+          var time = now.getTime();
+          var expireTime = time + 1000*36000;
+          now.setTime(expireTime);
+          document.cookie = json["tokenName"]+'='+json+';expires='+now.toUTCString()+';path=/';
+          this.setCookie("tokenName", json["tokenName"]);
+          this.setCookie("tokenValue", json["tokenValue"])
           window.location.reload();
         }
       }).catch((err) => {
@@ -88,10 +95,12 @@ export default class App extends React.Component {
     this.eraseCookie("Nick");
     this.eraseCookie("Host");
     this.eraseCookie("Token");
+    this.eraseCookie("tokenName");
+    this.eraseCookie("tokenValue");
     document.cookie = "SDWAuth= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
     window.location.reload();
   }
-  
+
   //SDWAuth
   UNSAFE_componentWillMount() {
     if (getCookie("LastHost")) {
@@ -103,7 +112,7 @@ export default class App extends React.Component {
     if (getCookie("LastToken")) {
       this.setState({ tokenValue: getCookie("LastToken")});
     }
-    if (document.cookie.indexOf('SDWAuth') !== -1) {
+    if (getCookie("tokenName") && getCookie("tokenValue")) {
       this.setState({isLoaded: true});
     }
   }
@@ -119,7 +128,7 @@ export default class App extends React.Component {
     this.eraseCookie("savedConnections");
     this.eraseCookie("LastHost");
     this.eraseCookie("LastNick");
-    this.eraseCookie("LastTicken");
+    this.eraseCookie("LastToken");
   }
 
   clearConnection() {
@@ -197,14 +206,14 @@ export default class App extends React.Component {
       });
     }
 
-    if (getCookie('Host') === null || getCookie('Nick') === null || getCookie('Token') === null || document.cookie.indexOf('SDWAuth') === -1) {
+    if (getCookie('Host') === null || getCookie('Nick') === null || getCookie('Token') === null || getCookie('tokenName') === null || getCookie('tokenValue') === null) {
       return ( 
         <div className="wrapper fadeInDown fill-cont" style={{backgroundImage : 'url(' + background + ')'}}>
           <div id="formContent" className="fadeIn first">
             <form>
               <br />
               <h1 style={{color:"white"}}>shad0w<br/><span style={{fontSize:"20px"}}>v{packageJson.version}</span></h1>
-              <img src={logo} style={{width:"25%"}} alt="jian yang" />
+              <img src={logo} style={{width:"25%"}} alt="shad0w" />
               <br /><br />
               <p style={{color:"white"}}><strong>Enter a host, nickname and token to login.</strong></p>
               <span className="custom-dropdown">

@@ -7,12 +7,12 @@ const fetch = require('sync-fetch');
 export class AgentsPanel extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { isLoaded: false, focused: false, agents: [], agentsCheck: [], dragSources: [], activeIndex: {}, allIndexes: {} };
+    this.state = { isLoaded: false, focused: false, agents: [], dragSources: [], activeIndex: {}, allIndexes: {} };
   }
 
   render() {
     const { isLoaded, agents, dragSources, allIndexes } = this.state;
-
+    console.log(this.state.agents);
     if (!isLoaded) {
       const FA = require('react-fontawesome');
       return <div className="loading"><FA name="spinner enlargeSpinner" className="rotate"/><br />LOADING</div>;
@@ -20,16 +20,17 @@ export class AgentsPanel extends React.Component {
 
     for (var i = 0; i < localStorage.length; i++) {
       const item = localStorage.key(i);
-      if (item !== "savedConnections" && !item.includes("Host") && !item.includes("Nick") && !item.includes("Token") && !item.includes("gl-") && !item.includes("_latest")) {
-        if (!(item in agents.active_agents)) {
+      if (item !== "savedConnections" && !item.includes("Host") && !item.includes("Nick") && !item.includes("Token") && !item.includes("gl-") && !item.includes("_latest") && !item.includes("token")) {
+        if (!(item in agents)) {
           localStorage.removeItem(item);
           localStorage.removeItem(item+"_latest");
         }
       };
     }
 
-    const agentInfo = Object.keys(agents.active_agents).map(function(key, index) {
-      const agent = agents.active_agents[key];
+    const agentInfo = Object.keys(agents).map(function(key, index) {
+      const agent = agents[key];
+      const uuid = key;
 
       function myClick() {
         this.selectRow(index);
@@ -37,7 +38,7 @@ export class AgentsPanel extends React.Component {
           title: agent["ip"]+"@"+agent["pid"]+":"+agent["procname"],
           type: "react-component",
           component: "agents-menu-component",
-          props: { agentuuid: agent["uuid"] },
+          props: { agentuuid: uuid },
         };
         if( global.myMainLayout.selectedItem === null ) {
           //alert( 'No item selected. Please click the black header bar to select which item you want to add new items to.' );
@@ -47,21 +48,22 @@ export class AgentsPanel extends React.Component {
         }
       }
 
-      allIndexes[index] = agent["uuid"];
-      return <ContextMenuTrigger key={agent["uuid"]} id={agent["uuid"]+"shad0wMENU"} renderTag="tr" attributes={{
-        id: agent["uuid"]+"shad0w",
+      allIndexes[index] = uuid;
+      return <ContextMenuTrigger key={uuid} id={uuid+"shad0wMENU"} renderTag="tr" attributes={{
+        id: uuid+"shad0w",
         className: "pointer " + ((index in this.state.activeIndex) && "active-index")
       }}>
-        {/*<tr id={agent["uuid"]+"shad0w"} key={agent["uuid"]} className="pointer">*/}
-          <td onContextMenu={ e=>this.selectRowRight(index,agent["uuid"]) } onClick={ e=>this.selectRow(index,agent["uuid"]) } onDoubleClick={myClick.bind(this)} /*style={{display: "none"}}*/>{agent["uuid"]}</td>
-          <td onContextMenu={ e=>this.selectRowRight(index,agent["uuid"]) } onClick={ e=>this.selectRow(index,agent["uuid"]) } onDoubleClick={myClick.bind(this)}>{agent["ip"]}</td>
-          <td onContextMenu={ e=>this.selectRowRight(index,agent["uuid"]) } onClick={ e=>this.selectRow(index,agent["uuid"]) } onDoubleClick={myClick.bind(this)}>{agent["admin"] === "true" ? agent["user"] + "*": agent["user"]}</td>
-          <td onContextMenu={ e=>this.selectRowRight(index,agent["uuid"]) } onClick={ e=>this.selectRow(index,agent["uuid"]) } onDoubleClick={myClick.bind(this)}>{agent["hostname"]}</td>
-          <td onContextMenu={ e=>this.selectRowRight(index,agent["uuid"]) } onClick={ e=>this.selectRow(index,agent["uuid"]) } onDoubleClick={myClick.bind(this)}>{agent["platform"]}</td>
-          <td onContextMenu={ e=>this.selectRowRight(index,agent["uuid"]) } onClick={ e=>this.selectRow(index,agent["uuid"]) } onDoubleClick={myClick.bind(this)}>{agent["type"]}</td>
-          <td onContextMenu={ e=>this.selectRowRight(index,agent["uuid"]) } onClick={ e=>this.selectRow(index,agent["uuid"]) } onDoubleClick={myClick.bind(this)}>{agent["pid"]}:{agent["procname"]}</td>
-          <td onContextMenu={ e=>this.selectRowRight(index,agent["uuid"]) } onClick={ e=>this.selectRow(index,agent["uuid"]) } onDoubleClick={myClick.bind(this)}>{agent["type"] !== "smb" ? agent["sleep"]+ "±" + agent["jitter"] + "% [" + agent["trueSleep"] + "]" : "∞"}</td>
-          {/*<td onClick={() => this.clear(agent["uuid"])}>X</td>*/}
+        {/*<tr id={uuid+"shad0w"} key={uuid} className="pointer">*/}
+          <td onContextMenu={ e=>this.selectRowRight(index,uuid) } onClick={ e=>this.selectRow(index,uuid) } onDoubleClick={myClick.bind(this)} /*style={{display: "none"}}*/>{uuid}</td>
+          <td onContextMenu={ e=>this.selectRowRight(index,uuid) } onClick={ e=>this.selectRow(index,uuid) } onDoubleClick={myClick.bind(this)}>{agent["ip_addr"]}</td>
+          <td onContextMenu={ e=>this.selectRowRight(index,uuid) } onClick={ e=>this.selectRow(index,uuid) } onDoubleClick={myClick.bind(this)}>{agent["username"]}</td>
+          <td onContextMenu={ e=>this.selectRowRight(index,uuid) } onClick={ e=>this.selectRow(index,uuid) } onDoubleClick={myClick.bind(this)}>{agent["machine"]}</td>
+          <td onContextMenu={ e=>this.selectRowRight(index,uuid) } onClick={ e=>this.selectRow(index,uuid) } onDoubleClick={myClick.bind(this)}>{agent["arch"]}</td>
+          <td onContextMenu={ e=>this.selectRowRight(index,uuid) } onClick={ e=>this.selectRow(index,uuid) } onDoubleClick={myClick.bind(this)}>{agent["os"]}</td>
+          <td onContextMenu={ e=>this.selectRowRight(index,uuid) } onClick={ e=>this.selectRow(index,uuid) } onDoubleClick={myClick.bind(this)}>{agent["domain"]}</td>
+          <td onContextMenu={ e=>this.selectRowRight(index,uuid) } onClick={ e=>this.selectRow(index,uuid) } onDoubleClick={myClick.bind(this)}>{agent["secure"] === true ? "True":"False"}</td>
+          <td onContextMenu={ e=>this.selectRowRight(index,uuid) } onClick={ e=>this.selectRow(index,uuid) } onDoubleClick={myClick.bind(this)}>{agent["last_checkin_raw"]}</td>
+          {/*<td onClick={() => this.clear(uuid)}>X</td>*/}
         {/*</tr>*/}
         </ContextMenuTrigger>
     }.bind(this));
@@ -79,7 +81,7 @@ export class AgentsPanel extends React.Component {
         const $tds = $(this).find('td'),
                     agentUUID = $tds.eq(0).text();
         const newItemConfig = {
-          title: (!agents.active_agents[agentUUID]) ? "undefined" : agents.active_agents[agentUUID]["ip"]+"@"+agents.active_agents[agentUUID]["pid"]+":"+agents.active_agents[agentUUID]["procname"],
+          title: (!agents[agentUUID]) ? "undefined" : agents[agentUUID]["ip"]+"@"+agents[agentUUID]["pid"]+":"+agents[agentUUID]["procname"],
           type: "react-component",
           component: "agents-menu-component",
           props: { agentuuid: agentUUID },
@@ -98,12 +100,12 @@ export class AgentsPanel extends React.Component {
       });
     }
 
-    const agentsMenus = Object.keys(agents.active_agents).map((key) => {
+    const agentsMenus = Object.keys(agents).map((key) => {
       const active = this.state.activeIndex;
       function myClick() {
         for (const agent in active) {
           const newItemConfig = {
-            title: (!agents.active_agents[active[agent]]) ? "undefined" : agents.active_agents[active[agent]]["ip"]+"@"+agents.active_agents[active[agent]]["pid"]+":"+agents.active_agents[active[agent]]["procname"],
+            title: (!agents[active[agent]]) ? "undefined" : agents[active[agent]]["ip_addr"]+"@"+agent,
             type: "react-component",
             component: "agents-menu-component",
             props: { agentuuid: active[agent] },
@@ -119,7 +121,7 @@ export class AgentsPanel extends React.Component {
       return (
       <ContextMenu key={key+"shad0wMENU"} id={key+"shad0wMENU"}>
         <MenuItem>
-          <strong>{(Object.keys(this.state.activeIndex).length > 1) ? "MULTIPLE" : this.state.agents.active_agents[key]["pid"]+":"+this.state.agents.active_agents[key]["procname"]}</strong>
+          <strong>{(Object.keys(this.state.activeIndex).length > 1) ? "MULTIPLE" : key+":"+this.state.agents[key]["username"]}</strong>
         </MenuItem>
         <MenuItem onClick={myClick}>
           Interact
@@ -130,7 +132,6 @@ export class AgentsPanel extends React.Component {
 
     return (
       <div tabIndex="1" onKeyDown={e=>this.selectMany(e)} className="scrollable-noflex-nopadding table-responsive" id="Agents_main"  ref={node => this.node = node}>
-        { this.state.newCheckin && (<div className="static"></div>) }
         { agentsMenus }
         <table className="table"> 
           <thead>
@@ -139,10 +140,10 @@ export class AgentsPanel extends React.Component {
               <th>IP</th>
               <th>User</th>
               <th>Hostname</th>
+              <th>Architecture</th>
               <th>OS</th>
-              <th>Type</th>
-              <th>Process</th>
-              <th>Sleep</th>
+              <th>Domain</th>
+              <th>Secure</th>
               <th>Last Checkin</th>
               {/*<th>Remove</th>*/}
             </tr>
@@ -153,11 +154,6 @@ export class AgentsPanel extends React.Component {
         </table>
       </div>
     );
-  }
-
-  triggerStatic() {
-    this.setState({ newCheckin: true });
-    setTimeout(x => this.setState({ newCheckin: false }), 1000);
   }
 
   selectRow(index, agentuuid) {
@@ -213,42 +209,30 @@ export class AgentsPanel extends React.Component {
     this.setState({activeIndex: {}});
   }
 
-  componentDidMount() {
-    let { agents } = this.state;
-
-    /*fetch(getCookie("Host")+"/beacons", {
-      method: 'GET',
-      credentials: 'include'
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        console.log(json);
-        agents = json;
-      }).catch((err) => {
-        alert("Connection failed.");
-        console.log(err);
-    });*/
-
+  getBeacons() {
     const data = fetch(getCookie("Host")+"/beacons", {
       method: 'GET',
-      credentials: 'include'
+      credentials: 'include',
+      headers: {
+        'Cookie': getCookie("tokenName")+'='+getCookie("tokenValue")
+      }
     }).json();
+    return data;
+  }
 
-    console.log(data);
+  componentDidMount() {
+    let { agents } = this.state;
+    const data = this.getBeacons();
 
-    /*
-    const { getCommState } = this.props;
-    const commState = getCommState();
-    agents = commState;
-
-    for (const agent in agents.active_agents) {
-      agentsCheck.push(agent);
-    }
-
-    this.setState({ agentsCheck, agents, isLoaded: true });
+    agents = data;
 
     document.addEventListener('mousedown', (e)=>this.handleClick(e), false)
-    setInterval(x => this.forceUpdate(), 1000);*/
+    this.setState({ agents, isLoaded: true });
+    setInterval(x => {
+      let { agents } = this.state;
+      agents = this.getBeacons(); 
+      this.setState({ agents });
+    }, 1000);
   }
   
   componentWillUnmount() {
@@ -256,20 +240,6 @@ export class AgentsPanel extends React.Component {
   }
 
   componentDidUpdate() {
-    /*let { agents, agentsCheck, focused } = this.state;
-
-    if ( focused === false ) {
-      document.getElementById('Agents_main').focus();
-      focused = true;
-      this.setState({ focused });
-    };
-
-    for (const agent in agents.active_agents) {
-      if (!(agentsCheck.includes(agent))) {
-        agentsCheck.push(agent);
-        this.setState({ agentsCheck });
-        this.triggerStatic();
-      }
-    }*/
+    /* */
   }
 }

@@ -60,7 +60,7 @@ class TeamServer(object):
         else:
             teamsrv.shad0w.event.debug_log(f"Login for '{username}' failed")
 
-        response = {"success": False}
+        response = {"success": False, "tokenValue": cookie.decode("utf-8"), "tokenName": "SDWAuth"}
 
         if success:
             response['success'] = True
