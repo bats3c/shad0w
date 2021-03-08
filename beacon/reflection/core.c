@@ -30,36 +30,43 @@
 #include "../lib/stdlib/stdlib.h"
 
 // core functions
-BOOL GetBasicUserInfo(struct BasicUserInfo *UserInfo)
+BOOL GetBasicUserInfo(PCHAR lpcUserName, PCHAR lpcDomainName, PCHAR lpsComputerName)
 {
 
-    /* get basic infomation about how the current user is running */
+    /*
+     * Get user info.
+     * 
+     * Retrieve infomation about the current user and domain context
+     *
+     */
 
-    DWORD dwUserBuf = 256;
-    char chCurrentUser[256];
-    LPSTR DomainBuf[MAX_PATH], ComputerBuf[MAX_PATH];
-    DWORD bufSize2, bufSize3 = UNLEN+1;
+    HANDLE hHeap, hToken = NULL;
+    DWORD  dwCompBufLen  = MAX_PATH;    
 
-    // set username
-
-    GetUserName(chCurrentUser, &dwUserBuf);
-    UserInfo->UserName = chCurrentUser;
-
-    // set the domain
-
-    ZeroMemory(DomainBuf, MAX_PATH);
-    GetComputerNameEx( ComputerNameDnsDomain, DomainBuf, &bufSize2 );
-    UserInfo->DomainName = DomainBuf;
-
-    if (strlen(UserInfo->DomainName) == 0)
+    if(!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken))
     {
-        UserInfo->DomainName = "NULL";
+        DEBUG("OpenProcessToken(): FAILED");
+        return FALSE;
     }
 
-    // set the computer name
+    if (!GetLogonFromToken(hToken, lpcUserName, lpcDomainName))
+    {
+        DEBUG("GetLogonFromToken(): FAILED");
+        return FALSE;
+    }
 
-    GetComputerNameA( ComputerBuf, &bufSize3 );
-    UserInfo->ComputerName = ComputerBuf;
+    if (!GetComputerNameA(lpsComputerName, &dwCompBufLen))
+    {
+        DEBUG("GetComputerNameA(): FAILED");
+        return FALSE;
+    }
+
+    // if the computer name is the same as the domain
+    // then this machine is not connected to a domain
+    if (strcmp(lpsComputerName, lpcDomainName) == 0)
+    {
+        strcpy(lpcDomainName, "NULL");
+    }
 
     return TRUE;
 }
