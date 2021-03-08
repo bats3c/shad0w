@@ -89,6 +89,27 @@ class TeamServer(object):
 
         return events
 
+    @app.route("/beacons")
+    def teamserver_get_beacons():
+        """
+        Give infomation to the client about the current beacons. 
+        """
+
+        # get the cookie
+        cookie = request.cookies.get("SDWAuth")
+
+        # check it is valid
+        _, valid = teamsrv.auth_obj.validate_cookie(cookie)
+        if valid is False:
+            return jsonify({"failed": True})
+
+        teamsrv.shad0w.event.debug_log("Handling request for registered beacons")
+
+        events = jsonify(teamsrv.shad0w.beacons)
+
+        return events
+
+
     @app.route("/cmd", methods=["POST"])
     def teamserver_run_command():
         """

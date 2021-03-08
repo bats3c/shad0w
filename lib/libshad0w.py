@@ -23,9 +23,10 @@ class SHAD0W(object):
         self.teamserver_host = host
         self.teamserver_port = port
 
-        self.login_path = "/login"
-        self.poll_path  = "/poll"
-        self.comnd_path = "/cmd"
+        self.login_path   = "/login"
+        self.poll_path    = "/poll"
+        self.comnd_path   = "/cmd"
+        self.beacons_path = "/beacons"
 
         self.http_session = requests.Session()
 
@@ -116,3 +117,24 @@ class SHAD0W(object):
             return data["success"]
         except:
             return False
+    
+    def beacons(self):
+        """
+        Get infomation on the registered beacons.
+        """
+
+        # make the beacons url
+        beacons_url = self._make_url(self.beacons_path)
+
+        # make the request
+        req = self.http_session.get(beacons_url)
+
+        # did we run it successfully
+        data = json.loads(req.text)
+
+        # give the results back
+        try:
+            if data['failed']:
+                return False
+        except:
+            return data
