@@ -152,7 +152,10 @@ class Handler(object):
         # the request for the beacon and generate the correct one, once this is done we
         # will to to send it back to the stager.
 
-        print("hit")
+        # only stage a payload if an endpoint is set
+        if self.shad0w.endpoint is None:
+            self.shad0w.debug.error(f"No endpoint set, unable to stage beacon.")
+            return ""
 
         # a stager should request a beacon via a post request
         if request.method == "POST":
