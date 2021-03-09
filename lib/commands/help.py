@@ -12,10 +12,9 @@ __type__ = "system"
 
 
 def usage(shad0w):
-    t = PrettyTable(["Command", "Type", "Description"])
+    t = PrettyTable(["Command", "Description"])
 
     t.align["Command"] = "l"
-    t.align["Type"] = "l"
     t.align["Description"] = "l"
 
     num_of_modules = len(cmd.Shad0wLexer.commands)
@@ -30,21 +29,16 @@ def usage(shad0w):
             importlib.reload(mod)
 
         try:
-            type = mod.__type__
-        except Exception:
-            type = "No type available."
-
-        try:
             description = mod.__description__
         except Exception:
             description = "No description available."
 
-        tDict[command] = ([command, type, description], num)
+        tDict[command] = ([command, description], num)
 
     for tup in (sorted(tDict.items())):
         t.add_row(tup[1][0])
         if tup[1][1] != num_of_modules - 1:
-            t.add_row([" ", " ", " "])
+            t.add_row([" ", " "])
     return t
 
 
