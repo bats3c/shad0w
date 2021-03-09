@@ -9,7 +9,7 @@ import threading
 
 from lib import shellcode
 
-__description__ = "Create a SOCKS tunnel over HTTP/HTTPS"
+__description__ = "Create a SOCKS tunnel over HTTP/HTTPS\n"
 __author__ = "@_batsec_, @rbmaslen"
 __type__ = "module"
 
