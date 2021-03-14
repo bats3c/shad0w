@@ -213,7 +213,7 @@ export default class App extends React.Component {
             <form>
               <br />
               <h1 style={{color:"white"}}>shad0w<br/><span style={{fontSize:"20px"}}>v{packageJson.version}</span></h1>
-              <img src={logo} style={{width:"25%"}} alt="shad0w" />
+              <img src={logo} style={{width:"10%"}} alt="shad0w" />
               <br /><br />
               <p style={{color:"white"}}><strong>Enter a host, nickname and token to login.</strong></p>
               <span className="custom-dropdown">
@@ -241,13 +241,13 @@ export default class App extends React.Component {
       <div onClick={(menuVisible) ? this.showSidebar.bind(this):() => { return false }}>
         <div id="wrapper">
           <ul id="menuContainer" onMouseEnter={this.stopTimer.bind(this)} onMouseLeave={this.restartTimer.bind(this)} className={"scrollable "+( menuVisible ? 'visible' : '' )}>
-            <li><img src={logo} style={{width:"30%"}} alt="jian yang" /><span style={{fontSize:"20px"}}>&nbsp;<strong>shad0w</strong></span></li>
+            <li><img src={logo} style={{width:"30%"}} alt="jian yang" /><span style={{fontSize:"20px"}}>&nbsp;<strong><br />shad0w</strong></span></li>
             <li onClick={function(){this.eraseAllCookies()}.bind(this)}>Logout</li>
             <li onClick={function(){window.location.reload()}}>Reload</li>
           </ul>
           <div className="drawerScroll">
             <img style={{ position:"relative", width:"25px"}} src={logo} alt="jian yang" /><div className="pad" />
-            <div tlte="expand" onClick={this.showSidebar.bind(this)} className={"drawerBtn "+( menuVisible ? 'visibleBtn' : '' )}><FA name="ellipsis-h" /></div><div className="pad" />
+            <div title="expand" onClick={this.showSidebar.bind(this)} className={"drawerBtn "+( menuVisible ? 'visibleBtn' : '' )}><strong>...</strong></div><div className="pad" />
             <div title="logout" onClick={function(){this.eraseAllCookies()}.bind(this)} className={"drawerBtn "+( menuVisible ? 'visibleBtn' : '' )}><FA name="sign-out-alt" /></div><div className="pad" />
             <div title="refresh" onClick={function(){window.location.reload()}} className={"drawerBtn "+( menuVisible ? 'visibleBtn' : '' )}><FA name="sync" /></div><div className="pad" />
           </div>

@@ -4,3 +4,9 @@
 3. Finish designs.  Remove old Jyang branding, make it shad0w compatible.
 4. Pass CORS IP through an argument
 5. Fetch doesn't like self signed.  Make SSL an argument.
+
+BUGS
+2 bugs to resolve, not a huge deal, will happen with the next 2 endpoints.
+
+1. Currently must wait 1 second about to drag table items.
+2. Agent results can be lost in several scenarios where poll endpoint is obtained and data cleared but not saved to panels.
