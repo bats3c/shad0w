@@ -7,12 +7,12 @@ const fetch = require('sync-fetch');
 export class AgentsPanel extends React.Component {
   constructor(props) {
     super(props);
+    this.returnBeaconData = this.returnBeaconData.bind(this);
     this.state = { isLoaded: false, focused: false, agents: [], dragSources: [], activeIndex: {}, allIndexes: {} };
   }
 
   render() {
     const { isLoaded, agents, dragSources, allIndexes } = this.state;
-    console.log(this.state.agents);
     if (!isLoaded) {
       const FA = require('react-fontawesome');
       return <div className="loading"><FA name="spinner enlargeSpinner" className="rotate"/><br />LOADING</div>;
@@ -35,10 +35,10 @@ export class AgentsPanel extends React.Component {
       function myClick() {
         this.selectRow(index);
         const newItemConfig = {
-          title: agent["ip"]+"@"+agent["pid"]+":"+agent["procname"],
+          title: agents[uuid]["ip_addr"]+"@"+uuid,
           type: "react-component",
           component: "agents-menu-component",
-          props: { agentuuid: uuid },
+          props: { agentuuid: uuid, returnBeaconData: this.returnBeaconData },
         };
         if( global.myMainLayout.selectedItem === null ) {
           //alert( 'No item selected. Please click the black header bar to select which item you want to add new items to.' );
@@ -77,14 +77,15 @@ export class AgentsPanel extends React.Component {
 
     if(!deviceIsMobile){
       const {agents} = this.state;
+      const that = this;
       $('.pointer').each(function() {
         const $tds = $(this).find('td'),
                     agentUUID = $tds.eq(0).text();
         const newItemConfig = {
-          title: (!agents[agentUUID]) ? "undefined" : agents[agentUUID]["ip"]+"@"+agents[agentUUID]["pid"]+":"+agents[agentUUID]["procname"],
+          title: (!agents[agentUUID]) ? "undefined" : agents[agentUUID]["ip_addr"]+"@"+agentUUID,
           type: "react-component",
           component: "agents-menu-component",
-          props: { agentuuid: agentUUID },
+          props: { agentuuid: agentUUID, returnBeaconData: that.returnBeaconData },
         };
         if (!(dragSources.includes(agentUUID))) {
           global.myMainLayout.createDragSource( $(this), newItemConfig );
@@ -102,13 +103,14 @@ export class AgentsPanel extends React.Component {
 
     const agentsMenus = Object.keys(agents).map((key) => {
       const active = this.state.activeIndex;
+      const that = this;
       function myClick() {
         for (const agent in active) {
           const newItemConfig = {
-            title: (!agents[active[agent]]) ? "undefined" : agents[active[agent]]["ip_addr"]+"@"+agent,
+            title: (!agents[active[agent]]) ? "undefined" : agents[active[agent]]["ip_addr"]+"@"+active[agent],
             type: "react-component",
             component: "agents-menu-component",
-            props: { agentuuid: active[agent] },
+            props: { agentuuid: active[agent], returnBeaconData: that.returnBeaconData },
           };
           if( global.myMainLayout.selectedItem === null ) {
             //alert( 'No item selected. Please click the black header bar to select which item you want to add new items to.' );
@@ -210,14 +212,59 @@ export class AgentsPanel extends React.Component {
   }
 
   getBeacons() {
-    const data = fetch(getCookie("Host")+"/beacons", {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Cookie': getCookie("tokenName")+'='+getCookie("tokenValue")
+    let data;
+    try {
+      data = fetch(getCookie("Host")+"/beacons", {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Cookie': getCookie("tokenName")+'='+getCookie("tokenValue")
+        }
+      }).json();
+      if (data["failed"]) {
+        localStorage.removeItem("Nick")
+        localStorage.removeItem("Host")
+        localStorage.removeItem("Token")
+        localStorage.removeItem("tokenName")
+        localStorage.removeItem("tokenValue")
+        document.cookie = "SDWAuth= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+        window.location.reload();
       }
-    }).json();
-    return data;
+      return data;
+    }
+    catch {
+      return this.state.agents;
+    }
+  }
+
+  getBeaconData() {
+    let data;
+    try {
+      data = fetch(getCookie("Host")+"/poll", {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Cookie': getCookie("tokenName")+'='+getCookie("tokenValue")
+        }
+      }).json();
+      if (data["failed"]) {
+        localStorage.removeItem("Nick")
+        localStorage.removeItem("Host")
+        localStorage.removeItem("Token")
+        localStorage.removeItem("tokenName")
+        localStorage.removeItem("tokenValue")
+        document.cookie = "SDWAuth= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+        window.location.reload();
+      }
+      return data;
+    }
+    catch {
+      return this.state.allAgentData;
+    }
+  }
+
+  returnBeaconData() {
+    return this.state.allAgentData;
   }
 
   componentDidMount() {
@@ -232,6 +279,12 @@ export class AgentsPanel extends React.Component {
       let { agents } = this.state;
       agents = this.getBeacons(); 
       this.setState({ agents });
+    }, 1000);
+
+    setInterval(x => {
+      let { allAgentData } = this.state;
+      allAgentData = this.getBeaconData(); 
+      this.setState({ allAgentData });
     }, 1000);
   }
   

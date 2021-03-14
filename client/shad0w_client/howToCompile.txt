@@ -1,0 +1,6 @@
+Step 1. npm install
+Step 2. npm run build
+Step 3. sudo npm install electron-builder -g
+Step 4. ./buildElectron.sh
+
+EXTRA: Uncomment the last line in buildElectron.sh to compile for windows as well.  Only works with x86 Wine.

@@ -67,7 +67,7 @@ export default class App extends React.Component {
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log(document.cookie);
+        //console.log(document.cookie);
         if (json["success"] === false) {
           alert("BAD CREDENTIALS.  Try again!")
         } else {
@@ -76,7 +76,7 @@ export default class App extends React.Component {
           var time = now.getTime();
           var expireTime = time + 1000*36000;
           now.setTime(expireTime);
-          document.cookie = json["tokenName"]+'='+json+';expires='+now.toUTCString()+';path=/';
+          document.cookie = json["tokenName"]+'='+json["tokenValue"]+';expires='+now.toUTCString()+';path=/';
           this.setCookie("tokenName", json["tokenName"]);
           this.setCookie("tokenValue", json["tokenValue"])
           window.location.reload();
