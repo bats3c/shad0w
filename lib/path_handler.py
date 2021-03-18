@@ -27,9 +27,15 @@ class Handler(object):
 
         # print(request.get_json(force=True))
 
+        # print("request.data: ", request.data)
+
         jdata = request.get_json(force=True)
 
+        # jdata = base64.b64decode(jdata)
+
         # print("jdata: ", jdata)
+
+        # print("request.json: ", request.json)
 
         beacon_id, opcode, data = tools.get_data_from_json(jdata)
 
