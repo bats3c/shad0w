@@ -66,7 +66,7 @@ def generate(file, args, params, parse=True):
 
         # build the command line args if we need to
         if args.param:
-            cmdline += f" -p \'{params}\'"
+            cmdline += f" -p \"{params}\""
         if args.cls:
             cmdline += f" -c {args.cls}"
         if args.method:
