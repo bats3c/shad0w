@@ -52,7 +52,9 @@ class Handler(object):
             try:
                 # if the beacon isn't just checking in to give us
                 # data then build a response to give the beacon
-
+                if beacon_id not in self.shad0w.beacons.keys():
+                    return self.register_beacon(request)
+                
                 if ((opcode == 0) and (data == "")):
                     # get the current task
                     tasklist = self.shad0w.beacons[beacon_id]["task"]
