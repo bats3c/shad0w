@@ -8,7 +8,7 @@
 
 SHAD0W is a modular C2 framework designed to successfully operate on mature environments.
 
-It uses a range of methods to evade EDR and AV while allowing the operator to continue using tooling and tradecraft they are familiar with. Its powered by Python 3.8 and C, and uses [Donut](https://github.com/TheWover/donut) for payload generation. By using Donut along with the process injection capabilities of SHAD0W, it provides the operator the ability to execute .NET assemblies, DLLs, EXEs, JS, VBS or XSLs fully inside memory. Dynamically resolved syscalls are heavily used to avoid userland API hooking, anti DLL injection to make it harder for EDR to load code into the beacons and offical Microsoft mitigation methods to protect spawn processes.
+It uses a range of methods to evade EDR and AV while allowing the operator to continue using tooling and tradecraft they are familiar with. Its powered by Python 3.8 and C, and uses [Donut](https://github.com/TheWover/donut) for payload generation. By using Donut along with the process injection capabilities of SHAD0W, it provides the operator the ability to execute .NET assemblies, DLLs, EXEs, JS, VBS or XSLs fully inside memory. Dynamically resolved syscalls are heavily used to avoid userland API hooking, anti DLL injection to make it harder for EDR to load code into the beacons and official Microsoft mitigation methods to protect spawn processes.
 
 See the wiki for installation and usage instructions.
 
@@ -16,7 +16,7 @@ Main features of SHAD0W C2:
 - **Built for Docker** - Runs fully inside of Docker allowing cross platform usage
 - **Extremely modular** - Easy to create new modules to interact and task beacons
 - **HTTPS C2 communication** - All traffic between beacons and the C2 are encrypted and transmitted over HTTPS
-- **JSON based protocol** - Custom beaons are able to be built and used with an easy to implement protocol
+- **JSON based protocol** - Custom beacons are able to be built and used with an easy to implement protocol
 - **Live proxy and mirror** - The C2 server is able to mirror any website in real time, relaying all non C2 traffic to that site, making it look less subject when viewed in a web browser
 - **Modern CLI** - The CLI is built on [prompt-toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit)
 
