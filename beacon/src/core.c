@@ -344,7 +344,7 @@ LPCSTR* BuildCheckinData(DWORD OpCode, LPCSTR Data, DWORD Mode)
         }
 
         encoded_data = base64_encode((const char*)Data, lstrlen(Data), &b64_len_out);
-        encoded_data[b64_len_out + 1] = '\0';
+        encoded_data[b64_len_out] = '\0';
 
         lpBuffer = (CHAR*)malloc(dwEstSize + b64_len_out);
         if (lpBuffer == NULL)
