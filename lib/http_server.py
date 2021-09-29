@@ -11,10 +11,10 @@ from flask import Flask, request, jsonify, Response
 app = Flask(__name__)
 
 # shut flask output up
-log                    = logging.getLogger('werkzeug')
-log.disabled           = True
-cli                    = sys.modules['flask.cli']
-cli.show_server_banner = lambda *x: None
+# log                    = logging.getLogger('werkzeug')
+# log.disabled           = True
+# cli                    = sys.modules['flask.cli']
+# cli.show_server_banner = lambda *x: None
 
 IGNORE_CONTENT = ""
 

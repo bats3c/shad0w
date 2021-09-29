@@ -43,6 +43,7 @@ BOOL ResolveImports(
 {
     BOOL bSuccess = TRUE;
 
+    HMODULE hNtdll = BeaconGetModuleHandle((LPWSTR)L"ntdll.dll");
     HMODULE hKernel32 = BeaconGetModuleHandle((LPWSTR)L"kernel32.dll");
     HMODULE hWinHTTP = LoadLibraryW(L"winhttp.dll");
 
@@ -53,6 +54,8 @@ BOOL ResolveImports(
 
     g_Api->HeapFree = (API_HeapFree)GetProcAddress(hKernel32, "HeapFree");
     g_Api->HeapAlloc = (API_HeapAlloc)GetProcAddress(hKernel32, "HeapAlloc");
+
+    g_Api->RtlGetVersion = (API_RtlGetVersion)GetProcAddress(hNtdll, "RtlGetVersion");
 
     g_Api->WinHttpOpen = (API_WinHttpOpen)GetProcAddress(hWinHTTP, "WinHttpOpen");
     g_Api->WinHttpConnect = (API_WinHttpConnect)GetProcAddress(hWinHTTP, "WinHttpConnect");

@@ -1,5 +1,10 @@
 #pragma once
 
+typedef LPVOID (WINAPI * API_RtlGetVersion)
+(
+    POSVERSIONINFOEXW OsInfo
+);
+
 typedef LPVOID (WINAPI * API_HeapFree)
 (
     HANDLE hHeap,
@@ -108,6 +113,7 @@ typedef struct _API
     API_HeapFree HeapFree;
     API_HeapAlloc HeapAlloc;
     API_WinHttpOpen WinHttpOpen;
+    API_RtlGetVersion RtlGetVersion;
     API_WinHttpConnect WinHttpConnect;
     API_WinHttpReadData WinHttpReadData;
     API_WinHttpSetOption WinHttpSetOption;

